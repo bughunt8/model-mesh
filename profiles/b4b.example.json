@@ -1,0 +1,278 @@
+// EXAMPLE with real provider/model IDs — reference mapping, not the genericized template.
+// The canonical genericized profile is the same-named file without ".example".
+{
+  "agents": {
+    "hephaestus": {
+      "prompt_append": "You are the primary implementation agent. Own the codebase but delegate and review. Explore, decide, execute. Use LSP and AST-grep aggressively.",
+      "model": "apiyi/gpt-5.6-terra",
+      "reasoning": "medium",
+      "fallback_models": [
+        {
+          "model": "apiyi/gpt-5.6-luna",
+          "reasoning": "medium"
+        },
+        {
+          "model": "deepseek/deepseek-v4-pro",
+          "reasoning": "max"
+        },
+        {
+          "model": "apiyi/gpt-5.5",
+          "reasoning": "medium"
+        }
+      ],
+      "ultrawork": {
+        "model": "apiyi/gpt-5.6-sol",
+        "reasoning": "high"
+      }
+    },
+    "oracle": {
+      "model": "apiyi/gpt-5.6-terra",
+      "reasoning": "high",
+      "fallback_models": [
+        {
+          "model": "apiyi/gpt-5.5",
+          "reasoning": "medium"
+        },
+        {
+          "model": "deepseek/deepseek-v4-pro"
+        },
+        {
+          "model": "opencode/gemini-3.1-pro",
+          "reasoning": "high"
+        }
+      ]
+    },
+    "momus": {
+      "model": "apiyi/gpt-5.6-terra",
+      "reasoning": "medium",
+      "fallback_models": [
+        {
+          "model": "apiyi/gpt-5.5",
+          "reasoning": "medium"
+        },
+        {
+          "model": "opencode/gemini-3.1-pro",
+          "reasoning": "high"
+        },
+        {
+          "model": "deepseek/deepseek-v4-pro"
+        }
+      ]
+    },
+    "sisyphus": {
+      "prompt_append": "Delegate heavily to hephaestus for implementation. Parallelize exploration.",
+      "model": "zai-coding-plan/glm-5.2",
+      "reasoning": "high",
+      "fallback_models": [
+        {
+          "model": "moonshotai/kimi-k2.7-code"
+        },
+        {
+          "model": "opencode/gemini-3.1-pro",
+          "reasoning": "high"
+        }
+      ],
+      "ultrawork": {
+        "model": "minimax/MiniMax-M3"
+      }
+    },
+    "sisyphus-junior": {
+      "model": "opencode/gemini-3-flash",
+      "fallback_models": [
+        {
+          "model": "deepseek/deepseek-v4-flash"
+        }
+      ]
+    },
+    "atlas": {
+      "model": "moonshotai/kimi-k2.7-code",
+      "temperature": 0.7,
+      "fallback_models": [
+        {
+          "model": "zai-coding-plan/glm-5.2"
+        },
+        {
+          "model": "opencode/gemini-3-flash"
+        },
+        {
+          "model": "opencode/qwen3.8-max-preview"
+        }
+      ]
+    },
+    "prometheus": {
+      "model": "moonshotai/kimi-k2.7-code",
+      "temperature": 0.8,
+      "fallback_models": [
+        {
+          "model": "zai-coding-plan/glm-5.2"
+        },
+        {
+          "model": "apiyi/gpt-5.6-terra",
+          "reasoning": "high"
+        },
+        {
+          "model": "opencode/qwen3.8-max-preview"
+        }
+      ]
+    },
+    "metis": {
+      "model": "zai-coding-plan/glm-5.2",
+      "temperature": 0.7,
+      "fallback_models": [
+        {
+          "model": "moonshotai/kimi-k2.7-code"
+        },
+        {
+          "model": "deepseek/deepseek-v4-pro"
+        }
+      ]
+    },
+    "librarian": {
+      "model": "opencode/qwen3.6-plus",
+      "fallback_models": [
+        {
+          "model": "deepseek/deepseek-v4-flash"
+        },
+        {
+          "model": "opencode/gemini-3-flash"
+        }
+      ]
+    },
+    "explore": {
+      "model": "deepseek/deepseek-v4-flash",
+      "fallback_models": [
+        {
+          "model": "opencode/gemini-3-flash"
+        }
+      ]
+    },
+    "multimodal-looker": {
+      "model": "minimax/MiniMax-M3",
+      "fallback_models": [
+        {
+          "model": "apiyi/gpt-5.6-luna",
+          "reasoning": "medium"
+        },
+        {
+          "model": "zai-coding-plan/glm-5-turbo"
+        },
+        {
+          "model": "opencode/qwen3.8-max-preview"
+        }
+      ]
+    }
+  },
+  "categories": {
+    "visual-engineering": {
+      "models": [
+        {
+          "model": "opencode/gemini-3.1-pro",
+          "reasoning": "high"
+        },
+        {
+          "model": "minimax/MiniMax-M3"
+        },
+        {
+          "model": "deepseek/deepseek-v4-pro"
+        }
+      ]
+    },
+    "ultrabrain": {
+      "models": [
+        {
+          "model": "apiyi/gpt-5.6-sol",
+          "reasoning": "high"
+        },
+        {
+          "model": "apiyi/gpt-5.6-terra",
+          "reasoning": "high"
+        },
+        {
+          "model": "zai-coding-plan/glm-5.2",
+          "reasoning": "max"
+        }
+      ]
+    },
+    "deep": {
+      "models": [
+        {
+          "model": "moonshotai/kimi-k2.7-code"
+        },
+        {
+          "model": "moonshotai/kimi-k3"
+        },
+        {
+          "model": "zai-coding-plan/glm-5.2"
+        },
+        {
+          "model": "apiyi/gpt-5.6-terra",
+          "reasoning": "medium"
+        },
+        {
+          "model": "opencode/qwen3.8-max-preview"
+        }
+      ]
+    },
+    "artistry": {
+      "models": [
+        {
+          "model": "opencode/gemini-3.1-pro",
+          "reasoning": "high"
+        },
+        {
+          "model": "opencode/qwen3.7-plus"
+        },
+        {
+          "model": "opencode/kimi-k2.6"
+        }
+      ]
+    },
+    "quick": {
+      "models": [
+        {
+          "model": "deepseek/deepseek-v4-flash"
+        },
+        {
+          "model": "opencode/gemini-3-flash"
+        },
+        {
+          "model": "zai-coding-plan/glm-5-turbo"
+        }
+      ]
+    },
+    "unspecified-low": {
+      "models": [
+        {
+          "model": "deepseek/deepseek-v4-flash"
+        },
+        {
+          "model": "opencode/gemini-3-flash"
+        }
+      ]
+    },
+    "unspecified-high": {
+      "models": [
+        {
+          "model": "apiyi/gpt-5.6-terra",
+          "reasoning": "high"
+        },
+        {
+          "model": "deepseek/deepseek-v4-pro"
+        },
+        {
+          "model": "moonshotai/kimi-k2.7-code"
+        }
+      ]
+    },
+    "writing": {
+      "models": [
+        {
+          "model": "opencode/gemini-3.1-pro"
+        },
+        {
+          "model": "opencode/gemini-3-flash"
+        }
+      ]
+    }
+  }
+}

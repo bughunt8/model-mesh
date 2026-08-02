@@ -32,9 +32,17 @@ def tracked_files():
         for fn in files:
             yield os.path.join(base, fn)
 
+# *.example.json files intentionally carry real provider/model IDs as a reference
+# mapping (see README). They are exempt from the vendor-name denylist by design,
+# but still validated for JSON/schema shape below.
+def is_example(rel):
+    return rel.endswith(".example.json")
+
 print("[1] vendor denylist")
 for path in tracked_files():
     rel = os.path.relpath(path, ROOT)
+    if is_example(rel):
+        continue
     if DENY.search(rel):
         fail(f"forbidden name in PATH: {rel}")
     if path.endswith(TEXT_EXT):
@@ -80,14 +88,23 @@ for skill in ["mm-method", "mm-loop", "mm-verify", "mm-domain"]:
 #    ultrawork singular model, categories use models[], no `variant`, no `models` on agents)
 # ---------------------------------------------------------------------------
 print("[4] profiles")
+_profile_files = []
 for prof in ["ultimate", "hybrid", "b4b"]:
-    p = os.path.join(ROOT, "profiles", f"{prof}.json")
+    _profile_files.append(f"{prof}.json")
+    ex = os.path.join(ROOT, "profiles", f"{prof}.example.json")
+    if os.path.exists(ex):
+        _profile_files.append(f"{prof}.example.json")
+for prof_file in _profile_files:
+    prof = prof_file[:-5]
+    p = os.path.join(ROOT, "profiles", prof_file)
     if not os.path.exists(p):
-        fail(f"missing profiles/{prof}.json"); continue
+        fail(f"missing profiles/{prof_file}"); continue
     try:
-        d = json.load(io.open(p, encoding="utf-8"))
+        _txt = io.open(p, encoding="utf-8").read()
+        _txt = "\n".join(l for l in _txt.splitlines() if not l.lstrip().startswith("//"))
+        d = json.loads(_txt)
     except Exception as e:
-        fail(f"{prof}.json invalid JSON: {e}"); continue
+        fail(f"{prof_file} invalid JSON: {e}"); continue
     bad = []
     for an, a in d.get("agents", {}).items():
         if "models" in a: bad.append(f"agents.{an}.models (use model+fallback_models)")

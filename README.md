@@ -38,6 +38,8 @@ AGENTS.md              # portable method + routing runbook for any agent
 THIRD_PARTY_NOTICES.md # upstream attribution
 ```
 
+Each profile also ships a `*.example.json` (e.g. `profiles/hybrid.example.json`) showing the same fragment populated with **real provider/model IDs** as a concrete reference mapping. The plain `*.json` files stay genericized; the `*.example.json` files are illustrative and are exempt from the vendor-name CI check by design.
+
 The three `profiles/*.json` are **fragments** (agents + categories only). `setup-config.sh` wraps a chosen fragment in the required `[opencode]` structure to produce a complete, deployable config.
 
 ---
