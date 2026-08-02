@@ -149,20 +149,24 @@ These charts began as introspection and were then checked against observed behav
 
 ```mermaid
 flowchart TD
-    S1["Step 1: define done"] --> GRILL{"material decisions still hidden AND user reachable?"}
-    GRILL -->|yes| INT["Interview: one question at a time, recommend an answer, decisions only"]
-    GRILL -->|no| S2["Step 2: evidence"]
-    INT --> S2
-    S2 --> S3["Step 3: decide + plan"]
-    S3 --> PROTO{"design risk? race / non-atomic txn / shaky state model / UI unknown / unverifiable assumption"}
-    PROTO -->|yes| PB["Step 3.5: throwaway prototype answers the one question"]
-    PROTO -->|no| S4["Step 4: implement"]
-    PB -->|answer changes design| S3
-    PB -->|design holds| S4
-    S4 --> TDD{"behavior change with a testable seam?"}
-    TDD -->|yes| RG["agree seams -> red->green vertical slices"]
-    TDD -->|no| REV
-    RG --> REV["Step 4 close: two-axis review (Spec + Standards)"]
-    REV -->|spec miss or hard standards violation| S4
-    REV -->|clean| S5["Step 5: verify by observation"]
+    S1["Step 1: define done"] --> GTRIG{"material decisions hidden AND attended?"}
+    GTRIG -->|yes| MINI["mini-orient: list tree, grep spec - resolve every fact"]
+    GTRIG -->|no| S2["Step 2: evidence"]
+    MINI --> INT["interview: decisions only, one at a time, recommend an answer, bounded ~3-4"]
+    INT -->|answer changes the ask| S0["back to Step 0"]
+    INT -->|answer changes done| S1
+    INT -->|shared understanding| S2
+    S2 --> S3["Step 3: decide + plan (name scope incl. test files)"]
+    S3 --> PTRIG{"design risk in THIS change's scope AND not answerable by reading/one test?"}
+    PTRIG -->|yes| PROTO["Step 3.5: throwaway prototype; paste transcript; delete code"]
+    PTRIG -->|no| TDD
+    PROTO -->|answer changes design| S3
+    PROTO -->|design holds| TDD{"behavior change with a usable test seam?"}
+    TDD -->|yes| SEAM["agree seams"] --> RED["write test -> RUN -> observe RED"] --> GREEN["minimal impl -> GREEN"]
+    GREEN -->|more slices| RED
+    GREEN -->|slices done| REV
+    TDD -->|no seam / no harness| IMPL["implement surgically"] --> REV
+    REV["Step 4 close: materialize diff -> two axes (Spec | Standards), separate"]
+    REV -->|spec miss or hard standards violation, <2 rounds| GREENBASE["establish green, then fix/refactor"] --> REV
+    REV -->|clean, or 2 rounds hit| S5["Step 5: verify by observation"]
 ```
