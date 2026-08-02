@@ -26,3 +26,16 @@ The routing configs target the oh-my-openagent / opencode framework
 `opencode`, the `[opencode]` config key, and the schema URL are that framework's
 real identifiers, intentionally retained so the config loads. They are not vendor
 model names.
+
+## matt-pocock/skills (concepts adapted)
+
+The mm-method loop integrates ideas adapted from several skills in
+https://github.com/mattpocock/skills:
+
+- **grilling / grill-me** -> Step 1 requirement-sharpening interview (one question at a time, decisions vs facts).
+- **prototype** -> Step 3.5 conditional throwaway-prototype phase (logic/UI branches, throwaway rules).
+- **tdd** -> Step 4 test-first vertical-slice method (seams, red->green, anti-patterns).
+- **code-review** -> Step 4 close two-axis review (Spec + Standards, Fowler smell baseline).
+
+These are conceptual adaptations rewritten into model-mesh's loop and prose; no files were copied verbatim.
+Consult that repository for the original, fuller skills. Licensing per that repository.

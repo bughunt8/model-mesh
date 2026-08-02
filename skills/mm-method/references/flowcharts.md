@@ -144,3 +144,25 @@ Follow the arrows literally; a diamond is a decision you must actually make, not
 
 These charts began as introspection and were then checked against observed behavior: bare flagship-model agents run on real problems with their full tool-call transcripts extracted (eval round 10). The observation validated the core paths (spec read before any edit, twin bug found via the README, verification of every mode, assumption stated on ambiguity) and corrected the charts in three places: the ORIENT box at the start of evidence gathering, the expensive-vs-chained nuance on parallelization, and the cleanup rule in the report step. Where introspection and observation disagreed, observation won.
 
+
+## 8. The added gates (grill / prototype / TDD / two-axis review)
+
+```mermaid
+flowchart TD
+    S1["Step 1: define done"] --> GRILL{"material decisions still hidden AND user reachable?"}
+    GRILL -->|yes| INT["Interview: one question at a time, recommend an answer, decisions only"]
+    GRILL -->|no| S2["Step 2: evidence"]
+    INT --> S2
+    S2 --> S3["Step 3: decide + plan"]
+    S3 --> PROTO{"design risk? race / non-atomic txn / shaky state model / UI unknown / unverifiable assumption"}
+    PROTO -->|yes| PB["Step 3.5: throwaway prototype answers the one question"]
+    PROTO -->|no| S4["Step 4: implement"]
+    PB -->|answer changes design| S3
+    PB -->|design holds| S4
+    S4 --> TDD{"behavior change with a testable seam?"}
+    TDD -->|yes| RG["agree seams -> red->green vertical slices"]
+    TDD -->|no| REV
+    RG --> REV["Step 4 close: two-axis review (Spec + Standards)"]
+    REV -->|spec miss or hard standards violation| S4
+    REV -->|clean| S5["Step 5: verify by observation"]
+```

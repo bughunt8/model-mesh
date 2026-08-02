@@ -19,6 +19,8 @@ A mid-tier model that follows this loop beats a stronger model that free-styles:
 
 Deeper material loads on demand: `references/failure-modes.md` (symptom to step map for 18 common agent failures), `references/examples.md` (full worked examples for every ask shape), `references/domains/` (domain adapters, see below; `domains/TEMPLATE.md` is their schema and `/mm-domain` generates new ones), `references/flowcharts.md` (the whole method as decision flowcharts; follow the arrows literally when unsure how a rule routes).
 
+**Four engineering gates fold into the loop** (adapted from matt-pocock/skills; see repo `THIRD_PARTY_NOTICES.md`): a **grill** interview in Step 1 (sharpen requirements, decisions only), a conditional **prototype** phase at Step 3.5 (throwaway code for design risks like races and non-atomic transactions), **test-first vertical slices** in Step 4 (seams, red -> green), and a **two-axis review** (Spec + Standards) at the Step 4 -> 5 boundary. They are proportional: trivial and low-risk work skips them; each names itself in the report when it runs or is deliberately skipped.
+
 **Domain adapters.** Coding is the default domain. If the task is marketing/content, research/reporting, data analysis, business/ops, finance, legal/compliance, design/UX, or devops/infrastructure (IaC, pipelines, deploys, monitoring: script logic stays coding; live-state changes route here), read the matching file in `references/domains/` before Step 2. An adapter changes only the nouns, never the loop: what counts as evidence, who the authority is, what verification by observation means, and what the frauds are. Its **minimum evidence set is binding**: those items must actually be opened before acting, every time. Research is never optional; the adapter defines how much is enough. Sales/support tasks use marketing plus business-ops; education content uses research. Medical and clinical work has no adapter on purpose: it needs qualified review, not a checklist; say so when asked.
 
 **Triviality gate (run first).** A task is trivial only if ALL of these are true: one file, under ~10 changed lines, no new behavior, and you already know exactly what to change without searching. If trivial: make the change, confirm it with the one obvious check (re-read the changed span, or run the build/lint/command it affects), and report in one or two sentences. Everything else, and anything you are unsure about, gets the full loop.
@@ -49,7 +51,7 @@ Tie-breaks, in order:
 
 Also extract the constraints the user stated and the decisions they already made. Never re-litigate a settled decision or re-derive an established fact.
 
-## Step 1 - Define done
+## Step 1 - Define done (grill the requirements)
 
 Tell the user, in one or two sentences, what done looks like and how it will be verified. By shape:
 
@@ -57,7 +59,16 @@ Tell the user, in one or two sentences, what done looks like and how it will be 
 - **Question/assessment:** every claim in the findings traces to something you actually read or ran; you can cite the file and line, or the command output, for each claim.
 - **Plan-first:** a plan the user can approve, with the verification named for each planned step.
 
-State your load-bearing assumptions. If one is checkable with a single tool call, check it instead of assuming. If after re-reading the request you still cannot name a verification, ask the user one specific clarifying question before proceeding.
+State your load-bearing assumptions. If one is checkable with a single tool call, check it instead of assuming.
+
+**Grill gate (attended work with real unknowns).** When the ask still hides material decisions after you have looked - genuinely ambiguous scope, competing valid designs, or unstated constraints - do not paper over them with a guess. Interview the user to a shared understanding first:
+
+- Ask **one question at a time** and wait for the answer before the next. Multiple questions at once is bewildering and gets skimmed.
+- Walk the decision tree branch by branch, resolving dependencies between decisions in order. For each question, **state your recommended answer** so the user can just confirm.
+- A **fact** you can find by looking (filesystem, tools, docs) you look up - never ask it. Only genuine **decisions** (the user's to make) become questions.
+- Do not start work until the user confirms the shared understanding.
+
+Use the grill gate proportionally: a one-file change with an obvious spec does not need an interview; an ambiguous multi-surface feature does. If after re-reading the request you still cannot name a verification, that is itself a grill question - ask it before proceeding. Unattended (no user to answer): skip the interview, state each open decision and your chosen default explicitly in the report, and label the answer accordingly.
 
 ## Step 2 - Gather evidence
 
@@ -79,22 +90,59 @@ Route by the Step 0 table. For task-shaped work, proceed to Step 4 without askin
 
 Name the scope: the files or surfaces the change will touch. Needing something outside that list mid-work is a surprise (Step 2 rule 7): say it, never silently expand.
 
+## Step 3.5 - Prototype the risk (conditional)
+
+Run this phase **only when the plan carries a genuine design question that is cheaper to answer with throwaway code than to reason about on paper.** Skip it otherwise; most tasks skip it. A prototype is throwaway code that answers one question - the question decides its shape.
+
+**Design-risk gate - prototype when any of these are live in the plan:**
+- **Concurrency / race conditions** - two actors can touch the same state; ordering or interleaving is hard to reason about.
+- **Non-atomic / multi-step transactions** - a sequence that must all-or-nothing succeed, partial-failure/rollback paths, idempotency, double-submit.
+- **State-machine or logic uncertainty** - "does this state model feel right?"; many transitions, edge states, or invariant you are unsure holds.
+- **Distributed / eventual-consistency effects** - retries, out-of-order delivery, cache/replica staleness.
+- **UI shape uncertainty** - "what should this look like?"; several plausible layouts worth seeing side by side.
+- **A load-bearing assumption you could not verify by reading** - the cheapest proof is to run a tiny version.
+
+**How to prototype (both branches):**
+1. Pick the branch from the question. Logic/state/concurrency -> a tiny interactive terminal harness that pushes the state machine through the hard interleavings and prints full state after every action. UI -> a few radically different variations on one throwaway route, switchable by a param.
+2. **Throwaway from day one, clearly named as such**, located next to where the real code will live so context is obvious.
+3. **One command to run**, using the project's existing task runner. **No persistence, no polish, no abstractions** - the point is to learn fast. Surface the full relevant state after every step so the answer is visible.
+4. For concurrency/atomicity questions specifically: drive the interleaving deterministically (force the racing order, inject a failure between the two writes) and assert what you expected to be safe actually is.
+5. **Capture the verdict, throw away the code.** Fold the validated decision into the plan/real code; keep the prototype out of the main change (a throwaway branch or a clearly-marked scratch path you delete before Step 6). Record the question it settled and the answer in the report.
+
+A prototype that changes the design sends you back to Step 3 (revise the recommendation) before you implement. Never let prototype code leak into the shipped change - Step 6's cleanup and the judge treat leftover scaffolding as a fraud signal.
+
 ## Step 4 - Act surgically
 
 1. **Intent gate, before any behavior-changing edit.** Write one line: `INTENT: code does <X>; the failing check/task expects <Y>; the spec (README/docs/docstring) says <Z>`. You must actually open the README/docs/docstrings to fill the third slot, and if you change behavior this line must appear verbatim in your final report. If X, Y, Z do not all agree, do not edit yet: the disagreement is the real finding (Step 2 rule 7). Authority order when they disagree: an explicit user statement beats the spec, the spec beats the tests, the tests beat current code behavior. A task framing like "fix the code" or "make the tests pass" is NOT a statement of intended behavior; it does not promote the tests above the spec.
 2. **Recall gate, before first use of anything you have not opened this session.** An API signature, endpoint, config key, price, figure, or regulation written from memory is not evidence. Stop and open its source now (the docs file, the library source, a fetched page; a fresh two-lookup budget as in Step 2), or, if no source is reachable, write it and label it in the report as memory, unverified. Discovering ignorance re-opens Step 2 exactly like a surprise does.
 3. **Smallest correct change.** Touch only what the task needs. Match the existing style even if you would do it differently.
+
+   **Test-first, in vertical slices (default for behavior changes with a testable seam).** When the change adds or alters behavior at a public boundary, drive it test-first rather than writing code then back-filling tests:
+   - **Agree the seams first.** A seam is the public interface where you observe behavior without reaching inside. Before writing any test, name the seams under test and confirm them (with the user when attended; in the plan when not). You cannot test everything - agreeing seams up front lands the effort on critical paths and complex logic, not every edge case.
+   - **Red -> green, one slice at a time.** Write one failing test at a seam, then only enough code to pass it. One seam, one test, one minimal implementation per cycle; let each cycle teach the next. Do **not** horizontally slice (all tests, then all code) - bulk tests verify imagined behavior and go insensitive to real changes.
+   - **Tests verify behavior through public interfaces, never implementation details.** A good test reads like a specification ("user can checkout with valid cart") and survives refactors. Avoid the anti-patterns: implementation-coupled (mocks internal collaborators / asserts via a side channel - breaks on refactor though behavior is unchanged), and tautological (the assertion recomputes the expected value the way the code does, so it can never disagree - expected values come from an independent source: a known-good literal, a worked example, the spec).
+   - **Refactoring is not part of the red -> green loop.** It belongs to the review at the Step 4 -> 5 boundary, not the implementation cycle.
+   - No testable seam (throwaway script, pure config, docs): skip TDD and rely on Step 5's observation instead - say so.
 4. **Precise edits over rewrites.** Rewrite a whole file only if you authored it this session or have fully read it.
 5. **Track multi-part work.** Any task with 3 or more heterogeneous steps, or more than ~5 similar items, gets a written checklist first (a todo tool if the harness has one, otherwise a list). Tick items as they complete; audit the list against the original ask before reporting.
 6. **Never destroy without looking.** Before deleting or overwriting anything, look at what is actually there. If it contradicts how it was described, stop and surface that.
 7. **Failed-edit recovery ladder.** Re-read the exact region, adjust the match, retry once. Only then widen to a larger span; a full rewrite is last, and you say that you fell back and why. Never retry a failed call verbatim.
 8. **Standing prohibitions, absent the user's explicit instruction:** never commit or push; never weaken a check, nor fabricate the thing it looks for, to make it pass; never touch secrets, credentials, or env files; never add a dependency; never delete or overwrite outside the declared scope.
 
+### Step 4 close - two-axis review before you verify
+
+When implementation is complete, review the change you just made along **two independent axes** before moving to Step 5. Keep them separate - one axis passing must not mask the other failing.
+
+- **Spec axis** - does the diff faithfully implement what was asked (the Step 0/1 done criterion, the plan, any originating issue/spec)? Report: requirements missing or partial; behavior added that nobody asked for (scope creep); requirements that look done but implemented wrong. Quote the asked-for line for each finding.
+- **Standards axis** - does the diff follow this repo's documented standards (any `CONTRIBUTING`/standards file), and is it free of code smells? Carry a smell baseline even when the repo documents nothing - mysterious names, duplicated logic across hunks, feature envy, data clumps, primitive obsession standing in for a domain type, repeated switches, shotgun surgery, speculative generality. The repo's documented standard always overrides the baseline; skip anything tooling already enforces; each smell is a judgement call, not a hard violation.
+
+Do this review honestly against the actual diff, not from memory of what you intended. Any Spec-axis miss or hard Standards violation routes **back into Step 4** (fix it) before Step 5. Refactoring flagged here happens now, before verification - this is the home of the refactor step that the red -> green loop deliberately excludes. Record material findings (and what you did about them) for the Step 6 report.
+
 ## Step 5 - Verify by observation
 
 Verification has two halves, and a third when you fixed a defect:
 - **(a)** the Step 1 done criterion passes, observed (it ran, it rendered, it counted), not inferred from reading the code;
-- **(b)** the surrounding system still works: existing tests, build, or lint for the touched area. A green targeted check with a broken build is a failed verification.
+- **(b)** the surrounding system still works: existing tests, build, or lint for the touched area (including the red -> green tests written in Step 4, now all green). A green targeted check with a broken build is a failed verification.
 - **(c) Twin check, whenever you fixed a defect.** A bug found in one place is presumed to recur elsewhere until you have searched. Name the exact wrong construct, search the whole project for it, and write one line that must appear verbatim in your report: `TWINS: searched <the pattern> - found <N> other sites: <files, or "none">`. Fix them or list them; a completeness claim with no search behind it is failure mode 14.
 
 On failure, route: a mechanical mistake in the change goes back to Step 4; a failure that surprises you or contradicts your understanding goes back to Step 2. Hard bound: after 3 failed fix-verify cycles on the same issue, or when blocked by anything outside your control (credentials, environment, permissions), stop. Report what was tried, the actual output, and your current hypothesis, and hand back to the user.
@@ -124,6 +172,6 @@ Step 0: assessment; change nothing. Step 1: done = a cause backed by observation
 
 **plan** - run Steps 0 to 3 and stop. Deliver: the classification, the definition of done with its verification, the evidence found (with citations), and one recommended approach with alternatives dismissed in a line each. Do not touch any file.
 
-**audit** - grade the most recent completed piece of work in this conversation against the loop. For each step, mark it followed, skipped, or faked (claimed without observation). For every skip or fake, name the concrete risk it created; `references/failure-modes.md` maps symptoms to steps. Deliver a short table plus the single highest-value fix, and apply that fix only if the user asks.
+**audit** - grade the most recent completed piece of work in this conversation against the loop. For each step, mark it followed, skipped, or faked (claimed without observation); include the four engineering gates (grill in Step 1, prototype at 3.5, test-first in Step 4, two-axis review at the 4 -> 5 close), judging each as correctly-applied, wrongly-skipped, or faked - a skipped gate is only a finding when its trigger was actually present (a design risk for prototype, a testable seam for TDD). For every skip or fake, name the concrete risk it created; `references/failure-modes.md` maps symptoms to steps. Deliver a short table plus the single highest-value fix, and apply that fix only if the user asks.
 
 **report** - apply the Step 6 checklist to the answer you were about to send: outcome in the first sentence, load-bearing quotes only, caveats present, follow-ups only if they emerged from the work, hostile-reviewer reread done. Rewrite it, do not send the original.
