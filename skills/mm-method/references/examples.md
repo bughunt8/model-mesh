@@ -40,3 +40,17 @@ If the rename turned out to cross files (search shows 14 call sites in 6 files),
 - **Step 2:** parallel: find every config instance, read them all in one batch, fetch any external reference the user named. Tabulate what the projects actually do; the frequency table is the evidence.
 - **Step 3:** one proposed standard. Conflicts between projects are named, each with a recommended resolution, not silently averaged.
 - **Deliver the plan. Stop.** Steps 4-6 happen only after approval, and then the execution is surgical: precise edits per project, a measured before/after, and a report that includes what was intentionally left alone and why.
+
+---
+
+## Worked example: a feature that fires all four gates
+
+**Task (attended): "Add idempotent payment capture so a double-submit never charges twice."**
+
+- **Step 1 grill.** Mini-orient finds an existing `payments` table with a `status` column and a Stripe client. Genuine decisions asked one at a time, each with a recommendation: idempotency key source (recommend the client-supplied `Idempotency-Key` header) -> confirmed; behavior on duplicate (recommend: return the original result, 200, do not re-charge) -> confirmed. `GRILL: asked 2 decisions; open decisions defaulted: key TTL=24h`.
+- **Step 3.5 prototype.** Design risk: non-atomic "check-then-charge" is a classic double-charge race. Throwaway harness fires two concurrent captures with the same key, forcing the interleave, and proves a unique constraint on `(idempotency_key)` + insert-first collapses the race to one charge. Transcript pasted; code deleted. `PROTO: non-atomic check-then-charge - prototyped, verdict: unique-key insert-first serializes duplicates (1 charge, 1 replay)`.
+- **Step 4 test-first.** Seam = the capture endpoint. Slice 1 (observed red): "same key twice -> one Stripe charge, second returns the first result." Slice 2: "different keys -> two charges." Each red-first. `SEAMS: capture endpoint idempotency - 2 red->green slices, each observed red first`.
+- **Step 4 close review.** Spec axis: both decisions honored. Standards axis: the 24h TTL was a magic number -> extract. `REVIEW: Spec 0 / Standards 1`. Fix on green baseline.
+- **Step 5 verify.** Re-run the suite yourself; confirm the duplicate-charge test fails if you drop the unique constraint (negative check / false-green defence). Report outcome-first with all four lines.
+
+See `references/gates.md` for the fuller per-gate walk-throughs and `references/evidence.md` for what "observed" requires.

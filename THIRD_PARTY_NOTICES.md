@@ -39,3 +39,16 @@ https://github.com/mattpocock/skills:
 
 These are conceptual adaptations rewritten into model-mesh's loop and prose; no files were copied verbatim.
 Consult that repository for the original, fuller skills. Licensing per that repository.
+
+## debug-pipeline2 (concepts adapted)
+
+The evidence discipline folded into the loop is adapted from the `debug-pipeline2`
+audit-fix-prove protocol (author: ronald-ng, MIT):
+
+- **Machine-checkable evidence** (a claim carries a reproducible command + real output) -> Step 2 capture, Step 5 verify, and `references/evidence.md`.
+- **Negative tests** ("a check is only trustworthy once seen to fail") -> the TDD observed-red rule and the evidence standard.
+- **False-green defence** ("re-execute and reproduce, never rubber-stamp a report") -> Step 5, conditional on non-trivial work.
+- **Independent-reviewer isolation** (reviewers spawned fresh, artifacts-only, never told each other's verdict) -> the Step 4-close two-axis review.
+
+Conceptual adaptations rewritten for generic coding; the pipeline-specific machinery
+(on-disk state contracts, OMO agent mapping, run budgets) was not carried over.
