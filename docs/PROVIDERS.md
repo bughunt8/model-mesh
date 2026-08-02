@@ -58,6 +58,10 @@ Then either (a) hand-edit the config's model strings, or (b) run a find/replace 
 3. **Preview/experimental models stay last-resort.** `preview-xl` is a final fallback only.
 
 
+## Worked example
+
+For a complete filled-in reference (every placeholder → a real ID, matching `profiles/*.example.json`), see [`EXAMPLE-MAPPING.md`](EXAMPLE-MAPPING.md). Your own mapping will differ.
+
 ## Mapping file (keep it private)
 
 Put your placeholder→real-model mapping in a file named exactly **`provider-map.local`** at the repo root. It is git-ignored by default. Do **not** name it `provider-map.json` or anything without `.local`, or it may be committed. A safe starter is provided as `provider-map.local.example`.

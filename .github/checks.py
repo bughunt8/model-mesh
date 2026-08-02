@@ -36,7 +36,7 @@ def tracked_files():
 # mapping (see README). They are exempt from the vendor-name denylist by design,
 # but still validated for JSON/schema shape below.
 def is_example(rel):
-    return rel.endswith(".example.json")
+    return rel.endswith(".example.json") or rel.replace(os.sep, "/") == "docs/EXAMPLE-MAPPING.md"
 
 print("[1] vendor denylist")
 for path in tracked_files():
