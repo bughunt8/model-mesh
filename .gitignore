@@ -1,0 +1,4 @@
+# local provider mapping — never commit real model IDs
+provider-map.local
+*.local
+.DS_Store

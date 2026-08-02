@@ -1,0 +1,19 @@
+{
+  "name": "open-model-method",
+  "description": "The loop (think/act/prove/grow) + multi-model routing profiles (ultimate/hybrid/b4b), model-agnostic.",
+  "owner": {
+    "name": "bughunt8",
+    "url": "https://github.com/bughunt8"
+  },
+  "plugins": [
+    {
+      "name": "open-model-method",
+      "source": "./",
+      "description": "Disciplined agent loop plus multi-model routing config profiles for oh-my-openagent.",
+      "version": "1.0.0",
+      "author": {
+        "name": "bughunt8"
+      }
+    }
+  ]
+}

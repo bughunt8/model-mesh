@@ -1,0 +1,310 @@
+{
+  "agents": {
+    "hephaestus": {
+      "prompt_append": "You are the primary implementation agent. Own the codebase but delegate and review. Explore, decide, execute. Use LSP and AST-grep aggressively.",
+      "model": "ProviderA/flagship-xl",
+      "reasoning": "medium",
+      "fallback_models": [
+        {
+          "model": "ProviderA/flagship-mid",
+          "reasoning": "high"
+        },
+        {
+          "model": "ProviderC/open-reason-xl",
+          "reasoning": "max"
+        },
+        {
+          "model": "ProviderA/flagship-prev",
+          "reasoning": "medium"
+        }
+      ],
+      "ultrawork": {
+        "model": "ProviderA/flagship-xl",
+        "reasoning": "ultra"
+      }
+    },
+    "oracle": {
+      "model": "ProviderA/flagship-xl",
+      "reasoning": "max",
+      "fallback_models": [
+        {
+          "model": "ProviderA/flagship-mid",
+          "reasoning": "high"
+        },
+        {
+          "model": "ProviderA/flagship-prev",
+          "reasoning": "high"
+        },
+        {
+          "model": "ProviderA/reasoner-xl",
+          "reasoning": "high"
+        },
+        {
+          "model": "ProviderC/open-reason-xl",
+          "reasoning": "max"
+        },
+        {
+          "model": "ProviderB/util-pro",
+          "reasoning": "high"
+        }
+      ]
+    },
+    "momus": {
+      "model": "ProviderA/flagship-xl",
+      "reasoning": "max",
+      "fallback_models": [
+        {
+          "model": "ProviderA/flagship-mid",
+          "reasoning": "high"
+        },
+        {
+          "model": "ProviderA/flagship-prev",
+          "reasoning": "high"
+        },
+        {
+          "model": "ProviderB/util-pro",
+          "reasoning": "high"
+        },
+        {
+          "model": "ProviderC/open-reason-xl",
+          "reasoning": "max"
+        }
+      ]
+    },
+    "sisyphus": {
+      "prompt_append": "Delegate heavily to hephaestus for implementation. Parallelize exploration.",
+      "model": "ProviderD/comm-xl",
+      "reasoning": "high",
+      "fallback_models": [
+        {
+          "model": "ProviderE/coder-mid"
+        },
+        {
+          "model": "ProviderB/coder-swarm"
+        }
+      ],
+      "ultrawork": {
+        "model": "ProviderC/open-reason-xl",
+        "reasoning": "max"
+      }
+    },
+    "sisyphus-junior": {
+      "model": "ProviderB/util-flash",
+      "fallback_models": [
+        {
+          "model": "ProviderB/util-misc"
+        }
+      ]
+    },
+    "atlas": {
+      "model": "ProviderE/coder-xl",
+      "temperature": 0.7,
+      "fallback_models": [
+        {
+          "model": "ProviderA/reasoner-xl",
+          "reasoning": "high"
+        },
+        {
+          "model": "ProviderA/flagship-xl",
+          "reasoning": "high"
+        },
+        {
+          "model": "ProviderD/comm-xl"
+        },
+        {
+          "model": "ProviderB/preview-xl"
+        }
+      ]
+    },
+    "prometheus": {
+      "model": "ProviderE/coder-xl",
+      "temperature": 0.8,
+      "fallback_models": [
+        {
+          "model": "ProviderA/reasoner-xl",
+          "reasoning": "high"
+        },
+        {
+          "model": "ProviderA/flagship-xl",
+          "reasoning": "high"
+        },
+        {
+          "model": "ProviderD/comm-xl"
+        },
+        {
+          "model": "ProviderB/preview-xl"
+        }
+      ]
+    },
+    "metis": {
+      "model": "ProviderD/comm-xl",
+      "reasoning": "high",
+      "temperature": 0.7,
+      "fallback_models": [
+        {
+          "model": "ProviderE/coder-mid"
+        },
+        {
+          "model": "ProviderC/open-reason-xl"
+        }
+      ]
+    },
+    "librarian": {
+      "model": "ProviderB/retrieval-mid",
+      "fallback_models": [
+        {
+          "model": "ProviderB/util-flash"
+        },
+        {
+          "model": "ProviderC/open-reason-lite"
+        }
+      ]
+    },
+    "explore": {
+      "model": "ProviderC/open-reason-lite",
+      "fallback_models": [
+        {
+          "model": "ProviderB/util-flash"
+        }
+      ]
+    },
+    "multimodal-looker": {
+      "model": "ProviderF/vision-xl",
+      "fallback_models": [
+        {
+          "model": "ProviderA/flagship-xl",
+          "reasoning": "medium"
+        },
+        {
+          "model": "ProviderB/util-pro",
+          "reasoning": "high"
+        },
+        {
+          "model": "ProviderB/preview-xl"
+        }
+      ]
+    }
+  },
+  "categories": {
+    "visual-engineering": {
+      "models": [
+        {
+          "model": "ProviderB/util-pro",
+          "reasoning": "high"
+        },
+        {
+          "model": "ProviderF/vision-xl"
+        },
+        {
+          "model": "ProviderC/open-reason-xl"
+        }
+      ]
+    },
+    "ultrabrain": {
+      "models": [
+        {
+          "model": "ProviderA/flagship-xl",
+          "reasoning": "ultra"
+        },
+        {
+          "model": "ProviderA/flagship-xl",
+          "reasoning": "max"
+        },
+        {
+          "model": "ProviderA/reasoner-xl",
+          "reasoning": "high"
+        },
+        {
+          "model": "ProviderB/util-pro",
+          "reasoning": "high"
+        }
+      ]
+    },
+    "deep": {
+      "models": [
+        {
+          "model": "ProviderE/coder-xl"
+        },
+        {
+          "model": "ProviderA/flagship-xl",
+          "reasoning": "max"
+        },
+        {
+          "model": "ProviderA/reasoner-xl",
+          "reasoning": "high"
+        },
+        {
+          "model": "ProviderD/comm-xl"
+        },
+        {
+          "model": "ProviderB/preview-xl"
+        }
+      ]
+    },
+    "artistry": {
+      "models": [
+        {
+          "model": "ProviderB/util-pro",
+          "reasoning": "high"
+        },
+        {
+          "model": "ProviderB/creative-mid"
+        },
+        {
+          "model": "ProviderB/coder-swarm"
+        }
+      ]
+    },
+    "quick": {
+      "models": [
+        {
+          "model": "ProviderB/util-flash"
+        },
+        {
+          "model": "ProviderC/open-reason-lite"
+        },
+        {
+          "model": "ProviderD/comm-lite"
+        }
+      ]
+    },
+    "unspecified-low": {
+      "models": [
+        {
+          "model": "ProviderB/budget-low"
+        },
+        {
+          "model": "ProviderC/open-reason-lite"
+        },
+        {
+          "model": "ProviderB/util-flash"
+        }
+      ]
+    },
+    "unspecified-high": {
+      "models": [
+        {
+          "model": "ProviderA/flagship-mid",
+          "reasoning": "high"
+        },
+        {
+          "model": "ProviderC/open-reason-xl"
+        },
+        {
+          "model": "ProviderB/util-pro",
+          "reasoning": "high"
+        }
+      ]
+    },
+    "writing": {
+      "models": [
+        {
+          "model": "ProviderB/util-pro"
+        },
+        {
+          "model": "ProviderB/util-flash"
+        }
+      ]
+    }
+  }
+}

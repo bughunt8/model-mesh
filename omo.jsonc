@@ -1,0 +1,332 @@
+// open-model-method default config (hybrid profile)
+{
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/omo.schema.json",
+  "[opencode]": {
+    "team_mode": {
+      "enabled": true,
+      "tmux_visualization": true
+    },
+    "agents": {
+      "hephaestus": {
+        "prompt_append": "You are the primary implementation agent. Own the codebase but delegate and review. Explore, decide, execute. Use LSP and AST-grep aggressively.",
+        "model": "ProviderA/flagship-mid",
+        "reasoning": "medium",
+        "fallback_models": [
+          {
+            "model": "ProviderA/flagship-lite",
+            "reasoning": "medium"
+          },
+          {
+            "model": "ProviderC/open-reason-xl",
+            "reasoning": "max"
+          },
+          {
+            "model": "ProviderA/flagship-prev",
+            "reasoning": "medium"
+          }
+        ],
+        "ultrawork": {
+          "model": "ProviderE/coder-xl"
+        }
+      },
+      "oracle": {
+        "model": "ProviderA/flagship-xl",
+        "reasoning": "high",
+        "fallback_models": [
+          {
+            "model": "ProviderA/flagship-mid",
+            "reasoning": "high"
+          },
+          {
+            "model": "ProviderD/comm-xl",
+            "reasoning": "max"
+          },
+          {
+            "model": "ProviderC/open-reason-xl",
+            "reasoning": "max"
+          },
+          {
+            "model": "ProviderB/util-pro",
+            "reasoning": "high"
+          }
+        ]
+      },
+      "prometheus": {
+        "model": "ProviderE/coder-xl",
+        "fallback_models": [
+          {
+            "model": "ProviderD/comm-xl"
+          },
+          {
+            "model": "ProviderA/flagship-mid",
+            "reasoning": "high"
+          },
+          {
+            "model": "ProviderB/preview-xl"
+          }
+        ]
+      },
+      "metis": {
+        "model": "ProviderD/comm-xl",
+        "fallback_models": [
+          {
+            "model": "ProviderE/coder-mid"
+          },
+          {
+            "model": "ProviderC/open-reason-xl"
+          }
+        ]
+      },
+      "momus": {
+        "disable": false,
+        "prompt_append": "You are Momus. Evaluate execution strategies strictly against the current repository state. You must explicitly look for structural inconsistencies, architectural violations, and missing imports. If a plan is valid, output 'PLAN_APPROVED'. If invalid, output 'PLAN_REJECTED' followed by a bulleted critique.",
+        "tools": {
+          "read": true,
+          "grep": true,
+          "glob": true,
+          "list": true,
+          "bash": true,
+          "edit": false,
+          "write": false,
+          "patch": false
+        },
+        "model": "ProviderA/flagship-mid",
+        "reasoning": "medium",
+        "fallback_models": [
+          {
+            "model": "ProviderC/open-reason-xl"
+          },
+          {
+            "model": "ProviderA/flagship-prev",
+            "reasoning": "medium"
+          },
+          {
+            "model": "ProviderB/util-pro",
+            "reasoning": "high"
+          }
+        ]
+      },
+      "atlas": {
+        "model": "ProviderE/coder-xl",
+        "fallback_models": [
+          {
+            "model": "ProviderD/comm-xl"
+          },
+          {
+            "model": "ProviderB/util-pro",
+            "reasoning": "high"
+          },
+          {
+            "model": "ProviderB/preview-xl"
+          }
+        ]
+      },
+      "sisyphus-junior": {
+        "model": "ProviderC/open-reason-lite",
+        "fallback_models": [
+          {
+            "model": "ProviderE/coder-mid"
+          },
+          {
+            "model": "ProviderB/util-flash"
+          },
+          {
+            "model": "ProviderB/util-misc"
+          }
+        ]
+      },
+      "sisyphus": {
+        "prompt_append": "Delegate heavily to hephaestus for implementation. Parallelize exploration.",
+        "model": "ProviderD/comm-xl",
+        "reasoning": "high",
+        "fallback_models": [
+          {
+            "model": "ProviderE/coder-mid"
+          },
+          {
+            "model": "ProviderB/util-pro",
+            "reasoning": "high"
+          }
+        ],
+        "ultrawork": {
+          "model": "ProviderC/open-reason-xl",
+          "reasoning": "max"
+        }
+      },
+      "librarian": {
+        "model": "ProviderB/retrieval-mid",
+        "fallback_models": [
+          {
+            "model": "ProviderC/open-reason-lite"
+          },
+          {
+            "model": "ProviderB/util-flash"
+          }
+        ]
+      },
+      "explore": {
+        "model": "ProviderC/open-reason-lite",
+        "fallback_models": [
+          {
+            "model": "ProviderB/util-flash"
+          }
+        ]
+      },
+      "multimodal-looker": {
+        "model": "ProviderF/vision-xl",
+        "fallback_models": [
+          {
+            "model": "ProviderB/util-pro",
+            "reasoning": "high"
+          },
+          {
+            "model": "ProviderD/comm-lite"
+          }
+        ]
+      }
+    },
+    "categories": {
+      "visual-engineering": {
+        "models": [
+          {
+            "model": "ProviderB/util-pro",
+            "reasoning": "high"
+          },
+          {
+            "model": "ProviderF/vision-xl"
+          },
+          {
+            "model": "ProviderC/open-reason-xl"
+          }
+        ]
+      },
+      "ultrabrain": {
+        "models": [
+          {
+            "model": "ProviderD/comm-xl",
+            "reasoning": "max"
+          },
+          {
+            "model": "ProviderA/flagship-mid",
+            "reasoning": "high"
+          },
+          {
+            "model": "ProviderE/coder-xl"
+          }
+        ]
+      },
+      "deep": {
+        "models": [
+          {
+            "model": "ProviderE/coder-mid",
+            "temperature": 0.4
+          },
+          {
+            "model": "ProviderE/coder-xl"
+          },
+          {
+            "model": "ProviderD/comm-xl"
+          },
+          {
+            "model": "ProviderA/flagship-mid",
+            "reasoning": "medium"
+          }
+        ]
+      },
+      "artistry": {
+        "models": [
+          {
+            "model": "ProviderB/util-pro",
+            "reasoning": "high"
+          },
+          {
+            "model": "ProviderB/creative-mid"
+          },
+          {
+            "model": "ProviderE/coder-swarm"
+          }
+        ]
+      },
+      "quick": {
+        "models": [
+          {
+            "model": "ProviderC/open-reason-lite"
+          },
+          {
+            "model": "ProviderB/util-flash"
+          },
+          {
+            "model": "ProviderD/comm-lite"
+          }
+        ]
+      },
+      "unspecified-low": {
+        "models": [
+          {
+            "model": "ProviderC/open-reason-lite"
+          },
+          {
+            "model": "ProviderE/coder-mid"
+          },
+          {
+            "model": "ProviderB/util-flash"
+          }
+        ]
+      },
+      "unspecified-high": {
+        "models": [
+          {
+            "model": "ProviderA/flagship-mid",
+            "reasoning": "high"
+          },
+          {
+            "model": "ProviderC/open-reason-xl"
+          },
+          {
+            "model": "ProviderE/coder-mid"
+          }
+        ]
+      },
+      "writing": {
+        "models": [
+          {
+            "model": "ProviderB/util-pro",
+            "reasoning": "high"
+          },
+          {
+            "model": "ProviderB/util-flash"
+          }
+        ]
+      }
+    },
+    "background_task": {
+      "defaultConcurrency": 3,
+      "staleTimeoutMs": 60000,
+      "providerConcurrency": {
+        "ProviderB": 10,
+        "ProviderD": 10
+      },
+      "modelConcurrency": {
+        "ProviderA/flagship-prev": 2,
+        "ProviderD/comm-xl": 3
+      }
+    },
+    "runtime_fallback": {
+      "enabled": true,
+      "retry_on_errors": [
+        400,
+        429,
+        503,
+        529
+      ],
+      "max_fallback_attempts": 3,
+      "cooldown_seconds": 60,
+      "timeout_seconds": 30,
+      "notify_on_fallback": true
+    }
+  },
+  "_migrations": [
+    "2026-07-opencode-config-unification",
+    "2026-08-reasoning-unification"
+  ]
+}
