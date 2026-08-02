@@ -1,23 +1,23 @@
 ---
-name: fable-method
-description: A step-by-step problem-solving loop (classify the ask, define done, gather evidence, decide, act surgically, verify by observation, report outcome-first). Use when the user says "/fable-method", "use the fable method", or "approach this like Fable", or proactively when starting any multi-step task that no task-specific skill covers. Subcommands - plan (stop after the plan), audit (grade finished work against the loop), report (rewrite an answer outcome-first).
-trigger: /fable-method
+name: mm-method
+description: A step-by-step problem-solving loop (classify the ask, define done, gather evidence, decide, act surgically, verify by observation, report outcome-first). Use when the user says "/mm-method", "use the model-mesh method", or "approach this like model-mesh", or proactively when starting any multi-step task that no task-specific skill covers. Subcommands - plan (stop after the plan), audit (grade finished work against the loop), report (rewrite an answer outcome-first).
+trigger: /mm-method
 ---
 
-# The Fable Method
+# model-mesh
 
 A mid-tier model that follows this loop beats a stronger model that free-styles: the quality lives in the structure, the evidence, and the honesty, not in the model. The loop is self-contained. Follow it literally. The steps structure your work, never your output: do not narrate step numbers or step headers in anything the user reads.
 
 ## Usage
 
 ```
-/fable-method <task>       full loop on the task (default)
-/fable-method plan <task>  Steps 0-3 only: classify, define done, gather evidence, deliver the plan, stop
-/fable-method audit        grade the work already done in this conversation against the loop (see Modes)
-/fable-method report       rewrite the answer you were about to send per Step 6
+/mm-method <task>       full loop on the task (default)
+/mm-method plan <task>  Steps 0-3 only: classify, define done, gather evidence, deliver the plan, stop
+/mm-method audit        grade the work already done in this conversation against the loop (see Modes)
+/mm-method report       rewrite the answer you were about to send per Step 6
 ```
 
-Deeper material loads on demand: `references/failure-modes.md` (symptom to step map for 18 common agent failures), `references/examples.md` (full worked examples for every ask shape), `references/domains/` (domain adapters, see below; `domains/TEMPLATE.md` is their schema and `/fable-domain` generates new ones), `references/flowcharts.md` (the whole method as decision flowcharts; follow the arrows literally when unsure how a rule routes).
+Deeper material loads on demand: `references/failure-modes.md` (symptom to step map for 18 common agent failures), `references/examples.md` (full worked examples for every ask shape), `references/domains/` (domain adapters, see below; `domains/TEMPLATE.md` is their schema and `/mm-domain` generates new ones), `references/flowcharts.md` (the whole method as decision flowcharts; follow the arrows literally when unsure how a rule routes).
 
 **Domain adapters.** Coding is the default domain. If the task is marketing/content, research/reporting, data analysis, business/ops, finance, legal/compliance, design/UX, or devops/infrastructure (IaC, pipelines, deploys, monitoring: script logic stays coding; live-state changes route here), read the matching file in `references/domains/` before Step 2. An adapter changes only the nouns, never the loop: what counts as evidence, who the authority is, what verification by observation means, and what the frauds are. Its **minimum evidence set is binding**: those items must actually be opened before acting, every time. Research is never optional; the adapter defines how much is enough. Sales/support tasks use marketing plus business-ops; education content uses research. Medical and clinical work has no adapter on purpose: it needs qualified review, not a checklist; say so when asked.
 
@@ -28,7 +28,7 @@ Deeper material loads on demand: `references/failure-modes.md` (symptom to step 
 - **In sources you can open** (a spec, file, dataset, check, or docs): run the loop. This is the default.
 - **In an established technique you do not yet know:** research it first (Step 2's lookup budget applies), then run the loop.
 - **Only in your own inference, nothing to open or look up:** say so. Do not dress a guess as a rigorous process (that is the costume, failure mode 14). Attended: ask whether to proceed anyway with a flagged low-confidence answer. Unattended: proceed but label the answer low-confidence, never silently. There is no "escalate to a bigger model" step; the fallback everywhere is an honest hand-back.
-- **In a specialized procedure the base model lacks, and it recurs (or the user asked for reusable tooling):** build that procedure as a skill via `fable-domain`.
+- **In a specialized procedure the base model lacks, and it recurs (or the user asked for reusable tooling):** build that procedure as a skill via `mm-domain`.
 
 Whenever the gate routes anywhere but "run the loop", name that choice in the report (what was missing, what you did instead). A silent detour is indistinguishable from a skipped step.
 

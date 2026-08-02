@@ -1,6 +1,6 @@
 # Routing Methodology
 
-The method's premise: **a well-routed set of mid-tier models, each in the role it fits, beats one flagship doing everything.** Capability has commoditized; the durable edge is matching each agent role to a model on four axes.
+The method's **design heuristic** (an opinion, not a benchmarked result): a well-routed set of models, each in the role it fits, can rival one flagship doing everything, at lower cost. As frontier models converge, matching each role to a model on four axes tends to matter more than raw rank. This repo ships no eval data; treat the rationale as a starting hypothesis and measure on your own mapping.
 
 ## The four axes
 
@@ -20,8 +20,8 @@ Each agent role is written for one family. Map your real models to the family, n
 | Family | Character | Roles it drives |
 |---|---|---|
 | **Flagship-native** | Principle-driven, autonomous, steerable | implementer, architect, reviewer |
-| **Communicator-class** | Claude-like orchestration, delegation | orchestrators |
-| **Dual-prompt** | Claude-preferred, coding-optimized | coding tier |
+| **Communicator-class** | a flagship model-like orchestration, delegation | orchestrators |
+| **Dual-prompt** | a flagship model-preferred, coding-optimized | coding tier |
 | **Multimodal / long-context** | Native vision, huge context | the "looker" |
 | **Open-weight reasoning** | Independent provider, non-proxy | escalation lifelines |
 | **Utility** | Fast, terse, cheap | loop steps, retrieval |
@@ -50,12 +50,12 @@ Each agent role is written for one family. Map your real models to the family, n
 | **hybrid** (default) | Cost-capped except `oracle` | Best value + best-in-class architect |
 | **b4b** | Cost-capped everywhere | Strict performance-per-dollar |
 
-Hybrid is the default because it captures ~90% of ultimate's quality at a fraction of the cost, only spending flagship budget where it has the highest leverage (the architect).
+Hybrid is the default because it spends flagship budget only where it has the highest leverage (the architect), while dropping other roles to the mid tier. Whether that trade is worth it for you depends on the models you map in — measure it.
 
 ## Standing rules
 
 1. **Family fit beats raw rank.** Never place a model outside its behavioral family's roles.
-2. **Keep a non-primary-provider lifeline.** Each critical agent has at least one fallback on a different provider, so one outage never fully stalls it.
+2. **Keep a non-primary-provider lifeline.** Each *critical agent* — defined here as `hephaestus`, `oracle`, `momus`, and `sisyphus` — has at least one fallback on a different provider, so one outage never fully stalls it. (Utility agents may stay single-provider.)
 3. **Reserve the top tier for the ceiling roles.** `ultra`/max-effort settings belong to the hardest reasoning only — they are the biggest token multiplier.
 4. **Preview/experimental models are last-resort fallbacks only.**
 5. **Fallback order = priority.** In each `fallback_models` list, earlier = tried first.

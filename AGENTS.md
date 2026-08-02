@@ -1,6 +1,6 @@
-# AGENTS.md - open-model-method
+# AGENTS.md - model-mesh
 
-> Portable instructions for any coding agent or harness (opencode, Codex, Cursor, aider, or a raw system prompt). Two parts: **(A) the routing setup** — how to configure multi-model roles — and **(B) the loop** — how to do any task well. Part B is identical in spirit to the `fable-method` SKILL; follow it literally. The steps structure your work, never your output: do not narrate step numbers in anything the user reads.
+> Portable instructions for any coding agent or harness (opencode, a coding agent, Cursor, aider, or a raw system prompt). Two parts: **(A) the routing setup** — how to configure multi-model roles — and **(B) the loop** — how to do any task well. Part B is identical in spirit to the `mm-method` SKILL; follow it literally. The steps structure your work, never your output: do not narrate step numbers in anything the user reads.
 
 ---
 
@@ -32,10 +32,10 @@ A mid-tier model that follows this loop beats a stronger model that free-styles:
 ## Usage
 
 ```
-/fable-method <task>       full loop on the task (default)
-/fable-method plan <task>  Steps 0-3 only: classify, define done, gather evidence, deliver the plan, stop
-/fable-method audit        grade the work already done in this conversation against the loop (see Modes)
-/fable-method report       rewrite the answer you were about to send per Step 6
+/mm-method <task>       full loop on the task (default)
+/mm-method plan <task>  Steps 0-3 only: classify, define done, gather evidence, deliver the plan, stop
+/mm-method audit        grade the work already done in this conversation against the loop (see Modes)
+/mm-method report       rewrite the answer you were about to send per Step 6
 ```
 
 Deeper material loads on demand: `references/failure-modes.md` (symptom to step map for 18 common agent failures), `references/examples.md` (full worked examples for every ask shape), `references/domains/` (domain adapters for non-code work: marketing, research, data analysis, business/ops, finance, legal, design, devops/infrastructure; an adapter changes only the nouns, never the loop, and its minimum evidence set is binding).

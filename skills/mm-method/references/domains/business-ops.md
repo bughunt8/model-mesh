@@ -22,7 +22,7 @@ Explicit owner/user decisions > the business's written strategy and brand docume
 - Every external commitment (a price quoted, a law cited, a vendor capability) traces to a current source you opened.
 - Anything outward-facing (sent, published, signed, purchased) is treated as irreversible: confirmed with the user before acting, per the method's reversibility test.
 
-## Fraud table (for fable-judge)
+## Fraud table (for mm-verify)
 
 | Fraud | Symptom |
 |---|---|

@@ -1,33 +1,44 @@
-# open-model-method
+# model-mesh
 
 **A disciplined agent loop + multi-model routing, for any model, any stack.**
 
 Two ideas, fused:
 
-1. **The loop** — a self-contained problem-solving method (think / act / prove / grow) that makes a mid-tier model behave like a careful senior engineer: classify the ask, define done, gather evidence, decide, act surgically, verify by observation, report outcome-first. Adapted from [fable-method](https://github.com/Sahir619/fable-method) (MIT).
-2. **The routing** — a config system for the [oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent) / opencode framework that puts each agent role on the *right model family* instead of one model everywhere. Three profiles: **ultimate**, **hybrid** (default), **b4b**.
+1. **The loop** — a self-contained problem-solving method (think / act / prove / grow) that guides a model to work like a careful senior engineer: classify the ask, define done, gather evidence, decide, act surgically, verify by observation, report outcome-first. Adapted from [fable-method](https://github.com/Sahir619/fable-method) (MIT) — see [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+2. **The routing** — a config system for the [oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent) / opencode framework that assigns each agent role to a model *family* instead of using one model everywhere. Three profiles: **ultimate**, **hybrid** (default), **b4b**.
 
-> **Core thesis:** the right model in the right role, following a disciplined loop, beats the best single model free-styling. Capability has commoditized; routing and method are the edge.
+> **Design heuristic (not a proven benchmark):** the right model in the right role, following a disciplined loop, tends to beat one model free-styling. These are design opinions, not measured guarantees — see [Claims & limits](#claims--limits).
 
-Everything here is **model-agnostic and vendor-neutral** — all provider/model names are placeholders (`ProviderA`, `flagship-xl`, …). You map them to whatever you run. See [`docs/PROVIDERS.md`](docs/PROVIDERS.md).
+## What's genericized vs kept
+
+This repo is **model-agnostic**. To be explicit about what that means:
+
+- **Genericized (placeholders):** every provider and model name → `ProviderA…ProviderF` and role-named models like `flagship-xl`, `coder-mid`. You map these to your real models. See [`docs/PROVIDERS.md`](docs/PROVIDERS.md).
+- **Kept (real framework names, on purpose):** `oh-my-openagent`, `opencode`, the `[opencode]` config key, and the schema URL. These are the actual framework identifiers the config **must** contain to load. They are not vendor model names; keeping them is what makes the config deployable.
+
+CI enforces a denylist of real model/provider names (`.github/checks.py`); `oh-my-openagent` and `opencode` are the only allowed framework names.
 
 ---
 
 ## What's in here
 
 ```
-omo.jsonc              # default deployable config (hybrid profile), oh-my-openagent schema
 profiles/
-  ultimate.json        # max capability, uncapped
-  hybrid.json          # DEFAULT: cost-capped except the architect
-  b4b.json             # strict cost-capped
-skills/                # the loop as installable skills (think/act/prove/grow)
-  fable-method/  fable-loop/  fable-judge/  fable-domain/
+  ultimate.json        # max capability, uncapped        (FRAGMENT: agents+categories)
+  hybrid.json          # DEFAULT                          (FRAGMENT)
+  b4b.json             # cost-preferenced                 (FRAGMENT)
+setup-config.sh        # materializes a profile into a full deployable ~/.omo/omo.jsonc
+scripts/materialize.py # wraps a fragment in the [opencode] structure
+skills/                # the loop as installable skills
+  mm-method/  mm-loop/  mm-verify/  mm-domain/
 docs/
-  ROUTING.md           # the routing methodology (4 axes, families, roles)
-  PROVIDERS.md         # placeholder -> real model mapping guide
-AGENTS.md              # portable method for any agent/harness
+  ROUTING.md           # routing methodology (4 axes, families, roles)
+  PROVIDERS.md         # placeholder -> real model mapping guide + framework compat
+AGENTS.md              # portable method + routing runbook for any agent
+THIRD_PARTY_NOTICES.md # upstream attribution
 ```
+
+The three `profiles/*.json` are **fragments** (agents + categories only). `setup-config.sh` wraps a chosen fragment in the required `[opencode]` structure to produce a complete, deployable config.
 
 ---
 
@@ -35,32 +46,37 @@ AGENTS.md              # portable method for any agent/harness
 
 1. **Clone**
    ```bash
-   git clone https://github.com/bughunt8/open-model-method
-   cd open-model-method
+   git clone https://github.com/bughunt8/model-mesh
+   cd model-mesh
    ```
-2. **Pick a profile.** Default is **hybrid** (`omo.jsonc` already holds it). For max capability use `profiles/ultimate.json`; for strict cost control use `profiles/b4b.json`.
-3. **Map placeholders to your models.** Open [`docs/PROVIDERS.md`](docs/PROVIDERS.md), decide which real provider/model each `ProviderX/role` maps to, and find-replace them in your chosen config. Keep the mapping file out of git.
-4. **Deploy the config.**
+2. **Materialize a profile** (default is hybrid):
    ```bash
-   cp omo.jsonc ~/.omo/omo.jsonc     # oh-my-openagent reads ~/.omo/omo.jsonc
-   bunx oh-my-openagent doctor        # must report no issues
+   ./setup-config.sh hybrid      # or: ultimate | b4b
    ```
-5. **Install the loop skills** (optional but recommended):
+   This backs up any existing `~/.omo/omo.jsonc`, then writes the selected profile as a complete config. It does **not** invent model IDs.
+3. **Map placeholders to your models.** Open the written `~/.omo/omo.jsonc` and [`docs/PROVIDERS.md`](docs/PROVIDERS.md); replace each `ProviderX/role-name` with a real provider/model you have confirmed exists. Put your mapping in `provider-map.local` (git-ignored) — never commit it.
+4. **Validate.**
    ```bash
-   bash install.sh                    # or: install.ps1 on Windows
+   bunx oh-my-openagent doctor    # must report no issues
    ```
-6. **Use it.** In your agent: `/fable-method <task>` runs the full loop; `/fable-loop <task>` orchestrates plan→execute→verify→audit; `/fable-judge` adversarially verifies finished work.
+5. **Install the loop skills** (optional):
+   ```bash
+   bash install.sh                # or install.ps1 on Windows (backs up existing skills)
+   ```
+6. **Use it:** `/mm-method <task>` runs the full loop; `/mm-loop <task>` orchestrates plan→execute→verify→audit; `/mm-verify` adversarially reviews finished work.
+
+Rollback anytime: `cp ~/.omo/omo.jsonc.bak-<stamp> ~/.omo/omo.jsonc`.
 
 ## Quickstart — LLM / Agent
 
-If you are an LLM setting this up autonomously, follow [`AGENTS.md`](AGENTS.md) for the loop, and this checklist for the config:
+Follow [`AGENTS.md`](AGENTS.md) (Part A is the routing runbook, Part B is the loop). In short:
 
-1. Read [`docs/ROUTING.md`](docs/ROUTING.md) and [`docs/PROVIDERS.md`](docs/PROVIDERS.md) fully before editing anything.
-2. Choose the profile the user asked for; if unspecified, **use `hybrid`** (it is the default).
-3. Produce a placeholder→real-model mapping table and show it to the user for approval **before** writing real IDs. Do not invent model IDs from memory — confirm each resolves against the target provider.
-4. Apply the mapping to a copy of the chosen profile, wrapped in the deployable `[opencode]` structure (see `omo.jsonc`).
-5. Validate: agents use `model` + `fallback_models` (not `models`); `ultrawork` uses singular `model`; categories use `models[]`. Run `oh-my-openagent doctor` and fix every reported key.
-6. Report outcome-first per `AGENTS.md` Step 6, listing any placeholder you could not confidently map.
+1. Read [`docs/ROUTING.md`](docs/ROUTING.md) and [`docs/PROVIDERS.md`](docs/PROVIDERS.md) fully first.
+2. Use `hybrid` unless the user specified otherwise.
+3. Produce a placeholder→real-model mapping table and get user approval **before** writing real IDs. Never invent model IDs from memory — confirm each resolves.
+4. Run `./setup-config.sh <profile>`, then apply the mapping to `~/.omo/omo.jsonc`.
+5. Enforce the schema: agents use `model` + `fallback_models` (not `models`); `ultrawork` uses singular `model`; categories use `models[]`; use `reasoning` not `variant`. Run `oh-my-openagent doctor` until clean.
+6. Report outcome-first (AGENTS.md Step 6); list any placeholder you could not confidently map.
 
 ---
 
@@ -68,42 +84,47 @@ If you are an LLM setting this up autonomously, follow [`AGENTS.md`](AGENTS.md) 
 
 | Phase | Skill | What it does |
 |---|---|---|
-| **think** | `fable-method` | The problem-solving loop: classify → define done → evidence → decide → act → verify → report |
-| **act** | `fable-loop` | Orchestrated plan/execute/verify/audit across subagents |
-| **prove** | `fable-judge` | Adversarial verification of finished work + trap suite |
-| **grow** | `fable-domain` | Generates domain adapters (marketing, research, data, devops, …) |
+| **think** | `mm-method` | classify → define done → evidence → decide → act → verify → report |
+| **act** | `mm-loop` | orchestrated plan/execute/verify/audit across subagents |
+| **prove** | `mm-verify` | adversarial verification of finished work |
+| **grow** | `mm-domain` | generates domain adapters (marketing, research, data, devops, …) |
 
-Hard bounds baked in: 3 failed verify cycles → stop and hand back; 2 fruitless lookups → stop searching; can't name a verification → ask one pointed question. Full detail in [`AGENTS.md`](AGENTS.md) and `skills/`.
+Hard bounds: 3 failed verify cycles → stop and hand back; 2 fruitless lookups → stop searching; can't name a verification → ask one pointed question. Full detail in [`AGENTS.md`](AGENTS.md) and `skills/`.
 
 ## The routing (profiles)
 
-See [`docs/ROUTING.md`](docs/ROUTING.md) for the full methodology. Summary:
+See [`docs/ROUTING.md`](docs/ROUTING.md). Each agent role maps to a behavioral **family** (flagship-native, communicator-class, dual-prompt, multimodal, open-weight, utility); family fit is the routing rule, not raw benchmark rank.
 
-- **Four axes:** capability, cost (incl. verbosity), latency, license+behavior.
-- **Family fit beats rank:** each agent role maps to a behavioral family (flagship-native, communicator-class, dual-prompt, multimodal, open-weight, utility).
-- **hybrid is default:** cost-capped everywhere except the architect (`oracle`), which gets the flagship for its high leverage.
-- **Resilience:** every critical agent keeps a different-provider fallback so one outage never stalls it.
-
-### Profile at a glance
+### Profile at a glance (primary model per role, from the actual JSON)
 
 | Role | ultimate | hybrid (default) | b4b |
 |---|---|---|---|
-| implementer | `flagship-xl` | `flagship-mid` | `flagship-mid` |
+| implementer (`hephaestus`) | `flagship-xl` | `flagship-mid` | `flagship-mid` |
 | architect (`oracle`) | `flagship-xl` | **`flagship-xl`** | `flagship-mid` |
 | reviewer (`momus`) | `flagship-xl` | `flagship-mid` | `flagship-mid` |
-| coding tier | `coder-xl` | `coder-mid` (+`coder-xl` fallback) | `coder-mid` |
-| orchestration | `comm-xl` | `comm-xl` | `comm-xl` |
+| coding agents (`atlas`, `prometheus`) | `coder-xl` | `coder-xl` | `coder-mid` |
+| `deep` category | `coder-xl` | `coder-mid` | `coder-mid` |
+| orchestration (`sisyphus`) | `comm-xl` | `comm-xl` | `comm-xl` |
+
+Hybrid's distinguishing choice: it keeps the flagship only for the **architect** (`oracle`), the highest-leverage advisory role, while dropping the implementer/reviewer to the mid tier.
 
 ---
 
-## Why this exists
+## Privacy & fallbacks (read before deploying)
 
-Distilled from real multi-model config work: as frontier models converged, "use the best model" stopped being the right question. A model can rank top-4 in the world and still be the wrong default for most agent roles once cost, verbosity, license, and behavior are priced in. This repo encodes that discipline so another human — or another LLM — can reproduce it.
+Routing forwards work to a **fallback model on a different provider** when the primary fails. That means prompts, source code, and retrieved context can cross provider (and possibly data-residency) boundaries. Before deploying:
+
+- Treat each fallback provider as a data recipient; only include providers you are contractually comfortable sending your context to.
+- If you need a same-boundary setup, restrict fallbacks to providers under the same agreement.
+- The default `runtime_fallback` retries only transient errors (`429/503/529`). It deliberately does **not** retry `400` (a rejected/malformed request is not an outage).
+- Never put API keys or secrets in the config or in your mapping file. The config holds model IDs only; credentials are configured in the framework, not here.
+
+## Claims & limits
+
+The routing rationale in this repo is a set of **design heuristics**, not measured results. Because you map placeholders to arbitrary real models, no fixed cost or quality number can hold across all mappings. This repo ships **no benchmark data** and makes no quantitative quality/cost guarantee. Where the docs say a profile is "cost-preferenced," that means the routing *prefers* cheaper tiers for most roles — it is not an enforced spend cap. Measure blended cost-per-solved-task on your own mapping.
 
 ## Credits & license
 
-- The loop skills are adapted from **[fable-method](https://github.com/Sahir619/fable-method)** by Sahir619 (MIT).
-- The routing layer targets **[oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent)** by code-yeongyu.
-- MIT licensed. See [`LICENSE`](LICENSE).
-
-Contributions welcome — see [`CONTRIBUTING.md`](CONTRIBUTING.md). This repo ships its own review discipline; run `/fable-judge` on your changes before opening a PR.
+- Loop skills adapted from **[fable-method](https://github.com/Sahir619/fable-method)** by Sahir619 (MIT). See [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+- Routing layer targets **[oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent)** by code-yeongyu.
+- MIT licensed. Upstream copyright retained in [`LICENSE`](LICENSE); new contributions © bughunt8. See [`CONTRIBUTING.md`](CONTRIBUTING.md).

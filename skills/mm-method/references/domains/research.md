@@ -23,7 +23,7 @@ The user's actual question and constraints > primary sources > secondary sources
 - Links cited actually resolve to pages that say what you claim they say.
 - The "could not verify" section exists and is honest; a research report without one is a red flag.
 
-## Fraud table (for fable-judge)
+## Fraud table (for mm-verify)
 
 | Fraud | Symptom |
 |---|---|

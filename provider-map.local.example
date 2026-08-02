@@ -1,0 +1,11 @@
+# model-mesh placeholder -> real model mapping (EXAMPLE)
+# Copy to provider-map.local (git-ignored) and fill in your real IDs.
+# Model IDs ONLY. Never put API keys or secrets here.
+#
+# ProviderA/flagship-xl    = <your-provider>/<your-top-model>
+# ProviderA/flagship-mid   = <your-provider>/<your-value-model>
+# ProviderC/open-reason-xl = <your-open-weight-provider>/<your-open-weight-model>
+# ProviderE/coder-xl       = <your-coding-provider>/<your-top-coding-model>
+# ProviderE/coder-mid      = <your-coding-provider>/<your-value-coding-model>
+# ProviderD/comm-xl        = <your-orchestration-provider>/<your-orchestration-model>
+# ProviderF/vision-xl      = <your-multimodal-provider>/<your-vision-model>

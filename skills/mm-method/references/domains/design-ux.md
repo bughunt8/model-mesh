@@ -23,7 +23,7 @@ Explicit user/client direction > brand.md and design tokens > the referenced des
 - Accessibility is checked, not asserted: contrast ratios computed, focus visible, interactive elements labeled, keyboard path walked.
 - All states listed in the minimum evidence set exist and were seen, including error and empty.
 
-## Fraud table (for fable-judge)
+## Fraud table (for mm-verify)
 
 | Fraud | Symptom |
 |---|---|

@@ -1,11 +1,11 @@
 ---
-name: fable-loop
-description: End-to-end orchestrated workflow that runs a task the way Fable ran sessions - parallel evidence subagents, one committed plan, surgical execution with an intent gate, adversarial verification agents, honest outcome-first report. Use for non-trivial multi-step tasks when the user says "/fable-loop", "run the fable loop", or "do this the way Fable would". For the rules alone without orchestration, use fable-method; for large multi-phase projects, prefer the GSD workflow and use this inside phases.
+name: mm-loop
+description: End-to-end orchestrated workflow that runs a task the way model-mesh ran sessions - parallel evidence subagents, one committed plan, surgical execution with an intent gate, adversarial verification agents, honest outcome-first report. Use for non-trivial multi-step tasks when the user says "/mm-loop", "run the model-mesh loop", or "do this the way model-mesh would". For the rules alone without orchestration, use mm-method; for large multi-phase projects, prefer the GSD workflow and use this inside phases.
 ---
 
-# The Fable Loop
+# The model-mesh Loop
 
-This skill orchestrates the fable-method: read its SKILL.md first; its rules govern every stage. It is installed alongside this skill (in this plugin's `skills/fable-method/` directory, or `~/.claude/skills/fable-method/` for manual installs). The method says WHAT to check; this loop says WHO does the work: what runs in the main thread, what fans out to subagents, and what gets attacked before delivery.
+This skill orchestrates the mm-method: read its SKILL.md first; its rules govern every stage. It is installed alongside this skill (in this plugin's `skills/mm-method/` directory, or `~/.mm/skills/mm-method/` for manual installs). The method says WHAT to check; this loop says WHO does the work: what runs in the main thread, what fans out to subagents, and what gets attacked before delivery.
 
 **Gate first.** Trivial per the method's triviality gate: just do it, verify with the one obvious check, report in two sentences. No stages, no subagents. Everything else runs the four stages below in order.
 
@@ -37,14 +37,14 @@ This skill orchestrates the fable-method: read its SKILL.md first; its rules gov
 
 ## Stage 4 - AUDIT and REPORT (the second bookend)
 
-1. Self-audit per fable-method audit mode: for each method step, followed, skipped, or faked. Fix what one pass can fix (usually an unverified claim: verify it now or relabel it a caveat).
+1. Self-audit per mm-method audit mode: for each method step, followed, skipped, or faked. Fix what one pass can fix (usually an unverified claim: verify it now or relabel it a caveat).
 2. Deliver per method Step 6: outcome in the first sentence, verification evidence shown, honest caveats, follow-ups only if they emerged from the work. No stage names or step numbers in the report; the INTENT and AUTH lines are the only method artifacts a report may contain.
 
 ## When NOT to use this loop
 
 - Trivial tasks (the gate handles them).
-- Pure questions with no multi-step work: plain fable-method covers the shape.
-- Inside an already-orchestrated GSD phase: GSD owns the stages there; apply fable-method rules within them instead of nesting loops.
+- Pure questions with no multi-step work: plain mm-method covers the shape.
+- Inside an already-orchestrated GSD phase: GSD owns the stages there; apply mm-method rules within them instead of nesting loops.
 
 ## Model economy
 

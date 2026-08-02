@@ -23,7 +23,7 @@ The user's stated constraints and jurisdiction > official/regulatory sources > i
 - Time comparisons are like-for-like: same period, same basis (nominal vs real, gross vs net), stated.
 - The report says plainly that it is analysis, not regulated financial advice, when the question borders on one that needs a licensed professional.
 
-## Fraud table (for fable-judge)
+## Fraud table (for mm-verify)
 
 | Fraud | Symptom |
 |---|---|

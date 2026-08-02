@@ -1,11 +1,11 @@
 {
-  "name": "open-model-method",
+  "name": "model-mesh",
   "description": "A disciplined agent loop (think/act/prove/grow) plus multi-model routing profiles for oh-my-openagent. Model-agnostic; all providers genericized. Default profile: hybrid.",
   "version": "1.0.0",
   "author": {
     "name": "bughunt8"
   },
-  "homepage": "https://github.com/bughunt8/open-model-method",
-  "repository": "https://github.com/bughunt8/open-model-method",
+  "homepage": "https://github.com/bughunt8/model-mesh",
+  "repository": "https://github.com/bughunt8/model-mesh",
   "license": "MIT"
 }

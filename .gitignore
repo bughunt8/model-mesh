@@ -1,4 +1,6 @@
 # local provider mapping — never commit real model IDs
 provider-map.local
 *.local
+# framework-generated / deployed config
+~/.omo/
 .DS_Store

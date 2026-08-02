@@ -23,7 +23,7 @@ Explicit client/user instruction > brand guidelines (`brand.md`) > the campaign 
 - Names, prices, dates, and titles are exact. One wrong competitor price discredits the whole piece.
 - Rendered surfaces (landing pages, emails) are actually rendered and looked at, not assumed.
 
-## Fraud table (for fable-judge)
+## Fraud table (for mm-verify)
 
 | Fraud | Symptom |
 |---|---|

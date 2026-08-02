@@ -24,7 +24,6 @@ You map placeholders to whatever you actually run. The **roles** are what matter
 | `flagship-lite` | Cheap flagship | Fast, low-cost flagship tier |
 | `flagship-prev` | Previous-gen flagship | Compatibility / safety fallback rung |
 | `reasoner-xl` | Cross-family deep reasoner | Architecture advisory (dual-prompt / oracle fallback) |
-| `reasoner-breadth` | Breadth reasoning leader | Optional high-ceiling reasoning fallback |
 | `coder-xl` | Flagship coding model | Dual-prompt coding tier (capability-first) |
 | `coder-mid` | Coding workhorse | Everyday code-gen/review (cost-sane) |
 | `coder-swarm` | Long-context coding, swarm-capable | Large low-risk subagent swarms |
@@ -57,3 +56,18 @@ Then either (a) hand-edit the config's model strings, or (b) run a find/replace 
 1. **Family fit beats raw rank.** Map each role to a model whose behavioral family matches (see `docs/ROUTING.md`).
 2. **Keep a non-flagship lifeline.** At least one fallback per critical agent should be a different provider than the primary, so a single provider outage does not stall the agent.
 3. **Preview/experimental models stay last-resort.** `preview-xl` is a final fallback only.
+
+
+## Mapping file (keep it private)
+
+Put your placeholder→real-model mapping in a file named exactly **`provider-map.local`** at the repo root. It is git-ignored by default. Do **not** name it `provider-map.json` or anything without `.local`, or it may be committed. A safe starter is provided as `provider-map.local.example`.
+
+Rules for the mapping file:
+- Model IDs only. **Never** put API keys, tokens, or secrets in it — credentials belong in the framework's own auth, not here.
+- Even model IDs can reveal your vendors and account topology, so treat the file as sensitive.
+
+## Framework compatibility
+
+- Target framework: **oh-my-openagent** (opencode). These names are kept intentionally (see README "What's genericized vs kept").
+- The generated config pins the schema to a released tag (`v4.19.4`) for reproducibility rather than a mutable `dev` branch. If you run a different framework version, update the `$schema` line and re-run `oh-my-openagent doctor`.
+- Schema shape enforced: agents use `model` + `fallback_models`; `ultrawork` uses a singular `model`; categories use a `models` array; use `reasoning` (not the deprecated `variant`).

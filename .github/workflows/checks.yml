@@ -3,6 +3,8 @@ on:
   push:
     branches: [main]
   pull_request:
+permissions:
+  contents: read
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -11,5 +13,5 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Validate manifests, skills, adapters, evidence, and style
+      - name: Validate (vendor denylist, manifests, skills, profiles, links)
         run: python .github/checks.py

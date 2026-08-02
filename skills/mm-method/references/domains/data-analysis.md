@@ -22,7 +22,7 @@ The user's stated question and definitions > the data itself > column names and 
 - Data-quality decisions (deduplicated X rows, excluded Y as out-of-window, netted Z refunds) are stated, with the sensitivity shown when a decision could flip the answer.
 - Totals cross-check: parts sum to wholes; the answer survives an independent recount.
 
-## Fraud table (for fable-judge)
+## Fraud table (for mm-verify)
 
 | Fraud | Symptom |
 |---|---|
