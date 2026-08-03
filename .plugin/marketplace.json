@@ -1,6 +1,6 @@
 {
   "name": "model-mesh",
-  "description": "The loop (think/act/prove/grow) + multi-model routing profiles (ultimate/hybrid/b4b), model-agnostic.",
+  "description": "v1.1: The loop (think/act/prove/grow) with four engineering gates (grill/prototype/test-first/two-axis review) and verification fold-ins (machine-checkable evidence, negative tests, false-green defence), plus multi-model routing profiles (ultimate/hybrid/b4b). Model-agnostic.",
   "owner": {
     "name": "bughunt8",
     "url": "https://github.com/bughunt8"
@@ -9,7 +9,7 @@
     {
       "name": "model-mesh",
       "source": "./",
-      "description": "Disciplined agent loop plus multi-model routing config profiles for oh-my-openagent.",
+      "description": "v1.1: Disciplined agent loop with grill/prototype/test-first/review gates and evidence-based verification fold-ins, plus multi-model routing config profiles for oh-my-openagent.",
       "version": "1.1.0",
       "author": {
         "name": "bughunt8"
