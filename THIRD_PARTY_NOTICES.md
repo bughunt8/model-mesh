@@ -29,6 +29,8 @@ model names.
 
 ## matt-pocock/skills (concepts adapted)
 
+By Matt Pocock (https://github.com/mattpocock/skills).
+
 The mm-method loop integrates ideas adapted from several skills in
 https://github.com/mattpocock/skills:
 

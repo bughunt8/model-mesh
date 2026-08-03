@@ -127,6 +127,9 @@ The routing rationale in this repo is a set of **design heuristics**, not measur
 
 ## Credits & license
 
-- Loop skills adapted from **[fable-method](https://github.com/Sahir619/fable-method)** by Sahir619 (MIT). See [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+- Loop skills adapted from **[fable-method](https://github.com/Sahir619/fable-method)** by Sahir619 (MIT).
+- The four engineering gates (grill, prototype, test-first, code-review) adapt concepts from **[matt-pocock/skills](https://github.com/mattpocock/skills)** by Matt Pocock.
+- The verification fold-ins (machine-checkable evidence, negative tests, false-green defence, reviewer isolation) adapt concepts from the **debug-pipeline2** protocol by ronald-ng (MIT).
 - Routing layer targets **[oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent)** by code-yeongyu.
+- Full attribution in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 - MIT licensed. Upstream copyright retained in [`LICENSE`](LICENSE); new contributions © bughunt8. See [`CONTRIBUTING.md`](CONTRIBUTING.md).
