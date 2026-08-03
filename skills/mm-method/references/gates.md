@@ -87,7 +87,14 @@ The 429 status and `Retry-After` header come from the user's confirmed decision 
 
 **Task:** the rate limiter, implementation complete.
 
-1. **Materialize the diff:** `git diff --stat` -> `middleware/rateLimit.ts | 48 ++, app.ts | 3 +, middleware/rateLimit.test.ts | 40 ++`. Review that text, not memory.
+1. **Materialize the diff:** `git diff --stat` ->
+   ```
+    middleware/rateLimit.ts      | 48 ++++++++++++
+    middleware/rateLimit.test.ts | 40 +++++++++
+    app.ts                       |  3 +
+    3 files changed, 88 insertions(+), 3 deletions(-)
+   ```
+   Then read the full `git diff` text, not memory.
 2. **Two isolated passes** (as two fresh subagents, each given only the materialized diff, the written done criterion + `GRILL:` decisions, `CONTRIBUTING.md`, and read-only repo access for context - never the conversation transcript, your narrative, or the other axis's verdict):
    - **Spec axis** (against the grill decisions): auth+writes only? yes. per-user + IP fallback? **IP fallback missing** - the diff keys straight off `req.user?.id`, so unauthenticated requests would key on `undefined`; there is no IP branch. Finding: requirement partial (a hypothesis from the diff, to be re-observed by running - not asserted as a runtime fact). Quote: "per-user, IP fallback."
    - **Standards axis:** a magic `100` and `60000` inline -> *mysterious value (magic literal)*; extract to named config. Duplicated key-building in two handlers -> *duplicated code*.
