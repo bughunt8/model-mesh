@@ -19,16 +19,39 @@ DENY = re.compile(
     r"\b(apiyi|claude|gpt-5|kimi|glm-5|deepseek|gemini|qwen|minimax|haiku|sonnet|opus|codex)\b",
     re.I,
 )
+# --- Narrow DSH allowlist ---------------------------------------------------
+# The DeepSeek Harness is a *target platform*, so a small, exact set of its
+# framework tokens must be discussable in docs/plans without leaking the real
+# provider/model IDs the denylist exists to catch. We neutralize ONLY these
+# exact tokens (longest-first) before applying DENY. Crucially, `deepseek-ai`,
+# `deepseek-harness`, and `deepseek.com/harness` are allowed, but a bare
+# `deepseek` (as in the real ID `deepseek/deepseek-v4-pro`) is NOT — after the
+# exact tokens are removed, any remaining `deepseek` still fails.
+DSH_ALLOW = re.compile(
+    r"(@deepseek-ai/[a-z0-9._-]+|deepseek-ai|deepseek[ -]harness|deepseek\.com/harness)",
+    re.I,
+)
+
+def deny_hit(text):
+    """True if `text` contains a forbidden token after removing exact DSH tokens."""
+    return bool(DENY.search(DSH_ALLOW.sub("", text)))
 # A bare `fable` reference is allowed only on lines that also carry the attribution
 # context (the upstream repo/author). Anywhere else it is a leak.
 FABLE = re.compile(r"\bfable\b", re.I)
 FABLE_OK = re.compile(r"fable-method|Sahir619|github\.com/Sahir619", re.I)
 TEXT_EXT = (".md", ".json", ".jsonc", ".sh", ".ps1", ".py", ".yml", ".yaml", ".txt")
 
+# Excluded from the denylist scan:
+#  - .git: VCS internals.
+#  - .github: CI infrastructure. checks.py itself legitimately contains the
+#    denylist tokens and the DSH allowlist regex; scanning it would be circular.
+#  - build/output dirs: never committed, but a local build may leave them behind
+#    before CI runs, so exclude by name so .gitignore state is irrelevant.
+EXCLUDE_DIRS = {".git", ".github", "node_modules", "dist", "build", ".pnpm-store"}
+
 def tracked_files():
     for base, dirs, files in os.walk(ROOT):
-        if os.sep + ".git" in base:
-            continue
+        dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
         for fn in files:
             yield os.path.join(base, fn)
 
@@ -43,13 +66,13 @@ for path in tracked_files():
     rel = os.path.relpath(path, ROOT)
     if is_example(rel):
         continue
-    if DENY.search(rel):
+    if deny_hit(rel):
         fail(f"forbidden name in PATH: {rel}")
     if path.endswith(TEXT_EXT):
         try:
             with io.open(path, encoding="utf-8", errors="ignore") as f:
                 for i, line in enumerate(f, 1):
-                    if DENY.search(line):
+                    if deny_hit(line):
                         fail(f"forbidden name in {rel}:{i}: {line.strip()[:80]}")
                     if FABLE.search(line) and not FABLE_OK.search(line):
                         fail(f"bare 'fable' (not attribution) in {rel}:{i}: {line.strip()[:80]}")
@@ -57,6 +80,28 @@ for path in tracked_files():
             fail(f"could not read {rel}: {e}")
 if fails == 0:
     ok("no forbidden vendor/model names in contents or paths")
+
+# Negative self-test: the DSH allowlist must NOT weaken the gate. Real IDs and
+# bare vendor words must still be caught; allowed DSH tokens must pass.
+print("[1b] denylist self-test")
+# Fixtures are assembled from parts so this checks.py file does not itself carry
+# a forbidden literal (the denylist scans this .py file too). `_ds` is the bare
+# provider token the gate must still catch even with the DSH allowlist active.
+_ds = "deep" + "seek"
+_must_fail = [
+    f"{_ds}/{_ds}-v4-pro", "api" + "yi/gpt-" + "5.6-sol", "moonshotai/ki" + "mi-k3",
+    "zai-coding-plan/gl" + "m-5.2", "minimax/Mini" + "Max-M3", f"we use {_ds} here",
+    "open" + "code/co" + "dex",
+]
+_must_pass = [
+    f"@{_ds}-ai/dsh", f"@{_ds}-ai/cordis", f"{_ds}-harness",
+    f"github.com/{_ds}-ai/{_ds}-harness", "the dsh CLI",
+    f"{_ds}.com/harness/en", f"{_ds} harness",
+]
+for s in _must_fail:
+    ok(f"still blocked: {s}") if deny_hit(s) else fail(f"self-test: should block but passed: {s}")
+for s in _must_pass:
+    ok(f"allowed: {s}") if not deny_hit(s) else fail(f"self-test: should allow but blocked: {s}")
 
 # ---------------------------------------------------------------------------
 # 2. Manifests parse and identify as model-mesh
