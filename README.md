@@ -116,6 +116,23 @@ Ultimate-only (v1.1.1): the coding agents (`atlas`, `prometheus`) carry two extr
 
 ---
 
+## Validation
+
+Two checks guard this repo; both run in CI on every push and PR, and both exit non-zero on any violation so you can run them locally before committing.
+
+```bash
+python .github/checks.py                     # repo-wide gate
+python scripts/validate-full-config.py       # full deployable config example
+python scripts/validate-full-config.py path/to/your-omo.jsonc   # validate your own config
+```
+
+- **`.github/checks.py`** — the release gate: a vendor-name denylist (genericized files must use placeholders; `*.example.json` and `docs/EXAMPLE-MAPPING.md` are exempt by design), plus manifest, skill-presence, profile-schema-shape, and local-link checks.
+- **`scripts/validate-full-config.py`** — validates [`examples/omo.full.example.json`](examples/omo.full.example.json) (or any config path you pass) against the hardened deployment invariants: valid JSON, `reasoning` within enum, every agent has a non-empty `fallback_models`, no duplicate or degenerate fallback rungs (a fallback must differ from the primary), `hephaestus` stays flagship-native-only (its `ultrawork` may be cross-family by design), `runtime_fallback.retry_on_errors` excludes `400` (a rejected request is not a transient outage), no unused `providerConcurrency` entries, `momus` uses `enabled` (not `disable`), no retired-vendor names, and a pinned `$schema` tag.
+
+Point the second command at your own materialized `~/.omo/omo.jsonc` to catch the same classes of mistakes before you deploy.
+
+---
+
 ## Privacy & fallbacks (read before deploying)
 
 Routing forwards work to a **fallback model on a different provider** when the primary fails. That means prompts, source code, and retrieved context can cross provider (and possibly data-residency) boundaries. Before deploying:
