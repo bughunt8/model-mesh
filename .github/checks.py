@@ -58,8 +58,19 @@ def tracked_files():
 # *.example.json files intentionally carry real provider/model IDs as a reference
 # mapping (see README). They are exempt from the vendor-name denylist by design,
 # but still validated for JSON/schema shape below.
+#
+# Validator/CI scripts must reference vendor names as *rule logic* (e.g. asserting
+# no retired vendor appears, or that hephaestus stays flagship-native). Scanning
+# them would be circular, exactly like .github/checks.py itself. Exempt them by an
+# explicit allowlist of paths, not a blanket scripts/ exclusion (materialize.py is
+# still scanned).
+DENY_EXEMPT_PATHS = {"scripts/validate-full-config.py"}
+
 def is_example(rel):
-    return rel.endswith(".example.json") or rel.replace(os.sep, "/") == "docs/EXAMPLE-MAPPING.md"
+    r = rel.replace(os.sep, "/")
+    return (r.endswith(".example.json")
+            or r == "docs/EXAMPLE-MAPPING.md"
+            or r in DENY_EXEMPT_PATHS)
 
 print("[1] vendor denylist")
 for path in tracked_files():

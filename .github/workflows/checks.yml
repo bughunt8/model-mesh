@@ -15,3 +15,5 @@ jobs:
           python-version: "3.12"
       - name: Validate (vendor denylist, manifests, skills, profiles, links)
         run: python .github/checks.py
+      - name: Validate full deployable config example
+        run: python scripts/validate-full-config.py
