@@ -46,7 +46,7 @@
           "reasoning": "max"
         },
         {
-          "model": "opencode/gemini-3.1-pro",
+          "model": "zai-coding-plan/glm-5.3",
           "reasoning": "high"
         }
       ]
@@ -64,7 +64,7 @@
           "reasoning": "high"
         },
         {
-          "model": "opencode/gemini-3.1-pro",
+          "model": "zai-coding-plan/glm-5.3",
           "reasoning": "high"
         },
         {
@@ -75,7 +75,7 @@
     },
     "sisyphus": {
       "prompt_append": "Delegate heavily to hephaestus for implementation. Parallelize exploration.",
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "zai-coding-plan/glm-5.3",
       "reasoning": "high",
       "fallback_models": [
         {
@@ -91,7 +91,7 @@
       }
     },
     "sisyphus-junior": {
-      "model": "opencode/gemini-3-flash",
+      "model": "deepseek/deepseek-v4-flash",
       "fallback_models": [
         {
           "model": "opencode/big-pickle"
@@ -111,10 +111,13 @@
           "reasoning": "high"
         },
         {
-          "model": "zai-coding-plan/glm-5.2"
+          "model": "zai-coding-plan/glm-5.3"
         },
         {
-          "model": "opencode/qwen3.8-max-preview"
+          "model": "opencode/qwen3.8-max"
+        },
+        {
+          "model": "xai/grok-4.6"
         }
       ]
     },
@@ -131,15 +134,18 @@
           "reasoning": "high"
         },
         {
-          "model": "zai-coding-plan/glm-5.2"
+          "model": "zai-coding-plan/glm-5.3"
         },
         {
-          "model": "opencode/qwen3.8-max-preview"
+          "model": "opencode/qwen3.8-max"
+        },
+        {
+          "model": "xai/grok-4.6"
         }
       ]
     },
     "metis": {
-      "model": "zai-coding-plan/glm-5.2",
+      "model": "zai-coding-plan/glm-5.3",
       "reasoning": "high",
       "temperature": 0.7,
       "fallback_models": [
@@ -155,7 +161,7 @@
       "model": "opencode/qwen3.6-plus",
       "fallback_models": [
         {
-          "model": "opencode/gemini-3-flash"
+          "model": "deepseek/deepseek-v4-flash"
         },
         {
           "model": "deepseek/deepseek-v4-flash"
@@ -166,7 +172,7 @@
       "model": "deepseek/deepseek-v4-flash",
       "fallback_models": [
         {
-          "model": "opencode/gemini-3-flash"
+          "model": "deepseek/deepseek-v4-flash"
         }
       ]
     },
@@ -178,11 +184,11 @@
           "reasoning": "medium"
         },
         {
-          "model": "opencode/gemini-3.1-pro",
+          "model": "opencode/qwen3.7-plus",
           "reasoning": "high"
         },
         {
-          "model": "opencode/qwen3.8-max-preview"
+          "model": "opencode/qwen3.8-max"
         }
       ]
     }
@@ -191,7 +197,7 @@
     "visual-engineering": {
       "models": [
         {
-          "model": "opencode/gemini-3.1-pro",
+          "model": "opencode/qwen3.7-plus",
           "reasoning": "high"
         },
         {
@@ -217,7 +223,7 @@
           "reasoning": "high"
         },
         {
-          "model": "opencode/gemini-3.1-pro",
+          "model": "opencode/qwen3.7-plus",
           "reasoning": "high"
         }
       ]
@@ -236,17 +242,17 @@
           "reasoning": "high"
         },
         {
-          "model": "zai-coding-plan/glm-5.2"
+          "model": "zai-coding-plan/glm-5.3"
         },
         {
-          "model": "opencode/qwen3.8-max-preview"
+          "model": "opencode/qwen3.8-max"
         }
       ]
     },
     "artistry": {
       "models": [
         {
-          "model": "opencode/gemini-3.1-pro",
+          "model": "opencode/qwen3.7-plus",
           "reasoning": "high"
         },
         {
@@ -260,7 +266,7 @@
     "quick": {
       "models": [
         {
-          "model": "opencode/gemini-3-flash"
+          "model": "deepseek/deepseek-v4-flash"
         },
         {
           "model": "deepseek/deepseek-v4-flash"
@@ -279,7 +285,7 @@
           "model": "deepseek/deepseek-v4-flash"
         },
         {
-          "model": "opencode/gemini-3-flash"
+          "model": "deepseek/deepseek-v4-flash"
         }
       ]
     },
@@ -293,7 +299,7 @@
           "model": "deepseek/deepseek-v4-pro"
         },
         {
-          "model": "opencode/gemini-3.1-pro",
+          "model": "opencode/qwen3.7-plus",
           "reasoning": "high"
         }
       ]
@@ -301,10 +307,10 @@
     "writing": {
       "models": [
         {
-          "model": "opencode/gemini-3.1-pro"
+          "model": "opencode/qwen3.7-plus"
         },
         {
-          "model": "opencode/gemini-3-flash"
+          "model": "deepseek/deepseek-v4-flash"
         }
       ]
     }

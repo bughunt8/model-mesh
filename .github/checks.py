@@ -16,7 +16,7 @@ def fail(m):
 # Real vendor/model names are forbidden. `fable` is allowed ONLY as attribution
 # to the upstream MIT project (fable-method / Sahir619), per THIRD_PARTY_NOTICES.
 DENY = re.compile(
-    r"\b(apiyi|claude|gpt-5|kimi|glm-5|deepseek|gemini|qwen|minimax|haiku|sonnet|opus|codex)\b",
+    r"\b(apiyi|claude|gpt-5|kimi|glm-5|deepseek|gemini|qwen|minimax|haiku|sonnet|opus|codex|grok|xai)\b",
     re.I,
 )
 # --- Narrow DSH allowlist ---------------------------------------------------
@@ -91,7 +91,7 @@ _ds = "deep" + "seek"
 _must_fail = [
     f"{_ds}/{_ds}-v4-pro", "api" + "yi/gpt-" + "5.6-sol", "moonshotai/ki" + "mi-k3",
     "zai-coding-plan/gl" + "m-5.2", "minimax/Mini" + "Max-M3", f"we use {_ds} here",
-    "open" + "code/co" + "dex",
+    "open" + "code/co" + "dex", "x" + "ai/gr" + "ok-4.6",
 ]
 _must_pass = [
     f"@{_ds}-ai/dsh", f"@{_ds}-ai/cordis", f"{_ds}-harness",

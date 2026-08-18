@@ -39,7 +39,7 @@
           "reasoning": "max"
         },
         {
-          "model": "ProviderB/util-pro",
+          "model": "ProviderD/comm-xl",
           "reasoning": "high"
         }
       ]
@@ -55,7 +55,7 @@
           "reasoning": "high"
         },
         {
-          "model": "ProviderB/preview-xl"
+          "model": "ProviderC/open-reason-xl"
         }
       ]
     },
@@ -94,7 +94,7 @@
           "reasoning": "medium"
         },
         {
-          "model": "ProviderB/util-pro",
+          "model": "ProviderD/comm-xl",
           "reasoning": "high"
         }
       ]
@@ -106,11 +106,11 @@
           "model": "ProviderD/comm-xl"
         },
         {
-          "model": "ProviderB/util-pro",
+          "model": "ProviderB/gen-pro",
           "reasoning": "high"
         },
         {
-          "model": "ProviderB/preview-xl"
+          "model": "ProviderB/gen-pro"
         }
       ]
     },
@@ -121,7 +121,7 @@
           "model": "ProviderE/coder-mid"
         },
         {
-          "model": "ProviderB/util-flash"
+          "model": "ProviderB/gen-flash"
         },
         {
           "model": "ProviderB/util-misc"
@@ -137,7 +137,7 @@
           "model": "ProviderE/coder-mid"
         },
         {
-          "model": "ProviderB/util-pro",
+          "model": "ProviderB/gen-pro",
           "reasoning": "high"
         }
       ],
@@ -153,7 +153,7 @@
           "model": "ProviderC/open-reason-lite"
         },
         {
-          "model": "ProviderB/util-flash"
+          "model": "ProviderB/gen-flash"
         }
       ]
     },
@@ -161,7 +161,7 @@
       "model": "ProviderC/open-reason-lite",
       "fallback_models": [
         {
-          "model": "ProviderB/util-flash"
+          "model": "ProviderB/gen-flash"
         }
       ]
     },
@@ -169,7 +169,7 @@
       "model": "ProviderF/vision-xl",
       "fallback_models": [
         {
-          "model": "ProviderB/util-pro",
+          "model": "ProviderB/gen-pro",
           "reasoning": "high"
         },
         {
@@ -182,7 +182,7 @@
     "visual-engineering": {
       "models": [
         {
-          "model": "ProviderB/util-pro",
+          "model": "ProviderB/gen-pro",
           "reasoning": "high"
         },
         {
@@ -229,7 +229,7 @@
     "artistry": {
       "models": [
         {
-          "model": "ProviderB/util-pro",
+          "model": "ProviderB/gen-pro",
           "reasoning": "high"
         },
         {
@@ -246,7 +246,7 @@
           "model": "ProviderC/open-reason-lite"
         },
         {
-          "model": "ProviderB/util-flash"
+          "model": "ProviderB/gen-flash"
         },
         {
           "model": "ProviderD/comm-lite"
@@ -262,7 +262,7 @@
           "model": "ProviderE/coder-mid"
         },
         {
-          "model": "ProviderB/util-flash"
+          "model": "ProviderB/gen-flash"
         }
       ]
     },
@@ -283,11 +283,11 @@
     "writing": {
       "models": [
         {
-          "model": "ProviderB/util-pro",
+          "model": "ProviderB/gen-pro",
           "reasoning": "high"
         },
         {
-          "model": "ProviderB/util-flash"
+          "model": "ProviderB/gen-flash"
         }
       ]
     }

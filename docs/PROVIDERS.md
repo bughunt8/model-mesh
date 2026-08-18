@@ -31,14 +31,15 @@ You map placeholders to whatever you actually run. The **roles** are what matter
 | `comm-lite` | Cheap communicator | Fast orchestration / utility |
 | `open-reason-xl` | Open-weight reasoning, SOTA | Non-proxy escalation lifeline |
 | `open-reason-lite` | Open-weight fast reasoner | Latency-sensitive subtasks |
-| `util-pro` | Concise utility/reasoning | Planning, writing, visual-engineering |
-| `util-flash` | Fast utility | Low-latency loop steps |
+| `gen-pro` | Concise generalist | Planning, writing, visual-engineering |
+| `gen-flash` | Fast utility | Low-latency loop steps |
 | `util-misc` | Misc utility | Backup rung |
 | `retrieval-mid` | Retrieval/librarian | Fast retrieval role |
 | `creative-mid` | Creative generalist | Artistry role |
 | `budget-low` | Cheapest general | unspecified-low |
-| `preview-xl` | Preview/experimental model | Last-resort backup only (see caveats) |
+| `flagship-open` | GA frontier-class open flagship | Ultimate-only rung (cost > cap) |
 | `vision-xl` | Native multimodal + long context | multimodal-looker primary |
+| `div-flagship` | Independent 5th-vendor diversification | Ultimate-only fallback (atlas/prometheus) |
 
 ## How to map (example)
 
@@ -55,7 +56,7 @@ Then either (a) hand-edit the config's model strings, or (b) run a find/replace 
 
 1. **Family fit beats raw rank.** Map each role to a model whose behavioral family matches (see `docs/ROUTING.md`).
 2. **Keep a non-flagship lifeline.** At least one fallback per critical agent should be a different provider than the primary, so a single provider outage does not stall the agent.
-3. **Preview/experimental models stay last-resort.** `preview-xl` is a final fallback only.
+3. **Cost-capped profiles honor the cap.** Models whose per-token cost exceeds the cap (`flagship-open`, `div-flagship`) appear in `ultimate` only; `hybrid`/`b4b` stay under the coder-xl cap. See `docs/EXAMPLE-MAPPING.md` for the concrete IDs and prices.
 
 
 ## Worked example

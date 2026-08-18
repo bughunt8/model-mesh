@@ -35,7 +35,7 @@
           "model": "ProviderC/open-reason-xl"
         },
         {
-          "model": "ProviderB/util-pro",
+          "model": "ProviderD/comm-xl",
           "reasoning": "high"
         }
       ]
@@ -49,7 +49,7 @@
           "reasoning": "medium"
         },
         {
-          "model": "ProviderB/util-pro",
+          "model": "ProviderD/comm-xl",
           "reasoning": "high"
         },
         {
@@ -66,7 +66,7 @@
           "model": "ProviderE/coder-mid"
         },
         {
-          "model": "ProviderB/util-pro",
+          "model": "ProviderB/gen-pro",
           "reasoning": "high"
         }
       ],
@@ -75,7 +75,7 @@
       }
     },
     "sisyphus-junior": {
-      "model": "ProviderB/util-flash",
+      "model": "ProviderB/gen-flash",
       "fallback_models": [
         {
           "model": "ProviderC/open-reason-lite"
@@ -90,10 +90,10 @@
           "model": "ProviderD/comm-xl"
         },
         {
-          "model": "ProviderB/util-flash"
+          "model": "ProviderB/gen-flash"
         },
         {
-          "model": "ProviderB/preview-xl"
+          "model": "ProviderB/gen-pro"
         }
       ]
     },
@@ -109,7 +109,7 @@
           "reasoning": "high"
         },
         {
-          "model": "ProviderB/preview-xl"
+          "model": "ProviderC/open-reason-xl"
         }
       ]
     },
@@ -132,7 +132,7 @@
           "model": "ProviderC/open-reason-lite"
         },
         {
-          "model": "ProviderB/util-flash"
+          "model": "ProviderB/gen-flash"
         }
       ]
     },
@@ -140,7 +140,7 @@
       "model": "ProviderC/open-reason-lite",
       "fallback_models": [
         {
-          "model": "ProviderB/util-flash"
+          "model": "ProviderB/gen-flash"
         }
       ]
     },
@@ -155,7 +155,7 @@
           "model": "ProviderD/comm-lite"
         },
         {
-          "model": "ProviderB/preview-xl"
+          "model": "ProviderB/gen-pro"
         }
       ]
     }
@@ -164,7 +164,7 @@
     "visual-engineering": {
       "models": [
         {
-          "model": "ProviderB/util-pro",
+          "model": "ProviderB/gen-pro",
           "reasoning": "high"
         },
         {
@@ -207,14 +207,14 @@
           "reasoning": "medium"
         },
         {
-          "model": "ProviderB/preview-xl"
+          "model": "ProviderB/gen-pro"
         }
       ]
     },
     "artistry": {
       "models": [
         {
-          "model": "ProviderB/util-pro",
+          "model": "ProviderB/gen-pro",
           "reasoning": "high"
         },
         {
@@ -231,7 +231,7 @@
           "model": "ProviderC/open-reason-lite"
         },
         {
-          "model": "ProviderB/util-flash"
+          "model": "ProviderB/gen-flash"
         },
         {
           "model": "ProviderD/comm-lite"
@@ -244,7 +244,7 @@
           "model": "ProviderC/open-reason-lite"
         },
         {
-          "model": "ProviderB/util-flash"
+          "model": "ProviderB/gen-flash"
         }
       ]
     },
@@ -265,10 +265,10 @@
     "writing": {
       "models": [
         {
-          "model": "ProviderB/util-pro"
+          "model": "ProviderB/gen-pro"
         },
         {
-          "model": "ProviderB/util-flash"
+          "model": "ProviderB/gen-flash"
         }
       ]
     }

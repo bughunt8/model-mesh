@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.1.1
+
+### Changed - model refresh (Aug 2026)
+(Concrete model IDs, prices, and benchmark citations live in `docs/EXAMPLE-MAPPING.md`; this public changelog uses role placeholders per the repo's placeholder-only convention.)
+- **`open-reason-xl` -> GA build:** the open-weight reasoning lifeline moved to its new general-availability build. The provider's API ID is unchanged, so no config edit was needed; large agentic-benchmark gains. Provider moved to peak/off-peak billing mid-August; still under the cost cap.
+- **`flagship-open` (new):** a new placeholder for the now-GA frontier-class open flagship replaces the retired preview last-resort rung. Its per-token output cost exceeds the `coder-xl` cap, so it is wired in `ultimate` only; `hybrid`/`b4b` use `gen-pro` in those slots.
+- **`comm-xl` upgraded:** migrated to the communicator vendor's newest release across all three profiles. Assumption: pricing unchanged (same subscription tier; per-token price not yet published), so the per-token cap does not gate it.
+- **Retired the utility vendor family:** removed both former `util-pro`/`util-flash` models entirely. Role-aware replacements: `gen-pro` (planning/writing/visual/artistry generalist) and `gen-flash` (fast loop). High-stakes safety rungs on `oracle`/`momus`/`prometheus` were promoted to the strongest model not already in-chain rather than a flat swap.
+- **`div-flagship` (new, provider `ProviderG`):** an independent 5th-vendor diversification fallback added to `atlas` and `prometheus` in `ultimate` only (not `hephaestus`, which stays flagship-native-only). Rationale is independent-vendor resilience + token efficiency, not a raw benchmark lead. Cost > cap, hence ultimate only.
+- Updated `docs/EXAMPLE-MAPPING.md` and `docs/PROVIDERS.md` to match.
+- `.github/checks.py`: added the new vendor tokens to the release denylist so real IDs cannot leak into genericized files.
+
 ## 1.1.0
 
 ### Added - four engineering gates folded into the mm-method loop
