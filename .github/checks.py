@@ -161,16 +161,40 @@ for prof_file in _profile_files:
         d = json.loads(_txt)
     except Exception as e:
         fail(f"{prof_file} invalid JSON: {e}"); continue
+    # Allowed keys per the v4.19.4 omo.schema.json ([opencode] block,
+    # additionalProperties:false). Enforcing these catches invented keys like
+    # agent 'models' or 'enabled' the way `oh-my-openagent doctor` does.
+    AGENT_KEYS = {
+        "category", "color", "compaction", "description", "disable", "displayName",
+        "fallback_models", "maxTokens", "mode", "model", "permission", "prompt",
+        "prompt_append", "providerOptions", "reasoning", "reasoningEffort", "skills",
+        "temperature", "textVerbosity", "thinking", "tools", "top_p", "ultrawork",
+        "variant", "allow_non_gpt_model",
+    }
+    CATEGORY_KEYS = {
+        "description", "disable", "fallback_models", "is_unstable_agent", "maxTokens",
+        "max_prompt_tokens", "max_tokens", "model", "models", "prompt_append",
+        "provider_options", "reasoning", "reasoningEffort", "temperature",
+        "textVerbosity", "thinking", "tools", "top_p", "variant", "warn_unavailable",
+    }
+    REASONING_ENUM = {"off", "minimal", "low", "medium", "high", "xhigh", "max", "auto"}
     bad = []
     for an, a in d.get("agents", {}).items():
-        if "models" in a: bad.append(f"agents.{an}.models (use model+fallback_models)")
-        if "variant" in a: bad.append(f"agents.{an}.variant (use reasoning)")
+        for k in a:
+            if k not in AGENT_KEYS:
+                bad.append(f"agents.{an}: unknown key '{k}' (not in v4.19.4 schema)")
+        if "models" in a: bad.append(f"agents.{an}.models (agents use model+fallback_models, not models)")
+        if a.get("reasoning") not in (None,) and a.get("reasoning") not in REASONING_ENUM:
+            bad.append(f"agents.{an}.reasoning '{a['reasoning']}' not in {sorted(REASONING_ENUM)}")
         if "ultrawork" in a and "models" in a["ultrawork"]:
             bad.append(f"agents.{an}.ultrawork.models (use singular model)")
-        for m in a.get("fallback_models", []):
-            if "variant" in m: bad.append(f"agents.{an} fallback variant")
     for cn, c in d.get("categories", {}).items():
-        if "models" not in c: bad.append(f"categories.{cn} missing models[]")
+        for k in c:
+            if k not in CATEGORY_KEYS:
+                bad.append(f"categories.{cn}: unknown key '{k}' (not in v4.19.4 schema)")
+        # a category must carry models via one of the schema-valid forms
+        if not any(key in c for key in ("models", "model", "fallback_models")):
+            bad.append(f"categories.{cn} missing models[]/model/fallback_models")
     # Duplicate-rung check. On the genericized profiles this catches real bugs
     # (a fallback repeating the primary or an earlier rung is useless). We skip
     # *.example.json because two DISTINCT placeholders can legitimately resolve

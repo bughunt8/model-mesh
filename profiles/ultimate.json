@@ -20,7 +20,7 @@
       ],
       "ultrawork": {
         "model": "ProviderA/flagship-xl",
-        "reasoning": "ultra"
+        "reasoning": "max"
       }
     },
     "oracle": {
@@ -210,7 +210,7 @@
       "models": [
         {
           "model": "ProviderA/flagship-xl",
-          "reasoning": "ultra"
+          "reasoning": "max"
         },
         {
           "model": "ProviderE/coder-xl",

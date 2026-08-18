@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.1.4
+
+### Fixed
+- Aligned the repo's schema rules with the authoritative **v4.19.4** `omo.schema.json` (`[opencode]` block). Corrected the `reasoning` enum to `off/minimal/low/medium/high/xhigh/max/auto` — the value `ultra` is **not** valid and was replaced with `max` in the profiles that used it.
+- Removed an invalid `enabled` key from `momus` in the full deployable example (the v4.19.4 schema key is `disable`; `enabled` is rejected by `oh-my-openagent doctor`).
+
+### Added
+- `scripts/validate-full-config.py`: new rule **R14** validates every agent/category/model-ref object against the schema's allowed key set (`additionalProperties:false`), mirroring `oh-my-openagent doctor`. This catches invented keys (e.g. an agent `models` key, or `enabled` instead of `disable`) that earlier slipped through.
+- `.github/checks.py`: the profile schema-shape check now enforces the same allowed-key sets and the corrected `reasoning` enum on the genericized profiles, and accepts any schema-valid category model form (`models`, `model`, or `fallback_models`).
+
+### Changed
+- `scripts/validate-full-config.py`: rule **R9** corrected — it now requires the schema key `disable` (bool) and flags `enabled` as invalid (previously reversed).
+
 ## 1.1.3
 
 ### Changed

@@ -73,7 +73,6 @@
         ]
       },
       "momus": {
-        "enabled": true,
         "prompt_append": "You are Momus. Evaluate execution strategies strictly against the current repository state. You must explicitly look for structural inconsistencies, architectural violations, and missing imports. If a plan is valid, output 'PLAN_APPROVED'. If invalid, output 'PLAN_REJECTED' followed by a bulleted critique.",
         "tools": {
           "read": true,

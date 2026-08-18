@@ -20,7 +20,7 @@ Rules enforced:
       by design — that is the explicit non-flagship lifeline).
   R7  runtime_fallback.retry_on_errors excludes 400 (not a transient error).
   R8  background_task.providerConcurrency lists no provider that is unused.
-  R9  momus uses `enabled` (not the invalid `disable` key).
+  R9  momus enable/disable uses the schema key `disable` (bool); `enabled` is invalid.
   R10 No leftover retired-vendor names (Gemini) anywhere in the config.
   R11 $schema is pinned to a version tag (not the moving `dev` branch).
   R12 every model ID resolves to a known catalog entry (opencode/* must be an
@@ -29,6 +29,9 @@ Rules enforced:
       native vendor prefix (e.g. deepseek/kimi-k3). Relay/aggregator prefixes
       (apiyi, tokeness, opencode) are exempt — we make no negative claim about
       what a relay may legitimately mirror, to avoid false failures.
+  R14 only schema-allowed keys on agents/categories/model-refs (mirrors the
+      v4.19.4 omo.schema.json additionalProperties:false; catches invented keys
+      like agent 'models' or 'enabled' the way `oh-my-openagent doctor` does).
 """
 import io, json, os, re, sys
 
@@ -36,7 +39,33 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEFAULT = os.path.join(ROOT, "examples", "omo.full.example.json")
 path = sys.argv[1] if len(sys.argv) > 1 else DEFAULT
 
-ALLOWED_REASONING = {"low", "medium", "high", "max", "ultra"}
+# Canonical reasoning enum from the v4.19.4 omo.schema.json ([opencode] block).
+# NOTE: 'ultra' is NOT valid (use 'xhigh' or 'max'); 'off/minimal/auto' are valid.
+ALLOWED_REASONING = {"off", "minimal", "low", "medium", "high", "xhigh", "max", "auto"}
+
+# Allowed keys per the v4.19.4 omo.schema.json ([opencode] block), which is
+# additionalProperties:false. Validating against these catches invented keys
+# (e.g. 'models' on an agent, 'enabled' instead of 'disable') the way the real
+# `oh-my-openagent doctor` does.
+AGENT_KEYS = {
+    "category", "color", "compaction", "description", "disable", "displayName",
+    "fallback_models", "maxTokens", "mode", "model", "permission", "prompt",
+    "prompt_append", "providerOptions", "reasoning", "reasoningEffort", "skills",
+    "temperature", "textVerbosity", "thinking", "tools", "top_p", "ultrawork",
+    "variant", "allow_non_gpt_model",  # allow_non_gpt_model is hephaestus-only
+}
+CATEGORY_KEYS = {
+    "description", "disable", "fallback_models", "is_unstable_agent", "maxTokens",
+    "max_prompt_tokens", "max_tokens", "model", "models", "prompt_append",
+    "provider_options", "reasoning", "reasoningEffort", "temperature",
+    "textVerbosity", "thinking", "tools", "top_p", "variant", "warn_unavailable",
+}
+# Keys valid inside a fallback/model-ref object (agent.fallback_models[], etc.)
+MODELREF_KEYS = {
+    "model", "reasoning", "temperature", "top_p", "max_tokens", "provider_options",
+    "variant", "reasoningEffort", "thinking", "textVerbosity", "maxTokens",
+    "providerOptions",
+}
 RETIRED_VENDORS = re.compile(r"\bgemini\b", re.I)  # Gemini was retired in v1.1.1
 
 # --- Known-valid model catalog (R12) ----------------------------------------
@@ -251,15 +280,15 @@ if unused:
 else:
     ok(f"providerConcurrency providers all in use ({sorted(pc.keys()) or 'none listed'})")
 
-# ---- R9: momus enabled, not disable ----------------------------------------
-print("[R9] momus uses 'enabled'")
+# ---- R9: momus enable/disable uses the schema key ('disable', not 'enabled') --
+print("[R9] momus enable/disable key")
 mom = agents.get("momus", {})
-if "disable" in mom:
-    fail("momus uses invalid key 'disable' (use 'enabled')")
-elif "enabled" in mom:
-    ok(f"momus.enabled = {mom['enabled']}")
+if "enabled" in mom:
+    fail("momus uses invalid key 'enabled' (v4.19.4 schema key is 'disable': bool)")
+elif "disable" in mom:
+    ok(f"momus.disable = {mom['disable']}")
 else:
-    ok("momus present (no enable/disable flag; framework default applies)")
+    ok("momus present (no disable flag; enabled by default)")
 
 # ---- R10: no retired-vendor names ------------------------------------------
 print("[R10] no retired-vendor (Gemini) names")
@@ -306,6 +335,41 @@ if misroutes:
         fail(m)
 else:
     ok("no first-party model served under the wrong native vendor prefix")
+
+# ---- R14: schema-key validity (additionalProperties:false) ------------------
+# The single check that would have caught the 'models'/'enabled' errors: every
+# agent, category, and model-ref object may only use keys the v4.19.4 schema
+# permits. This mirrors what `oh-my-openagent doctor` enforces.
+print("[R14] only schema-allowed keys")
+key_bad = []
+for an, a in agents.items():
+    for k in a:
+        if k not in AGENT_KEYS:
+            key_bad.append(f"agents.{an}: unknown key '{k}' (not in v4.19.4 schema)")
+    for i, m in enumerate(a.get("fallback_models", []) if isinstance(a.get("fallback_models"), list) else []):
+        if isinstance(m, dict):
+            for k in m:
+                if k not in MODELREF_KEYS:
+                    key_bad.append(f"agents.{an}.fallback_models[{i}]: unknown key '{k}'")
+    uw = a.get("ultrawork")
+    if isinstance(uw, dict):
+        for k in uw:
+            if k not in MODELREF_KEYS:
+                key_bad.append(f"agents.{an}.ultrawork: unknown key '{k}'")
+for cn, c in cats.items():
+    for k in c:
+        if k not in CATEGORY_KEYS:
+            key_bad.append(f"categories.{cn}: unknown key '{k}'")
+    for i, m in enumerate(c.get("models", []) if isinstance(c.get("models"), list) else []):
+        if isinstance(m, dict):
+            for k in m:
+                if k not in MODELREF_KEYS:
+                    key_bad.append(f"categories.{cn}.models[{i}]: unknown key '{k}'")
+if key_bad:
+    for m in key_bad:
+        fail(m)
+else:
+    ok("all agent/category/model-ref keys are schema-allowed")
 
 # ---- result -----------------------------------------------------------------
 print()

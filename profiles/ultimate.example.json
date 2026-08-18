@@ -22,7 +22,7 @@
       ],
       "ultrawork": {
         "model": "apiyi/gpt-5.6-sol",
-        "reasoning": "ultra"
+        "reasoning": "max"
       }
     },
     "oracle": {
@@ -212,7 +212,7 @@
       "models": [
         {
           "model": "apiyi/gpt-5.6-sol",
-          "reasoning": "ultra"
+          "reasoning": "max"
         },
         {
           "model": "moonshotai/kimi-k3",
