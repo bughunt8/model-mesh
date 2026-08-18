@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.3
+
+### Changed
+- `scripts/validate-full-config.py`: tightened rule **R12** from loose substring matching to exact per-provider model-name matching, so a near-miss typo in a model name (a valid model family with an invalid version/variant suffix) no longer slips through.
+
+### Added
+- `scripts/validate-full-config.py`: new rule **R13** (cross-vendor route check) flags a first-party model served under the wrong native vendor prefix (a `ProviderX/model` where `model` belongs to a different first-party vendor). Relay/aggregator provider prefixes are exempt by design — a relay may legitimately mirror many vendors and their full coverage is not enumerable, so R13 makes no negative claim about relay routes to avoid false failures. It is the honest, non-guessing complement to R12's name-validity check.
+
 ## 1.1.2
 
 ### Added
