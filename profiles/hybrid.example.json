@@ -39,10 +39,6 @@
         {
           "model": "deepseek/deepseek-v4-pro",
           "reasoning": "max"
-        },
-        {
-          "model": "zai-coding-plan/glm-5.3",
-          "reasoning": "high"
         }
       ]
     },
@@ -112,7 +108,7 @@
           "reasoning": "high"
         },
         {
-          "model": "opencode/qwen3.7-plus"
+          "model": "opencode/mimo-v2.5-free"
         }
       ]
     },
@@ -225,6 +221,9 @@
         {
           "model": "apiyi/gpt-5.6-terra",
           "reasoning": "medium"
+        },
+        {
+          "model": "opencode/mimo-v2.5-free"
         }
       ]
     },

@@ -37,10 +37,6 @@
         {
           "model": "ProviderC/open-reason-xl",
           "reasoning": "max"
-        },
-        {
-          "model": "ProviderD/comm-xl",
-          "reasoning": "high"
         }
       ]
     },
@@ -110,7 +106,7 @@
           "reasoning": "high"
         },
         {
-          "model": "ProviderB/gen-pro"
+          "model": "ProviderB/open-coder"
         }
       ]
     },
@@ -223,6 +219,9 @@
         {
           "model": "ProviderA/flagship-mid",
           "reasoning": "medium"
+        },
+        {
+          "model": "ProviderB/open-coder"
         }
       ]
     },

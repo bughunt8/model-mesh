@@ -171,6 +171,24 @@ for prof_file in _profile_files:
             if "variant" in m: bad.append(f"agents.{an} fallback variant")
     for cn, c in d.get("categories", {}).items():
         if "models" not in c: bad.append(f"categories.{cn} missing models[]")
+    # Duplicate-rung check. On the genericized profiles this catches real bugs
+    # (a fallback repeating the primary or an earlier rung is useless). We skip
+    # *.example.json because two DISTINCT placeholders can legitimately resolve
+    # to the same real model under a given mapping (a mapping collapse, not a bug).
+    if not prof_file.endswith(".example.json"):
+        for an, a in d.get("agents", {}).items():
+            chain = [a.get("model")] + [m.get("model") for m in a.get("fallback_models", [])]
+            seen = set()
+            for i, mid in enumerate(chain):
+                if mid in seen:
+                    where = "primary" if i == 0 else f"fallback[{i-1}]"
+                    bad.append(f"agents.{an}: duplicate '{mid}' at {where} (fallback must differ from earlier rungs)")
+                seen.add(mid)
+        for cn, c in d.get("categories", {}).items():
+            ms = [m.get("model") for m in c.get("models", [])]
+            for x in set(ms):
+                if ms.count(x) > 1:
+                    bad.append(f"categories.{cn}: duplicate '{x}'")
     if bad:
         for b in bad: fail(f"{prof}.json: {b}")
     else:

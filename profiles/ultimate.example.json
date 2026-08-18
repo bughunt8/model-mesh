@@ -94,7 +94,7 @@
       "model": "deepseek/deepseek-v4-flash",
       "fallback_models": [
         {
-          "model": "opencode/big-pickle"
+          "model": "opencode/mimo-v2.5-free"
         }
       ]
     },
@@ -215,7 +215,7 @@
           "reasoning": "ultra"
         },
         {
-          "model": "apiyi/gpt-5.6-sol",
+          "model": "moonshotai/kimi-k3",
           "reasoning": "max"
         },
         {
@@ -246,6 +246,9 @@
         },
         {
           "model": "opencode/qwen3.8-max"
+        },
+        {
+          "model": "opencode/mimo-v2.5-free"
         }
       ]
     },

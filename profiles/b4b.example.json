@@ -96,6 +96,9 @@
         },
         {
           "model": "opencode/qwen3.7-plus"
+        },
+        {
+          "model": "opencode/mimo-v2.5-free"
         }
       ]
     },
@@ -210,6 +213,9 @@
         },
         {
           "model": "opencode/qwen3.7-plus"
+        },
+        {
+          "model": "opencode/mimo-v2.5-free"
         }
       ]
     },
@@ -247,6 +253,9 @@
         },
         {
           "model": "deepseek/deepseek-v4-flash"
+        },
+        {
+          "model": "opencode/mimo-v2.5-free"
         }
       ]
     },

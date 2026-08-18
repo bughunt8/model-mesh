@@ -34,6 +34,7 @@ You map placeholders to whatever you actually run. The **roles** are what matter
 | `gen-pro` | Concise generalist | Planning, writing, visual-engineering |
 | `gen-flash` | Fast utility | Low-latency loop steps |
 | `util-misc` | Misc utility | Backup rung |
+| `open-coder` | Token-efficient open-weight coder | Coding/open fallback rung (`deep`, coder agents) |
 | `retrieval-mid` | Retrieval/librarian | Fast retrieval role |
 | `creative-mid` | Creative generalist | Artistry role |
 | `budget-low` | Cheapest general | unspecified-low |

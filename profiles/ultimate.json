@@ -92,7 +92,7 @@
       "model": "ProviderB/gen-flash",
       "fallback_models": [
         {
-          "model": "ProviderB/util-misc"
+          "model": "ProviderB/open-coder"
         }
       ]
     },
@@ -213,7 +213,7 @@
           "reasoning": "ultra"
         },
         {
-          "model": "ProviderA/flagship-xl",
+          "model": "ProviderE/coder-xl",
           "reasoning": "max"
         },
         {
@@ -244,6 +244,9 @@
         },
         {
           "model": "ProviderB/flagship-open"
+        },
+        {
+          "model": "ProviderB/open-coder"
         }
       ]
     },

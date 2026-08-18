@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.1.2
+
+### Added
+- **MiMo across the profiles.** New `open-coder` placeholder (`opencode/mimo-v2.5-free`; the full deployable example uses `mimo-v2.5-pro` via the tokeness relay) — a token-efficient open-weight coder wired as a coding/open fallback rung in `deep` (all profiles), on `atlas`/`sisyphus-junior` open backups, and in `b4b`'s `unspecified-low`.
+
+### Fixed
+- Removed two pre-existing duplicate fallback rungs in the genericized profiles (`ultimate` `ultrabrain` had `flagship-xl` twice → 2nd is now `coder-xl`; `hybrid` `oracle` had `comm-xl` twice → trailing duplicate dropped), plus a duplicate `gen-pro` on `hybrid` `atlas`.
+- Replaced the invalid `tokeness/big-pickle` rung in the full config with the MiMo relay model (`big-pickle` is OpenCode-Zen-exclusive, not carried by a relay).
+
+### Changed
+- `.github/checks.py`: profile schema-check now also fails on duplicate fallback rungs in the genericized `*.json` profiles (example files are exempt because distinct placeholders may legitimately collapse to the same real model under a mapping).
+- `scripts/validate-full-config.py`: added rule R12 (model-ID validity against a known catalog; Zen-exclusive codenames rejected under relay/native prefixes).
+
 ## 1.1.1
 
 ### Changed - model refresh (Aug 2026)

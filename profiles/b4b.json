@@ -94,6 +94,9 @@
         },
         {
           "model": "ProviderB/gen-pro"
+        },
+        {
+          "model": "ProviderB/open-coder"
         }
       ]
     },
@@ -208,6 +211,9 @@
         },
         {
           "model": "ProviderB/gen-pro"
+        },
+        {
+          "model": "ProviderB/open-coder"
         }
       ]
     },
@@ -245,6 +251,9 @@
         },
         {
           "model": "ProviderB/gen-flash"
+        },
+        {
+          "model": "ProviderB/open-coder"
         }
       ]
     },
