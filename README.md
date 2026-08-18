@@ -9,6 +9,8 @@ Two ideas, fused:
 
 > **Design heuristic (not a proven benchmark):** the right model in the right role, following a disciplined loop, tends to beat one model free-styling. These are design opinions, not measured guarantees — see [Claims & limits](#claims--limits).
 
+> **What's new in v1.1.2:** added a token-efficient open-weight coder (`open-coder`, mapped to MiMo) as a coding/open fallback rung across **all three** profiles — in the `deep` category everywhere, on `atlas`/`sisyphus-junior` open backups, and in `b4b`'s `unspecified-low`. Also fixed pre-existing duplicate fallback rungs and added a CI guard so duplicate rungs and invalid model IDs now fail the build. See [`CHANGELOG.md`](CHANGELOG.md).
+>
 > **What's new in v1.1.1 (Aug 2026 model refresh):** the open-weight reasoning lifeline (`open-reason-xl`) moved to its new GA build (API ID unchanged); the communicator (`comm-xl`) upgraded to its newest release across all profiles; a now-GA frontier open flagship (`flagship-open`) and an independent 5th-vendor diversification fallback (`div-flagship`, `ProviderG`) were added to **ultimate only** (both exceed the cost cap); the previous utility-vendor family was retired and replaced role-aware by `gen-pro` / `gen-flash`. Concrete IDs, prices, and citations are in [`docs/EXAMPLE-MAPPING.md`](docs/EXAMPLE-MAPPING.md); full detail in [`CHANGELOG.md`](CHANGELOG.md).
 
 ## What's genericized vs kept
@@ -113,6 +115,8 @@ See [`docs/ROUTING.md`](docs/ROUTING.md). Each agent role maps to a behavioral *
 Hybrid's distinguishing choice: it keeps the flagship only for the **architect** (`oracle`), the highest-leverage advisory role, while dropping the implementer/reviewer to the mid tier.
 
 Ultimate-only (v1.1.1): the coding agents (`atlas`, `prometheus`) carry two extra over-cap fallback rungs — `flagship-open` (GA frontier open flagship) and `div-flagship` (independent 5th-vendor diversification, `ProviderG`) — for resilience when the primaries rate-limit. `hephaestus` deliberately keeps a flagship-native-only fallback chain. See [`docs/PROVIDERS.md`](docs/PROVIDERS.md) and [`docs/EXAMPLE-MAPPING.md`](docs/EXAMPLE-MAPPING.md).
+
+Open-coder fallback (v1.1.2): `open-coder` (a token-efficient open-weight coder, mapped to MiMo) is wired as a coding/open fallback rung in the `deep` category of **all three** profiles, on the `atlas` and `sisyphus-junior` open backups, and — most heavily — in the cost-preferenced `b4b` profile's `unspecified-low`. It is chosen for token efficiency, which is what a resilience rung should optimize for, rather than as a primary. Duplicate fallback rungs are now rejected by CI in the genericized profiles.
 
 ---
 
