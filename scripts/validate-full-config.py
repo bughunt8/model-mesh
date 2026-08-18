@@ -25,6 +25,10 @@ Rules enforced:
   R11 $schema is pinned to a version tag (not the moving `dev` branch).
   R12 every model ID resolves to a known catalog entry (opencode/* must be an
       OpenCode Zen model; 'big-pickle' is Zen-exclusive and invalid on a relay).
+  R13 no known cross-vendor mis-route: a first-party model under the WRONG
+      native vendor prefix (e.g. deepseek/kimi-k3). Relay/aggregator prefixes
+      (apiyi, tokeness, opencode) are exempt — we make no negative claim about
+      what a relay may legitimately mirror, to avoid false failures.
 """
 import io, json, os, re, sys
 
@@ -94,6 +98,33 @@ def model_id_valid(full):
     if name.lower() == "big-pickle":
         return False
     return name.lower() in {n.lower() for n in RELAY_NATIVE_NAMES}
+
+# --- R13: known cross-vendor mismatches -------------------------------------
+# We CANNOT enumerate everything each relay carries (a relay may legitimately
+# mirror many vendors), so R12 stays name-only and R13 flags ONLY the routes we
+# can affirmatively call wrong: a first-party model served under a DIFFERENT
+# first-party vendor's prefix (e.g. deepseek/kimi-k3, minimax/glm-5.3). Relay
+# prefixes (apiyi, tokeness, opencode) are exempt — they aggregate many vendors,
+# so we make no negative claim about them and avoid false failures.
+NATIVE_VENDORS = {"deepseek", "moonshotai", "minimax", "zai-coding-plan"}
+# model-name prefix -> the ONLY native vendor that may serve it
+NATIVE_OWNER = {
+    "deepseek-": "deepseek",
+    "kimi-": "moonshotai",
+    "minimax-": "minimax",
+    "glm-": "zai-coding-plan",
+}
+
+def route_mismatch(full):
+    """Return an explanation string if this is a known-wrong native route, else None."""
+    prov, _, name = full.partition("/")
+    if prov not in NATIVE_VENDORS:
+        return None  # relay/aggregator: no negative claim
+    nl = name.lower()
+    for pfx, owner in NATIVE_OWNER.items():
+        if nl.startswith(pfx) and prov != owner:
+            return f"{full}: '{name}' is a {owner} model, not servable under native '{prov}/'"
+    return None
 
 fails = 0
 def ok(m):  print(f"  ok   {m}")
@@ -265,6 +296,16 @@ if bad_ids:
              f"(opencode/* must be a Zen model; big-pickle is Zen-exclusive)")
 else:
     ok("all model IDs resolve to a known catalog entry")
+
+# ---- R13: known cross-vendor route mismatches -------------------------------
+print("[R13] no known cross-vendor native mis-routes")
+misroutes = [route_mismatch(e.get("model", "")) for _, e in iter_entries()]
+misroutes = [m for m in misroutes if m]
+if misroutes:
+    for m in misroutes:
+        fail(m)
+else:
+    ok("no first-party model served under the wrong native vendor prefix")
 
 # ---- result -----------------------------------------------------------------
 print()
