@@ -23,6 +23,8 @@ Rules enforced:
   R9  momus uses `enabled` (not the invalid `disable` key).
   R10 No leftover retired-vendor names (Gemini) anywhere in the config.
   R11 $schema is pinned to a version tag (not the moving `dev` branch).
+  R12 every model ID resolves to a known catalog entry (opencode/* must be an
+      OpenCode Zen model; 'big-pickle' is Zen-exclusive and invalid on a relay).
 """
 import io, json, os, re, sys
 
@@ -32,6 +34,52 @@ path = sys.argv[1] if len(sys.argv) > 1 else DEFAULT
 
 ALLOWED_REASONING = {"low", "medium", "high", "max", "ultra"}
 RETIRED_VENDORS = re.compile(r"\bgemini\b", re.I)  # Gemini was retired in v1.1.1
+
+# --- Known-valid model catalog (R12) ----------------------------------------
+# Guards against invalid IDs like 'tokeness/big-pickle' (big-pickle is an
+# OpenCode-Zen-exclusive cloaked model, not a relay model). Two layers:
+#  1) OPENCODE_ZEN: exact model names published in the OpenCode Zen catalog,
+#     valid under the 'opencode/' provider (https://opencode.ai/docs/zen/).
+#  2) RELAY_OK / NATIVE_OK: model *name substrings* known to be carried by the
+#     relay/native providers used here (tokeness.io relay; deepseek / moonshotai
+#     / minimax / zai-coding-plan native APIs). Substring match keeps this robust
+#     to minor version bumps while still catching a nonexistent codename.
+OPENCODE_ZEN = {
+    "gpt-5.6-sol","gpt-5.6-terra","gpt-5.6-luna","gpt-5.5","gpt-5.5-pro","gpt-5.4",
+    "gpt-5.4-pro","gpt-5.4-mini","gpt-5.4-nano","gpt-5.3-codex","gpt-5.3-codex-spark",
+    "gpt-5.2","gpt-5.2-codex","gpt-5.1","gpt-5.1-codex","gpt-5.1-codex-max",
+    "gpt-5.1-codex-mini","gpt-5","gpt-5-codex","gpt-5-nano",
+    "claude-fable-5","claude-opus-5","claude-opus-4-8","claude-opus-4-7",
+    "claude-opus-4-6","claude-opus-4-5","claude-sonnet-5","claude-sonnet-4-6",
+    "claude-sonnet-4-5","claude-haiku-4-5",
+    "gemini-3.7-flash","gemini-3.6-flash","gemini-3.5-flash","gemini-3.5-flash-lite",
+    "gemini-3.1-pro","gemini-3-flash","grok-4.6","grok-4.5","grok-build-0.1",
+    "muse-spark-1.2","qwen3.7-max","qwen3.7-plus","qwen3.6-plus","qwen3.5-plus",
+    "deepseek-v4-pro","deepseek-v4-flash","minimax-m3","minimax-m2.7","minimax-m2.5",
+    "glm-5.2","glm-5.1","glm-5","kimi-k2.5","kimi-k2.6","kimi-k2.7-code","kimi-k3",
+    "big-pickle","mimo-v2.5-free","hy3-free","laguna-s-2.1-free",
+    "nemotron-3-ultra-free","nemotron-3.5-lightning-free","deepseek-v4-flash-free",
+}
+# Model-name families accepted for non-opencode providers (relay + native).
+# 'big-pickle' is deliberately EXCLUDED here: it is Zen-exclusive, so it is only
+# valid under 'opencode/', never under a relay/native prefix.
+OK_NAME_SUBSTRINGS = (
+    "gpt-5.", "claude-", "gemini-", "grok-", "qwen3.", "kimi-k", "glm-5",
+    "deepseek-v4", "minimax", "mimo-",
+)
+
+def model_id_valid(full):
+    prov, _, name = full.partition("/")
+    if not name:
+        return False
+    if prov == "opencode":
+        return name in OPENCODE_ZEN
+    # relay / native providers: accept known family substrings (case-insensitive),
+    # but never a Zen-exclusive codename.
+    if name.lower() == "big-pickle":
+        return False
+    nl = name.lower()
+    return any(s in nl for s in OK_NAME_SUBSTRINGS)
 
 fails = 0
 def ok(m):  print(f"  ok   {m}")
@@ -189,6 +237,20 @@ elif schema:
     fail(f"$schema not pinned to a vX.Y.Z tag: {schema}")
 else:
     fail("$schema missing")
+
+# ---- R12: model-ID validity -------------------------------------------------
+print("[R12] model IDs are valid")
+bad_ids = []
+for ctx, e in iter_entries():
+    mid = e.get("model", "")
+    if not model_id_valid(mid):
+        bad_ids.append((ctx, mid))
+if bad_ids:
+    for ctx, mid in bad_ids:
+        fail(f"{ctx}: invalid/unknown model ID '{mid}' "
+             f"(opencode/* must be a Zen model; big-pickle is Zen-exclusive)")
+else:
+    ok("all model IDs resolve to a known catalog entry")
 
 # ---- result -----------------------------------------------------------------
 print()

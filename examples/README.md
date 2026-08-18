@@ -14,6 +14,14 @@ no duplicate/degenerate fallback rungs, unused `providerConcurrency` entries rem
 `momus` uses `enabled` (not `disable`), single canonical `codegraph` per section,
 schema pinned to `v4.19.4`.
 
+Model-ID validity (Aug 2026): this example routes through the `tokeness` relay
+(an OpenAI-compatible hub) plus several native provider APIs. The former
+`tokeness/big-pickle` rung was removed — `big-pickle` is an OpenCode-Zen-exclusive
+cloaked model and is not carried by a relay — and replaced with the MiMo open
+coder on the relay, which also adds a token-efficient open-coder fallback rung.
+The validator's rule R12 enforces this: any `opencode/*` model must be a published
+Zen model, and Zen-exclusive codenames are rejected under any other provider prefix.
+
 ## Validation
 
 Run `python scripts/validate-full-config.py` to check this file against all of the
