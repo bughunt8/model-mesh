@@ -60,13 +60,28 @@ OPENCODE_ZEN = {
     "big-pickle","mimo-v2.5-free","hy3-free","laguna-s-2.1-free",
     "nemotron-3-ultra-free","nemotron-3.5-lightning-free","deepseek-v4-flash-free",
 }
-# Model-name families accepted for non-opencode providers (relay + native).
-# 'big-pickle' is deliberately EXCLUDED here: it is Zen-exclusive, so it is only
-# valid under 'opencode/', never under a relay/native prefix.
-OK_NAME_SUBSTRINGS = (
-    "gpt-5.", "claude-", "gemini-", "grok-", "qwen3.", "kimi-k", "glm-5",
-    "deepseek-v4", "minimax", "mimo-",
-)
+# Exact model NAMES valid on non-opencode providers (relays mirror these IDs;
+# native providers publish them). Matched case-insensitively but EXACTLY, so a
+# near-miss typo like 'deepseek-v4-max' or a wrong-cased 'MiniMax-M3' on a relay
+# that doesn't carry it is caught. Extend deliberately as real models ship.
+# 'big-pickle' is intentionally absent: it is Zen-exclusive (opencode/ only).
+RELAY_NATIVE_NAMES = {
+    # GPT family (apiyi / tokeness relays)
+    "gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna", "gpt-5.5", "gpt-5.5-pro",
+    "gpt-5.4", "gpt-5.4-pro",
+    # Qwen (relays)
+    "qwen3.8-max", "qwen3.8-max-free", "qwen3.7-max", "qwen3.7-plus", "qwen3.6-plus",
+    # DeepSeek (native)  -- NOTE: only pro/flash exist; 'deepseek-v4-max' is invalid
+    "deepseek-v4-pro", "deepseek-v4-flash",
+    # Moonshot / Kimi (native)
+    "kimi-k3", "kimi-k2.7-code", "kimi-k2.6", "kimi-k2.5",
+    # Z.ai / GLM (native subscription)
+    "glm-5.3", "glm-5.2", "glm-5-turbo", "glm-5.1", "glm-5",
+    # MiniMax (native) -- canonical casing 'MiniMax-M3'
+    "minimax-m3", "minimax-m2.7",
+    # MiMo (relay) / Grok (relay)
+    "mimo-v2.5-pro", "mimo-v2.5-free", "grok-4.6", "grok-4.5",
+}
 
 def model_id_valid(full):
     prov, _, name = full.partition("/")
@@ -74,12 +89,11 @@ def model_id_valid(full):
         return False
     if prov == "opencode":
         return name in OPENCODE_ZEN
-    # relay / native providers: accept known family substrings (case-insensitive),
-    # but never a Zen-exclusive codename.
+    # relay / native providers: exact known model name (case-insensitive),
+    # never a Zen-exclusive codename.
     if name.lower() == "big-pickle":
         return False
-    nl = name.lower()
-    return any(s in nl for s in OK_NAME_SUBSTRINGS)
+    return name.lower() in {n.lower() for n in RELAY_NATIVE_NAMES}
 
 fails = 0
 def ok(m):  print(f"  ok   {m}")
