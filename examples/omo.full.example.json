@@ -1,0 +1,327 @@
+{
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/v4.19.4/assets/omo.schema.json",
+  "[opencode]": {
+    "team_mode": {
+      "enabled": true,
+      "tmux_visualization": true
+    },
+    "agents": {
+      "hephaestus": {
+        "prompt_append": "You are the primary implementation agent. Own the codebase but delegate and review. Explore, decide, execute. Use LSP and AST-grep aggressively.",
+        "ultrawork": {
+          "model": "deepseek/deepseek-v4-pro",
+          "reasoning": "max"
+        },
+        "model": "tokeness/gpt-5.6-luna",
+        "reasoning": "max",
+        "fallback_models": [
+          {
+            "model": "apiyi/gpt-5.6-sol",
+            "reasoning": "medium"
+          },
+          {
+            "model": "apiyi/gpt-5.6-terra",
+            "reasoning": "medium"
+          }
+        ]
+      },
+      "oracle": {
+        "model": "apiyi/gpt-5.6-sol",
+        "reasoning": "high",
+        "fallback_models": [
+          {
+            "model": "apiyi/gpt-5.6-terra",
+            "reasoning": "high"
+          },
+          {
+            "model": "zai-coding-plan/glm-5.3",
+            "reasoning": "max"
+          },
+          {
+            "model": "deepseek/deepseek-v4-pro",
+            "reasoning": "max"
+          },
+          {
+            "model": "tokeness/qwen3.7-plus"
+          }
+        ]
+      },
+      "prometheus": {
+        "model": "moonshotai/kimi-k3",
+        "fallback_models": [
+          {
+            "model": "zai-coding-plan/glm-5.3"
+          },
+          {
+            "model": "apiyi/gpt-5.6-terra",
+            "reasoning": "high"
+          },
+          {
+            "model": "tokeness/qwen3.8-max"
+          }
+        ]
+      },
+      "metis": {
+        "model": "zai-coding-plan/glm-5.3",
+        "fallback_models": [
+          {
+            "model": "moonshotai/kimi-k2.7-code"
+          },
+          {
+            "model": "deepseek/deepseek-v4-pro"
+          }
+        ]
+      },
+      "momus": {
+        "enabled": true,
+        "prompt_append": "You are Momus. Evaluate execution strategies strictly against the current repository state. You must explicitly look for structural inconsistencies, architectural violations, and missing imports. If a plan is valid, output 'PLAN_APPROVED'. If invalid, output 'PLAN_REJECTED' followed by a bulleted critique.",
+        "tools": {
+          "read": true,
+          "grep": true,
+          "glob": true,
+          "list": true,
+          "bash": true,
+          "edit": false,
+          "write": false,
+          "patch": false
+        },
+        "model": "tokeness/gpt-5.6-terra",
+        "reasoning": "max",
+        "fallback_models": [
+          {
+            "model": "deepseek/deepseek-v4-pro"
+          },
+          {
+            "model": "apiyi/gpt-5.6-sol",
+            "reasoning": "medium"
+          },
+          {
+            "model": "tokeness/qwen3.7-plus"
+          }
+        ]
+      },
+      "atlas": {
+        "model": "moonshotai/kimi-k3",
+        "fallback_models": [
+          {
+            "model": "zai-coding-plan/glm-5.3"
+          },
+          {
+            "model": "tokeness/qwen3.7-plus"
+          },
+          {
+            "model": "tokeness/qwen3.8-max"
+          }
+        ]
+      },
+      "sisyphus-junior": {
+        "model": "deepseek/deepseek-v4-flash",
+        "reasoning": "max",
+        "fallback_models": [
+          {
+            "model": "moonshotai/kimi-k2.7-code"
+          },
+          {
+            "model": "tokeness/big-pickle"
+          },
+          {
+            "model": "zai-coding-plan/glm-5-turbo"
+          }
+        ]
+      },
+      "sisyphus": {
+        "ultrawork": {
+          "model": "deepseek/deepseek-v4-pro",
+          "reasoning": "max"
+        },
+        "prompt_append": "Delegate heavily to hephaestus for implementation. Parallelize exploration.",
+        "model": "zai-coding-plan/glm-5.3",
+        "reasoning": "high",
+        "fallback_models": [
+          {
+            "model": "moonshotai/kimi-k2.7-code"
+          },
+          {
+            "model": "tokeness/qwen3.7-plus"
+          }
+        ]
+      },
+      "librarian": {
+        "model": "tokeness/qwen3.6-plus",
+        "fallback_models": [
+          {
+            "model": "deepseek/deepseek-v4-flash"
+          },
+          {
+            "model": "moonshotai/kimi-k2.7-code"
+          }
+        ]
+      },
+      "explore": {
+        "model": "deepseek/deepseek-v4-flash",
+        "reasoning": "max",
+        "fallback_models": [
+          {
+            "model": "moonshotai/kimi-k2.7-code"
+          }
+        ]
+      },
+      "multimodal-looker": {
+        "model": "minimax/MiniMax-M3",
+        "fallback_models": [
+          {
+            "model": "tokeness/qwen3.7-plus"
+          },
+          {
+            "model": "zai-coding-plan/glm-5-turbo"
+          }
+        ]
+      }
+    },
+    "categories": {
+      "visual-engineering": {
+        "models": [
+          {
+            "model": "tokeness/qwen3.7-plus"
+          },
+          {
+            "model": "minimax/MiniMax-M3"
+          },
+          {
+            "model": "deepseek/deepseek-v4-pro"
+          }
+        ]
+      },
+      "ultrabrain": {
+        "models": [
+          {
+            "model": "zai-coding-plan/glm-5.3",
+            "reasoning": "max"
+          },
+          {
+            "model": "apiyi/gpt-5.6-terra",
+            "reasoning": "high"
+          },
+          {
+            "model": "moonshotai/kimi-k3"
+          }
+        ]
+      },
+      "deep": {
+        "models": [
+          {
+            "model": "zai-coding-plan/glm-5.3"
+          },
+          {
+            "model": "tokeness/gpt-5.6-terra",
+            "reasoning": "medium"
+          },
+          {
+            "model": "moonshotai/kimi-k3"
+          },
+          {
+            "model": "moonshotai/kimi-k2.7-code"
+          }
+        ]
+      },
+      "artistry": {
+        "models": [
+          {
+            "model": "tokeness/qwen3.7-plus"
+          },
+          {
+            "model": "apiyi/qwen3.7-plus"
+          },
+          {
+            "model": "minimax/MiniMax-M3"
+          }
+        ]
+      },
+      "quick": {
+        "models": [
+          {
+            "model": "deepseek/deepseek-v4-flash"
+          },
+          {
+            "model": "tokeness/gpt-5.6-luna",
+            "reasoning": "max"
+          },
+          {
+            "model": "zai-coding-plan/glm-5-turbo"
+          }
+        ]
+      },
+      "unspecified-low": {
+        "models": [
+          {
+            "model": "deepseek/deepseek-v4-flash"
+          },
+          {
+            "model": "moonshotai/kimi-k2.7-code"
+          },
+          {
+            "model": "tokeness/big-pickle"
+          }
+        ]
+      },
+      "unspecified-high": {
+        "models": [
+          {
+            "model": "apiyi/gpt-5.6-terra",
+            "reasoning": "high"
+          },
+          {
+            "model": "deepseek/deepseek-v4-pro"
+          },
+          {
+            "model": "moonshotai/kimi-k2.7-code"
+          }
+        ]
+      },
+      "writing": {
+        "models": [
+          {
+            "model": "tokeness/qwen3.7-plus"
+          },
+          {
+            "model": "deepseek/deepseek-v4-flash"
+          }
+        ]
+      }
+    },
+    "background_task": {
+      "defaultConcurrency": 3,
+      "staleTimeoutMs": 60000,
+      "providerConcurrency": {
+        "zai-coding-plan": 10,
+        "tokeness": 10
+      },
+      "modelConcurrency": {
+        "tokeness/gpt-5.6-terra": 2,
+        "tokeness/gpt-5.6-sol": 3,
+        "zai-coding-plan/glm-5.3": 3
+      }
+    },
+    "runtime_fallback": {
+      "enabled": true,
+      "retry_on_errors": [
+        429,
+        503,
+        529
+      ],
+      "max_fallback_attempts": 3,
+      "cooldown_seconds": 60,
+      "timeout_seconds": 30,
+      "notify_on_fallback": true
+    },
+    "codegraph": {}
+  },
+  "_migrations": [
+    "2026-07-opencode-config-unification",
+    "2026-08-reasoning-unification",
+    "2026-07-codex-config-jsonc"
+  ],
+  "[codex]": {
+    "codegraph": {}
+  }
+}
