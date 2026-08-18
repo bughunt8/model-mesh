@@ -9,11 +9,13 @@ Two ideas, fused:
 
 > **Design heuristic (not a proven benchmark):** the right model in the right role, following a disciplined loop, tends to beat one model free-styling. These are design opinions, not measured guarantees — see [Claims & limits](#claims--limits).
 
+> **What's new in v1.1.1 (Aug 2026 model refresh):** the open-weight reasoning lifeline (`open-reason-xl`) moved to its new GA build (API ID unchanged); the communicator (`comm-xl`) upgraded to its newest release across all profiles; a now-GA frontier open flagship (`flagship-open`) and an independent 5th-vendor diversification fallback (`div-flagship`, `ProviderG`) were added to **ultimate only** (both exceed the cost cap); the previous utility-vendor family was retired and replaced role-aware by `gen-pro` / `gen-flash`. Concrete IDs, prices, and citations are in [`docs/EXAMPLE-MAPPING.md`](docs/EXAMPLE-MAPPING.md); full detail in [`CHANGELOG.md`](CHANGELOG.md).
+
 ## What's genericized vs kept
 
 This repo is **model-agnostic**. To be explicit about what that means:
 
-- **Genericized (placeholders):** every provider and model name → `ProviderA…ProviderF` and role-named models like `flagship-xl`, `coder-mid`. You map these to your real models. See [`docs/PROVIDERS.md`](docs/PROVIDERS.md).
+- **Genericized (placeholders):** every provider and model name → `ProviderA…ProviderG` and role-named models like `flagship-xl`, `coder-mid`. You map these to your real models. See [`docs/PROVIDERS.md`](docs/PROVIDERS.md).
 - **Kept (real framework names, on purpose):** `oh-my-openagent`, `opencode`, the `[opencode]` config key, and the schema URL. These are the actual framework identifiers the config **must** contain to load. They are not vendor model names; keeping them is what makes the config deployable.
 
 CI enforces a denylist of real model/provider names (`.github/checks.py`); `oh-my-openagent` and `opencode` are the only allowed framework names.
@@ -109,6 +111,8 @@ See [`docs/ROUTING.md`](docs/ROUTING.md). Each agent role maps to a behavioral *
 | orchestration (`sisyphus`) | `comm-xl` | `comm-xl` | `comm-xl` |
 
 Hybrid's distinguishing choice: it keeps the flagship only for the **architect** (`oracle`), the highest-leverage advisory role, while dropping the implementer/reviewer to the mid tier.
+
+Ultimate-only (v1.1.1): the coding agents (`atlas`, `prometheus`) carry two extra over-cap fallback rungs — `flagship-open` (GA frontier open flagship) and `div-flagship` (independent 5th-vendor diversification, `ProviderG`) — for resilience when the primaries rate-limit. `hephaestus` deliberately keeps a flagship-native-only fallback chain. See [`docs/PROVIDERS.md`](docs/PROVIDERS.md) and [`docs/EXAMPLE-MAPPING.md`](docs/EXAMPLE-MAPPING.md).
 
 ---
 
