@@ -9,7 +9,7 @@
 - **Stale full-example rungs.** The full deployable example still referenced a retired cheap communicator on three chains; replaced with the current cheap communicator/vision model and added to `modelConcurrency`.
 
 ### Added
-- **New cheap multimodal fallback role (`vision-lite`).** Added to `multimodal-looker` directly behind the vision primary in the metered profiles — a native-vision cheap model, so the first fallback keeps vision capability instead of degrading to a text-only rung. Documented in `docs/PROVIDERS.md` and the local provider map.
+- **New cheap multimodal fallback role (`vision-lite`).** Added to `multimodal-looker` directly behind the vision primary in the metered profiles — a native-vision cheap model, so the first fallback keeps vision capability instead of degrading to a text-only rung. Documented in `docs/PROVIDERS.md` and the local provider map. Its vision note now cites an **independent, ground-truth** vision benchmark (Roboflow Vision Evals: 66.3% overall, #23 of 34) rather than the vendor's self-reported MVBench/MMVU figures, which the note flags as unverified; the placement is documented as cost-first, not a capability claim.
 
 ### Changed
 - `.github/checks.py`: the duplicate-rung check now also runs on `*.example.json` (and now walks each agent's `ultrawork` slot too). With real IDs, a byte-identical model repeated in one chain is unambiguously a no-op bug; distinct placeholders that resolve to one model in *different* chains remain allowed.
