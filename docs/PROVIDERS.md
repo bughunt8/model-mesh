@@ -14,6 +14,7 @@ You map placeholders to whatever you actually run. The **roles** are what matter
 | `ProviderD` | Communicator-class / subscription provider | Your orchestration-model subscription |
 | `ProviderE` | Coding-specialist family provider | Your coding-model provider |
 | `ProviderF` | Multimodal / long-context provider | Your vision/long-context provider |
+| `ProviderG` | Independent diversification vendor (ultimate-only) | A 5th, independent vendor for outage resilience |
 
 ## Model placeholders (named by ROLE, not vendor)
 
@@ -29,6 +30,7 @@ You map placeholders to whatever you actually run. The **roles** are what matter
 | `coder-swarm` | Long-context coding, swarm-capable | Large low-risk subagent swarms |
 | `comm-xl` | Communicator-class orchestrator | Orchestration roles (sisyphus, metis) |
 | `comm-lite` | Cheap communicator | Fast orchestration / utility |
+| `vision-lite` | Cheap native-vision multimodal | multimodal-looker cheap fallback (behind `vision-xl`) |
 | `open-reason-xl` | Open-weight reasoning, SOTA | Non-proxy escalation lifeline |
 | `open-reason-lite` | Open-weight fast reasoner | Latency-sensitive subtasks |
 | `gen-pro` | Concise generalist | Planning, writing, visual-engineering |
@@ -57,7 +59,7 @@ Then either (a) hand-edit the config's model strings, or (b) run a find/replace 
 
 1. **Family fit beats raw rank.** Map each role to a model whose behavioral family matches (see `docs/ROUTING.md`).
 2. **Keep a non-flagship lifeline.** At least one fallback per critical agent should be a different provider than the primary, so a single provider outage does not stall the agent.
-3. **Cost-capped profiles honor the cap.** Models whose per-token cost exceeds the cap (`flagship-open`, `div-flagship`) appear in `ultimate` only; `hybrid`/`b4b` stay under the coder-xl cap. See `docs/EXAMPLE-MAPPING.md` for the concrete IDs and prices.
+3. **The policy budget cap is a preference for the cheap tiers, with named exemptions — not a hard per-slot ceiling.** The cap is a repo-chosen output-price ceiling ($4.65/1M in the shipped example mapping), **not** any single vendor's price — in particular not `coder-xl`'s, whose published output price ($15/1M) is well above it. It governs the **generalist, utility, and orchestration** rungs. Three things are deliberately **exempt**: (a) the flagship **coding** tier (`coder-xl`) on the agents/categories that do the hardest implementation — in `hybrid` that is `prometheus`/`atlas` primaries plus `deep`/`ultrabrain` fallbacks, in `b4b` only the `deep` fallback; (b) the read-only architect (`oracle`); (c) each agent's `ultrawork` escape hatch. Two placeholders exceed the cap and are additionally restricted to `ultimate` only because they add no capability the exempt coder does not already provide: `flagship-open` and `div-flagship`. See `docs/EXAMPLE-MAPPING.md` for the cap note, per-model prices, and the exact over-cap slot list.
 
 
 ## Worked example

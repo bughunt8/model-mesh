@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.1.5
+
+### Fixed
+- **Cap semantics corrected (docs).** Earlier notes described the metered-profile budget ceiling as "the `coder-xl` cost cap", implying it equalled that model's price. It does **not** — `coder-xl`'s published output price ($15/1M) is far above the ceiling. The ceiling is now documented as an explicit, editable **policy budget cap** independent of any vendor's list price, governing generalist/utility/orchestration rungs; the flagship coding tier (`coder-xl`), the architect (`oracle`), and each agent's `ultrawork` escape hatch are **named exemptions** that may exceed it. `docs/EXAMPLE-MAPPING.md` now carries an exemption table listing exactly which over-cap slots exist in the metered profiles, and every "under/over cap" claim was re-audited against the $4.65 number. (Previously the docs both under- and over-claimed: they called the cap a hard ceiling while shipping an over-cap flagship coder in the metered profiles.)
+- **`comm-xl` pricing note honesty.** The prior "assumption: pricing unchanged / per-token price not yet published" note is replaced with the now-published rate card. The communicator's newest release carries the **same unit price** as its predecessor (only publication is new, not a price change), and a verbosity caveat was added: measurably more output tokens per task can raise real cost-per-solved-task even at an unchanged unit price.
+- **No-op fallback rungs removed (mapping level).** Several `*.example.json` chains listed two distinct placeholders that resolved to the **same** real model in one chain (a retry that buys nothing). Root-caused in the example mapping, where two placeholder pairs had collapsed onto one model: `gen-flash` is remapped to a distinct fast gateway model (previously shared `open-reason-lite`'s target) and `creative-mid` to a distinct creative model (previously shared `gen-pro`'s target, and its first fix would have shared `retrieval-mid`'s — corrected). The genericized templates were left intact (the collapse was a property of the example mapping, not the templates), and the `.example.json` files were regenerated from the templates + corrected mapping. The remaining intentional alias (`comm-lite`/`vision-lite` → one cheap GLM model) never lands twice in a single chain.
+- **Stale full-example rungs.** The full deployable example still referenced a retired cheap communicator on three chains; replaced with the current cheap communicator/vision model and added to `modelConcurrency`.
+
+### Added
+- **New cheap multimodal fallback role (`vision-lite`).** Added to `multimodal-looker` directly behind the vision primary in the metered profiles — a native-vision cheap model, so the first fallback keeps vision capability instead of degrading to a text-only rung. Documented in `docs/PROVIDERS.md` and the local provider map.
+
+### Changed
+- `.github/checks.py`: the duplicate-rung check now also runs on `*.example.json` (and now walks each agent's `ultrawork` slot too). With real IDs, a byte-identical model repeated in one chain is unambiguously a no-op bug; distinct placeholders that resolve to one model in *different* chains remain allowed.
+- `.github/checks.py`: **new budget-cap placement rule** — an over-cap placeholder (`flagship-open`, `div-flagship`, `reasoner-xl`) that is not on the explicit metered-profile exemption list fails the build if it appears in `hybrid.json`/`b4b.json`. The flagship coding tier (`coder-xl`) is the documented exemption. This closes the gap where the metered profiles' cost policy was documented but unenforced.
+- `scripts/validate-full-config.py`: **R12** (model-ID catalog validity) now also runs on `profiles/*.example.json`, not just the full deployable example.
+
 ## 1.1.4
 
 ### Fixed
@@ -39,8 +55,8 @@
 ### Changed - model refresh (Aug 2026)
 (Concrete model IDs, prices, and benchmark citations live in `docs/EXAMPLE-MAPPING.md`; this public changelog uses role placeholders per the repo's placeholder-only convention.)
 - **`open-reason-xl` -> GA build:** the open-weight reasoning lifeline moved to its new general-availability build. The provider's API ID is unchanged, so no config edit was needed; large agentic-benchmark gains. Provider moved to peak/off-peak billing mid-August; still under the cost cap.
-- **`flagship-open` (new):** a new placeholder for the now-GA frontier-class open flagship replaces the retired preview last-resort rung. Its per-token output cost exceeds the `coder-xl` cap, so it is wired in `ultimate` only; `hybrid`/`b4b` use `gen-pro` in those slots.
-- **`comm-xl` upgraded:** migrated to the communicator vendor's newest release across all three profiles. Assumption: pricing unchanged (same subscription tier; per-token price not yet published), so the per-token cap does not gate it.
+- **`flagship-open` (new):** a new placeholder for the now-GA frontier-class open flagship replaces the retired preview last-resort rung. Its per-token output cost exceeds the policy budget cap (see v1.1.5 and `docs/EXAMPLE-MAPPING.md`), so it is wired in `ultimate` only; `hybrid`/`b4b` use `gen-pro` in those slots.
+- **`comm-xl` upgraded:** migrated to the communicator vendor's newest release across all three profiles. (Per-token pricing was later published — same unit price as the prior release, under the policy budget cap; see v1.1.5.)
 - **Retired the utility vendor family:** removed both former `util-pro`/`util-flash` models entirely. Role-aware replacements: `gen-pro` (planning/writing/visual/artistry generalist) and `gen-flash` (fast loop). High-stakes safety rungs on `oracle`/`momus`/`prometheus` were promoted to the strongest model not already in-chain rather than a flat swap.
 - **`div-flagship` (new, provider `ProviderG`):** an independent 5th-vendor diversification fallback added to `atlas` and `prometheus` in `ultimate` only (not `hephaestus`, which stays flagship-native-only). Rationale is independent-vendor resilience + token efficiency, not a raw benchmark lead. Cost > cap, hence ultimate only.
 - Updated `docs/EXAMPLE-MAPPING.md` and `docs/PROVIDERS.md` to match.

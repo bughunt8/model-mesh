@@ -87,7 +87,7 @@ OPENCODE_ZEN = {
     "claude-sonnet-4-5","claude-haiku-4-5",
     "gemini-3.7-flash","gemini-3.6-flash","gemini-3.5-flash","gemini-3.5-flash-lite",
     "gemini-3.1-pro","gemini-3-flash","grok-4.6","grok-4.5","grok-build-0.1",
-    "muse-spark-1.2","qwen3.7-max","qwen3.7-plus","qwen3.6-plus","qwen3.5-plus",
+    "muse-spark-1.2","qwen3.8-max","qwen3.7-max","qwen3.7-plus","qwen3.6-plus","qwen3.5-plus",
     "deepseek-v4-pro","deepseek-v4-flash","minimax-m3","minimax-m2.7","minimax-m2.5",
     "glm-5.2","glm-5.1","glm-5","kimi-k2.5","kimi-k2.6","kimi-k2.7-code","kimi-k3",
     "big-pickle","mimo-v2.5-free","hy3-free","laguna-s-2.1-free",
@@ -104,12 +104,15 @@ RELAY_NATIVE_NAMES = {
     "gpt-5.4", "gpt-5.4-pro",
     # Qwen (relays)
     "qwen3.8-max", "qwen3.8-max-free", "qwen3.7-max", "qwen3.7-plus", "qwen3.6-plus",
+    "qwen3.5-plus",
+    # Claude (opencode Zen + apiyi relay)
+    "claude-opus-5", "claude-fable-5", "claude-sonnet-5", "claude-sonnet-4-6",
     # DeepSeek (native)  -- NOTE: only pro/flash exist; 'deepseek-v4-max' is invalid
     "deepseek-v4-pro", "deepseek-v4-flash",
     # Moonshot / Kimi (native)
     "kimi-k3", "kimi-k2.7-code", "kimi-k2.6", "kimi-k2.5",
     # Z.ai / GLM (native subscription)
-    "glm-5.3", "glm-5.2", "glm-5-turbo", "glm-5.1", "glm-5",
+    "glm-5.3", "glm-5.3-flash", "glm-5.2", "glm-5.1", "glm-5",
     # MiniMax (native) -- canonical casing 'MiniMax-M3'
     "minimax-m3", "minimax-m2.7",
     # MiMo (relay) / Grok (relay)
@@ -325,6 +328,40 @@ if bad_ids:
              f"(opencode/* must be a Zen model; big-pickle is Zen-exclusive)")
 else:
     ok("all model IDs resolve to a known catalog entry")
+
+# ---- R12b: model-ID validity on the reference example PROFILES ---------------
+# The genericized profiles carry placeholders, but profiles/*.example.json carry
+# REAL IDs (the worked example). Apply the same catalog check there so a bad ID
+# in a shipped example profile is caught, not only in the full deployable file.
+print("[R12b] example-profile model IDs are valid")
+_prof_bad = []
+for _pf in ("ultimate", "hybrid", "b4b"):
+    _pp = os.path.join(ROOT, "profiles", f"{_pf}.example.json")
+    if not os.path.exists(_pp):
+        continue
+    try:
+        _pd = json.loads("\n".join(l for l in io.open(_pp, encoding="utf-8").read().splitlines()
+                                   if not l.lstrip().startswith("//")))
+    except Exception as e:
+        _prof_bad.append((f"{_pf}.example.json", f"<load error: {e}>")); continue
+    def _emit(mid, ctx):
+        if isinstance(mid, str) and mid and not model_id_valid(mid):
+            _prof_bad.append((ctx, mid))
+    for an, a in _pd.get("agents", {}).items():
+        _emit(a.get("model"), f"{_pf} agent {an}")
+        for i, m in enumerate(a.get("fallback_models", [])):
+            _emit(m.get("model"), f"{_pf} agent {an}.fallback[{i}]")
+        uw = a.get("ultrawork")
+        if isinstance(uw, dict):
+            _emit(uw.get("model"), f"{_pf} agent {an}.ultrawork")
+    for cn, c in _pd.get("categories", {}).items():
+        for i, m in enumerate(c.get("models", [])):
+            _emit(m.get("model"), f"{_pf} cat {cn}[{i}]")
+if _prof_bad:
+    for ctx, mid in _prof_bad:
+        fail(f"{ctx}: invalid/unknown model ID '{mid}'")
+else:
+    ok("all example-profile model IDs resolve to a known catalog entry")
 
 # ---- R13: known cross-vendor route mismatches -------------------------------
 print("[R13] no known cross-vendor native mis-routes")

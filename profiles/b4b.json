@@ -151,11 +151,11 @@
       "model": "ProviderF/vision-xl",
       "fallback_models": [
         {
-          "model": "ProviderA/flagship-lite",
-          "reasoning": "medium"
+          "model": "ProviderD/vision-lite"
         },
         {
-          "model": "ProviderD/comm-lite"
+          "model": "ProviderA/flagship-lite",
+          "reasoning": "medium"
         },
         {
           "model": "ProviderB/gen-pro"

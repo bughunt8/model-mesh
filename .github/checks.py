@@ -195,28 +195,88 @@ for prof_file in _profile_files:
         # a category must carry models via one of the schema-valid forms
         if not any(key in c for key in ("models", "model", "fallback_models")):
             bad.append(f"categories.{cn} missing models[]/model/fallback_models")
-    # Duplicate-rung check. On the genericized profiles this catches real bugs
-    # (a fallback repeating the primary or an earlier rung is useless). We skip
-    # *.example.json because two DISTINCT placeholders can legitimately resolve
-    # to the same real model under a given mapping (a mapping collapse, not a bug).
-    if not prof_file.endswith(".example.json"):
-        for an, a in d.get("agents", {}).items():
-            chain = [a.get("model")] + [m.get("model") for m in a.get("fallback_models", [])]
-            seen = set()
-            for i, mid in enumerate(chain):
-                if mid in seen:
-                    where = "primary" if i == 0 else f"fallback[{i-1}]"
-                    bad.append(f"agents.{an}: duplicate '{mid}' at {where} (fallback must differ from earlier rungs)")
-                seen.add(mid)
-        for cn, c in d.get("categories", {}).items():
-            ms = [m.get("model") for m in c.get("models", [])]
-            for x in set(ms):
-                if ms.count(x) > 1:
-                    bad.append(f"categories.{cn}: duplicate '{x}'")
+    # Duplicate-rung check. A rung whose model is byte-identical to the primary
+    # or an earlier rung is a no-op (a retry against the same endpoint buys
+    # nothing and, with a bounded max_fallback_attempts, shortens the chain).
+    # This now runs on *.example.json too: with REAL ids, an exact string repeat
+    # in one chain is unambiguously a bug (two DISTINCT placeholders collapsing
+    # to the same real model in the same chain is exactly the smell we want to
+    # catch, per the v1.1.5 review). Distinct placeholders in DIFFERENT chains
+    # collapsing to one model remains fine and is unaffected.
+    for an, a in d.get("agents", {}).items():
+        chain = [a.get("model")] + [m.get("model") for m in a.get("fallback_models", [])]
+        seen = set()
+        for i, mid in enumerate(chain):
+            if mid in seen:
+                where = "primary" if i == 0 else f"fallback[{i-1}]"
+                bad.append(f"agents.{an}: duplicate '{mid}' at {where} (a rung must differ from earlier rungs in the same chain)")
+            seen.add(mid)
+        # ultrawork is a separate escalation path, not a fallback rung. It is a
+        # no-op only if it repeats the primary at the SAME reasoning effort;
+        # same model at a HIGHER reasoning is a legitimate escalation.
+        uw = a.get("ultrawork")
+        if isinstance(uw, dict) and uw.get("model") == a.get("model") \
+                and uw.get("reasoning") == a.get("reasoning"):
+            bad.append(f"agents.{an}: ultrawork repeats the primary '{uw.get('model')}' at the same reasoning effort (no-op override)")
+    for cn, c in d.get("categories", {}).items():
+        ms = [m.get("model") for m in c.get("models", [])]
+        for x in set(ms):
+            if ms.count(x) > 1:
+                bad.append(f"categories.{cn}: duplicate '{x}'")
     if bad:
         for b in bad: fail(f"{prof}.json: {b}")
     else:
         ok(f"{prof}.json schema shape")
+
+# ---------------------------------------------------------------------------
+# 4c. Budget-cap placement: over-cap placeholders must not appear in the metered
+#     profiles unless they are on the explicit exemption list. Runs on the
+#     genericized *.json profiles (placeholder level) so it is mapping-agnostic:
+#     it encodes the POLICY (which ROLES may exceed the cap), not any real price.
+#     The exemption list is the docs/EXAMPLE-MAPPING.md cap-note table, in code.
+# ---------------------------------------------------------------------------
+print("[4c] budget-cap placement (metered profiles)")
+# Placeholders whose mapped model is intended to sit ABOVE the policy cap.
+OVER_CAP = {"flagship-open", "div-flagship", "reasoner-xl", "coder-xl"}
+# Of those, the ones ALLOWED in metered profiles, and in which slots.
+# coder-xl is the flagship-coding exemption; the rest are ultimate-only.
+#   value = set of allowed "agent-or-category:slot" locations, or "*" for any slot.
+METERED_EXEMPT = {
+    "coder-xl": "*",   # flagship coding tier + ultrawork escape hatch
+}
+def _role_of(pid):
+    # ProviderX/role -> role
+    return pid.split("/", 1)[1] if isinstance(pid, str) and "/" in pid else pid
+for prof in ("hybrid", "b4b"):
+    p = os.path.join(ROOT, "profiles", f"{prof}.json")
+    try:
+        d = json.loads("\n".join(l for l in io.open(p, encoding="utf-8").read().splitlines()
+                                 if not l.lstrip().startswith("//")))
+    except Exception as e:
+        fail(f"{prof}.json cap-check load error: {e}"); continue
+    viol = []
+    def _scan(pid, where):
+        if pid is None: return
+        role = _role_of(pid)
+        if role in OVER_CAP and role not in METERED_EXEMPT:
+            viol.append(f"over-cap '{role}' at {where} (allowed in ultimate only)")
+    for an, a in d.get("agents", {}).items():
+        _scan(a.get("model"), f"agents.{an}.primary")
+        for i, m in enumerate(a.get("fallback_models", [])):
+            _scan(m.get("model"), f"agents.{an}.fallback[{i}]")
+        uw = a.get("ultrawork")
+        if isinstance(uw, dict):
+            _scan(uw.get("model"), f"agents.{an}.ultrawork")
+    for cn, c in d.get("categories", {}).items():
+        for i, m in enumerate(c.get("models", [])):
+            _scan(m.get("model"), f"categories.{cn}[{i}]")
+        _scan(c.get("model"), f"categories.{cn}.model")
+        for i, m in enumerate(c.get("fallback_models", [])):
+            _scan(m.get("model"), f"categories.{cn}.fallback[{i}]")
+    if viol:
+        for v in viol: fail(f"{prof}.json: {v}")
+    else:
+        ok(f"{prof}.json budget-cap placement")
 
 # ---------------------------------------------------------------------------
 # 5. Local markdown links resolve

@@ -91,7 +91,7 @@
       }
     },
     "sisyphus-junior": {
-      "model": "deepseek/deepseek-v4-flash",
+      "model": "opencode/qwen3.5-plus",
       "fallback_models": [
         {
           "model": "opencode/mimo-v2.5-free"
@@ -161,7 +161,7 @@
       "model": "opencode/qwen3.6-plus",
       "fallback_models": [
         {
-          "model": "deepseek/deepseek-v4-flash"
+          "model": "opencode/qwen3.5-plus"
         },
         {
           "model": "deepseek/deepseek-v4-flash"
@@ -172,7 +172,7 @@
       "model": "deepseek/deepseek-v4-flash",
       "fallback_models": [
         {
-          "model": "deepseek/deepseek-v4-flash"
+          "model": "opencode/qwen3.5-plus"
         }
       ]
     },
@@ -259,7 +259,7 @@
           "reasoning": "high"
         },
         {
-          "model": "opencode/qwen3.7-plus"
+          "model": "opencode/muse-spark-1.2"
         },
         {
           "model": "opencode/kimi-k2.6"
@@ -269,26 +269,26 @@
     "quick": {
       "models": [
         {
-          "model": "deepseek/deepseek-v4-flash"
+          "model": "opencode/qwen3.5-plus"
         },
         {
           "model": "deepseek/deepseek-v4-flash"
         },
         {
-          "model": "zai-coding-plan/glm-5-turbo"
+          "model": "zai-coding-plan/glm-5.3-flash"
         }
       ]
     },
     "unspecified-low": {
       "models": [
         {
-          "model": "opencode/qwen-2.7-plus"
+          "model": "opencode/deepseek-v4-flash-free"
         },
         {
           "model": "deepseek/deepseek-v4-flash"
         },
         {
-          "model": "deepseek/deepseek-v4-flash"
+          "model": "opencode/qwen3.5-plus"
         }
       ]
     },
@@ -313,7 +313,7 @@
           "model": "opencode/qwen3.7-plus"
         },
         {
-          "model": "deepseek/deepseek-v4-flash"
+          "model": "opencode/qwen3.5-plus"
         }
       ]
     }

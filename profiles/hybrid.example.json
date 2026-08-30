@@ -4,9 +4,6 @@
   "agents": {
     "hephaestus": {
       "prompt_append": "You are the primary implementation agent. Own the codebase but delegate and review. Explore, decide, execute. Use LSP and AST-grep aggressively.",
-      "ultrawork": {
-        "model": "moonshotai/kimi-k3"
-      },
       "model": "apiyi/gpt-5.6-terra",
       "reasoning": "medium",
       "fallback_models": [
@@ -22,7 +19,10 @@
           "model": "apiyi/gpt-5.5",
           "reasoning": "medium"
         }
-      ]
+      ],
+      "ultrawork": {
+        "model": "moonshotai/kimi-k3"
+      }
     },
     "oracle": {
       "model": "apiyi/gpt-5.6-sol",
@@ -119,7 +119,7 @@
           "model": "moonshotai/kimi-k2.7-code"
         },
         {
-          "model": "deepseek/deepseek-v4-flash"
+          "model": "opencode/qwen3.5-plus"
         },
         {
           "model": "opencode/big-pickle"
@@ -127,10 +127,6 @@
       ]
     },
     "sisyphus": {
-      "ultrawork": {
-        "model": "deepseek/deepseek-v4-pro",
-        "reasoning": "max"
-      },
       "prompt_append": "Delegate heavily to hephaestus for implementation. Parallelize exploration.",
       "model": "zai-coding-plan/glm-5.3",
       "reasoning": "high",
@@ -142,7 +138,11 @@
           "model": "opencode/qwen3.7-plus",
           "reasoning": "high"
         }
-      ]
+      ],
+      "ultrawork": {
+        "model": "deepseek/deepseek-v4-pro",
+        "reasoning": "max"
+      }
     },
     "librarian": {
       "model": "opencode/qwen3.6-plus",
@@ -151,7 +151,7 @@
           "model": "deepseek/deepseek-v4-flash"
         },
         {
-          "model": "deepseek/deepseek-v4-flash"
+          "model": "opencode/qwen3.5-plus"
         }
       ]
     },
@@ -159,7 +159,7 @@
       "model": "deepseek/deepseek-v4-flash",
       "fallback_models": [
         {
-          "model": "deepseek/deepseek-v4-flash"
+          "model": "opencode/qwen3.5-plus"
         }
       ]
     },
@@ -167,11 +167,11 @@
       "model": "minimax/MiniMax-M3",
       "fallback_models": [
         {
-          "model": "opencode/qwen3.7-plus",
-          "reasoning": "high"
+          "model": "zai-coding-plan/glm-5.3-flash"
         },
         {
-          "model": "zai-coding-plan/glm-5-turbo"
+          "model": "opencode/qwen3.7-plus",
+          "reasoning": "high"
         }
       ]
     }
@@ -234,7 +234,7 @@
           "reasoning": "high"
         },
         {
-          "model": "opencode/qwen3.7-plus"
+          "model": "opencode/muse-spark-1.2"
         },
         {
           "model": "moonshotai/kimi-k2.6"
@@ -247,10 +247,10 @@
           "model": "deepseek/deepseek-v4-flash"
         },
         {
-          "model": "deepseek/deepseek-v4-flash"
+          "model": "opencode/qwen3.5-plus"
         },
         {
-          "model": "zai-coding-plan/glm-5-turbo"
+          "model": "zai-coding-plan/glm-5.3-flash"
         }
       ]
     },
@@ -263,7 +263,7 @@
           "model": "moonshotai/kimi-k2.7-code"
         },
         {
-          "model": "deepseek/deepseek-v4-flash"
+          "model": "opencode/qwen3.5-plus"
         }
       ]
     },
@@ -288,7 +288,7 @@
           "reasoning": "high"
         },
         {
-          "model": "deepseek/deepseek-v4-flash"
+          "model": "opencode/qwen3.5-plus"
         }
       ]
     }

@@ -8,4 +8,6 @@
 # ProviderE/coder-xl       = <your-coding-provider>/<your-top-coding-model>
 # ProviderE/coder-mid      = <your-coding-provider>/<your-value-coding-model>
 # ProviderD/comm-xl        = <your-orchestration-provider>/<your-orchestration-model>
+# ProviderD/comm-lite      = <your-orchestration-provider>/<your-cheap-communicator>
+# ProviderD/vision-lite    = <your-multimodal-provider>/<your-cheap-native-vision-model>
 # ProviderF/vision-xl      = <your-multimodal-provider>/<your-vision-model>

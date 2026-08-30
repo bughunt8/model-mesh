@@ -9,7 +9,7 @@
 Follow this exactly when asked to set up or modify the multi-model config. Do not free-style model choices.
 
 1. **Read the methodology first.** Open `docs/ROUTING.md` and `docs/PROVIDERS.md` in full before any edit. The routing rules are binding.
-2. **Pick the profile.** ultimate = max capability; hybrid = default (cost-capped except the architect); b4b = strict cost cap. If the user did not specify, use **hybrid**.
+2. **Pick the profile.** ultimate = max capability; hybrid = default (policy budget cap on generalist/utility/orchestration rungs, with the flagship coding tier `coder-xl`, the read-only architect `oracle`, and each agent's `ultrawork` escape hatch exempt); b4b = same cap applied more aggressively (fewer exempt slots — `coder-xl` survives only as the `deep` category's fallback). The cap is a preference for the cheap tiers, not a hard per-slot ceiling; see `docs/ROUTING.md` and the cap note in `docs/EXAMPLE-MAPPING.md`. If the user did not specify, use **hybrid**.
 3. **Map placeholders to real models.** Produce a table: each `ProviderX/role-name` -> a concrete provider/model you have confirmed exists. Never write a model ID from memory; confirm each resolves against the target provider (list its models or read its docs). Show the table to the user and get approval before writing real IDs.
 4. **Respect family fit.** Map each role to a model whose behavioral family matches the role (see the family table in `docs/ROUTING.md`). A wrong-family model fires the wrong prompt and degrades output regardless of benchmark rank.
 5. **Preserve resilience.** Keep at least one fallback per critical agent on a different provider than the primary. Keep any preview/experimental model as the LAST fallback only.

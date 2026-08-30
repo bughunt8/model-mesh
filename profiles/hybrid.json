@@ -165,11 +165,11 @@
       "model": "ProviderF/vision-xl",
       "fallback_models": [
         {
-          "model": "ProviderB/gen-pro",
-          "reasoning": "high"
+          "model": "ProviderD/vision-lite"
         },
         {
-          "model": "ProviderD/comm-lite"
+          "model": "ProviderB/gen-pro",
+          "reasoning": "high"
         }
       ]
     }

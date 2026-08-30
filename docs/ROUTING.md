@@ -47,10 +47,10 @@ Each agent role is written for one family. Map your real models to the family, n
 | Profile | Cost policy | When |
 |---|---|---|
 | **ultimate** | Uncapped, flagship-first | Max capability, cost secondary |
-| **hybrid** (default) | Cost-capped except `oracle` | Best value + best-in-class architect |
-| **b4b** | Cost-capped everywhere | Strict performance-per-dollar |
+| **hybrid** (default) | Budget cap on generalist/utility/orchestration rungs; flagship **coding** tier + `oracle` + each agent's `ultrawork` escape hatch are exempt | Best value + best-in-class coding/architecture |
+| **b4b** | Same budget cap, applied more aggressively (fewer exempt slots) | Strict performance-per-dollar |
 
-Hybrid is the default because it spends flagship budget only where it has the highest leverage (the architect), while dropping other roles to the mid tier. Whether that trade is worth it for you depends on the models you map in — measure it.
+Hybrid is the default because it spends over-cap budget only where it has the highest leverage — the read-only architect (`oracle`) and the flagship **coding** tier (`coder-xl`) on the agents/categories that do the hardest implementation (`prometheus`, `atlas`, `deep`, `ultrabrain`) — while holding generalist, utility, and orchestration roles at or under the [policy budget cap](PROVIDERS.md#rules-that-survive-any-mapping) ($4.65/1M output in the example mapping). The cap is a *preference for the cheap tiers*, not a hard ceiling on every slot; `docs/EXAMPLE-MAPPING.md` lists which mapped models sit above it and why. Whether the trade is worth it depends on the models you map in — measure it.
 
 ## Standing rules
 

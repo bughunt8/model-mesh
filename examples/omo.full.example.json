@@ -124,7 +124,7 @@
             "model": "tokeness/mimo-v2.5-pro"
           },
           {
-            "model": "zai-coding-plan/glm-5-turbo"
+            "model": "zai-coding-plan/glm-5.3-flash"
           }
         ]
       },
@@ -169,10 +169,10 @@
         "model": "minimax/MiniMax-M3",
         "fallback_models": [
           {
-            "model": "tokeness/qwen3.7-plus"
+            "model": "zai-coding-plan/glm-5.3-flash"
           },
           {
-            "model": "zai-coding-plan/glm-5-turbo"
+            "model": "tokeness/qwen3.7-plus"
           }
         ]
       }
@@ -246,7 +246,7 @@
             "reasoning": "max"
           },
           {
-            "model": "zai-coding-plan/glm-5-turbo"
+            "model": "zai-coding-plan/glm-5.3-flash"
           }
         ]
       },
@@ -298,7 +298,8 @@
       "modelConcurrency": {
         "tokeness/gpt-5.6-terra": 2,
         "tokeness/gpt-5.6-sol": 3,
-        "zai-coding-plan/glm-5.3": 3
+        "zai-coding-plan/glm-5.3": 3,
+        "zai-coding-plan/glm-5.3-flash": 3
       }
     },
     "runtime_fallback": {
