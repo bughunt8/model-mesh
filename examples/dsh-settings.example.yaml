@@ -1,0 +1,288 @@
+ui-onboarding:
+  welcomeNoticeVersion: 2026-08-13.1
+view:
+  width: full
+  max_width: none
+session:
+  panel_layout: wide
+  stream_alignment: expand
+agent-default-model:
+  provider: tokeness
+  model: gemini-3.8-flash
+llm-pi-ai:
+  providers:
+    bifrost:
+      displayName: bifrost
+      apiKeyEnv: BIFROST_API_KEY
+      api: openai-completions
+      baseURL: http://localhost:8080/v1/
+      models:
+      - id: deepseek/deepseek-v4-flash
+        contextWindow: 1000000
+        maxTokens: 8192
+      - id: deepseek/deepseek-v4-pro
+        contextWindow: 1000000
+        maxTokens: 8192
+    tokeness:
+      displayName: tokeness
+      apiKeyEnv: TOKENESS_API_KEY
+      api: openai-completions
+      baseURL: https://n.tokeness.io/v1
+      models:
+      - id: minimax-m3
+      - id: kimi-k2.7-code
+      - id: qwen3.7-plus
+      - id: glm-5.3
+      - id: tokeness/free
+      - id: kimi-k3
+      - id: qwen3.7-max
+      - id: deepseek-v4-pro
+      - id: qwen3.8-max-free
+      - id: qwen3.8-max
+      - id: mimo-v2.5
+      - id: mimo-v2.5-pro
+      - id: deepseek-v4-flash
+      - id: gpt-5.4-mini
+      - id: gpt-5.4
+      - id: codex-auto-review
+      - id: gpt-5.5
+      - id: gpt-5.6-terra
+      - id: gpt-5.6-luna
+      - id: gpt-5.6-sol
+      - id: claude-opus-5
+      - id: claude-opus-4-8
+      - id: claude-fable-5
+      - id: claude-sonnet-5
+      - id: gemini-3.1-pro
+      - id: gemini-3.7-flash
+      - id: grok-4.6
+      - id: grok-4.5
+      - id: gpt-image-2
+      - id: gemini-3.1-flash-image
+      - id: claude-fable-5-1
+      - id: gpt-6-astra
+      - id: gemini-3.8-flash
+    zai:
+      apiKeyEnv: ZAI_API_KEY
+    ollama:
+      displayName: p8-ollama
+      apiKeyEnv: OLLAMA_API_KEY
+      api: openai-completions
+      baseURL: http://192.168.8.195:11434/v1/
+      models:
+      - id: smtek/Qwen3.8-27B:Q3_K_M
+        name: Qwen3.8-27B:Q3_K_M
+    apiyi:
+      displayName: apiyi
+      apiKeyEnv: APIYI_API_KEY
+      api: openai-completions
+      baseURL: https://api.apiyi.com/v1
+      models:
+      - id: gpt-5.6-sol
+        contextWindow: 1000000
+        maxTokens: 8192
+      - id: gpt-5.6-terra
+        contextWindow: 1000000
+        maxTokens: 8192
+    zai-coding-plan:
+      displayName: zai-coding-plan
+      apiKeyEnv: ZAI_CODING_PLAN_API_KEY
+      api: openai-completions
+      baseURL: https://api.z.ai/api/coding/paas/v4
+      models:
+      - id: glm-5.3
+        contextWindow: 1000000
+        maxTokens: 8192
+        reasoningEfforts:
+          low: low
+          high: high
+          max: max
+      - id: glm-5.3-flash
+        contextWindow: 1000000
+        maxTokens: 8192
+        reasoningEfforts:
+          low: low
+          high: high
+          max: max
+    moonshotai:
+      displayName: moonshotai
+      apiKeyEnv: MOONSHOTAI_API_KEY
+      api: openai-completions
+      baseURL: https://api.moonshot.ai/v1
+      models:
+      - id: kimi-k2.7-code
+        contextWindow: 1000000
+        maxTokens: 8192
+      - id: kimi-k3
+        contextWindow: 1000000
+        maxTokens: 8192
+    minimax:
+      displayName: minimax
+      apiKeyEnv: MINIMAX_API_KEY
+      api: openai-completions
+      baseURL: https://api.minimax.chat/v1
+      models:
+      - id: MiniMax-M3
+        contextWindow: 1000000
+        maxTokens: 8192
+opencode-omo-roles:
+  roles:
+    sisyphus:
+      model:
+        provider: zai-coding-plan
+        model: glm-5.3
+        reasoningEffort: max
+      fallbackModels:
+      - provider: moonshotai
+        model: kimi-k2.7-code
+      - provider: tokeness
+        model: qwen3.7-plus
+      ultrawork:
+        model:
+          provider: deepseek-official
+          model: deepseek-v4-pro
+        reasoningEffort: max
+    librarian:
+      model:
+        provider: zai-coding-plan
+        model: glm-5.3
+        reasoningEffort: high
+      fallbackModels:
+      - provider: deepseek-official
+        model: deepseek-v4-flash
+      - provider: moonshotai
+        model: kimi-k2.7-code
+      ultrawork:
+        model: {}
+    hephaestus:
+      model:
+        provider: tokeness
+        model: gpt-6-astra
+        reasoningEffort: max
+      fallbackModels:
+      - provider: apiyi
+        model: gpt-5.6-sol
+      - provider: apiyi
+        model: gpt-5.6-terra
+      ultrawork:
+        model:
+          provider: deepseek-official
+          model: deepseek-v4-pro
+        reasoningEffort: max
+    prometheus:
+      model:
+        provider: moonshotai
+        model: kimi-k3
+        reasoningEffort: max
+      fallbackModels:
+      - provider: zai-coding-plan
+        model: glm-5.3
+      - provider: apiyi
+        model: gpt-5.6-terra
+      - provider: tokeness
+        model: qwen3.8-max
+      ultrawork:
+        model: {}
+    atlas:
+      model:
+        provider: moonshotai
+        model: kimi-k3
+      fallbackModels:
+      - provider: zai-coding-plan
+        model: glm-5.3
+      - provider: tokeness
+        model: qwen3.7-plus
+      - provider: tokeness
+        model: qwen3.8-max
+      ultrawork:
+        model: {}
+    sisyphus-junior:
+      model:
+        provider: deepseek-official
+        model: deepseek-v4-flash
+        reasoningEffort: max
+      fallbackModels:
+      - provider: moonshotai
+        model: kimi-k2.7-code
+      - provider: tokeness
+        model: mimo-v2.5-pro
+      - provider: zai-coding-plan
+        model: glm-5.3-flash
+      ultrawork:
+        model: {}
+    athena:
+      model:
+        provider: tokeness
+        model: gpt-5.6-sol
+      fallbackModels:
+      - provider: apiyi
+        model: gpt-5.6-terra
+      ultrawork:
+        model: {}
+    oracle:
+      model:
+        provider: zai-coding-plan
+        model: glm-5.3
+        reasoningEffort: high
+      fallbackModels:
+      - provider: apiyi
+        model: gpt-5.6-terra
+      - provider: deepseek-official
+        model: deepseek-v4-pro
+        reasoningEffort: max
+      - provider: tokeness
+        model: qwen3.7-plus
+      ultrawork:
+        model: {}
+    momus:
+      model:
+        provider: zai-coding-plan
+        model: glm-5.3
+        reasoningEffort: max
+      fallbackModels:
+      - provider: deepseek-official
+        model: deepseek-v4-pro
+      - provider: apiyi
+        model: gpt-5.6-sol
+      - provider: tokeness
+        model: qwen3.7-plus
+      ultrawork:
+        model: {}
+    explore:
+      model:
+        provider: deepseek-official
+        model: deepseek-v4-flash
+        reasoningEffort: max
+      fallbackModels:
+      - provider: moonshotai
+        model: kimi-k2.7-code
+      ultrawork:
+        model: {}
+    metis:
+      model:
+        provider: zai-coding-plan
+        model: glm-5.3
+      fallbackModels:
+      - provider: moonshotai
+        model: kimi-k2.7-code
+      - provider: deepseek-official
+        model: deepseek-v4-pro
+      ultrawork:
+        model: {}
+    multimodal-looker:
+      model:
+        provider: minimax
+        model: MiniMax-M3
+      fallbackModels:
+      - provider: zai-coding-plan
+        model: glm-5.3-flash
+      - provider: tokeness
+        model: qwen3.7-plus
+      ultrawork:
+        model: {}
+  omoJson:
+    enabled: true
+    path: ~/.omo/omo.jsonc
+  sessions: {}
+agent-presets:
+  default: opencode-omo
