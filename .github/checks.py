@@ -80,6 +80,10 @@ LANDSCAPE_GOLDEN_PATH = "scripts/landscape/expected/scan-2026-09-04.expected.jso
 def is_example(rel):
     r = rel.replace(os.sep, "/")
     return (r.endswith(".example.json")
+            # example config files carry real provider/model IDs as a concrete
+            # reference, in JSON or YAML (e.g. the DSH plugin settings example).
+            or r.endswith(".example.yaml")
+            or r.endswith(".example.yml")
             or r == "docs/EXAMPLE-MAPPING.md"
             or r == LANDSCAPE_GOLDEN_PATH
             or any(r.startswith(prefix) for prefix in DENY_EXEMPT_PREFIXES)
@@ -151,6 +155,8 @@ _must_not_be_exempt = [
     "scripts/landscape/review_gate.py",
     "scripts/landscape/scans/live.json",
     "docs/research-adjacent/report.md",
+    "examples/settings.yaml",       # only *.example.yaml is exempt, not bare .yaml
+    "config.yml",
 ]
 for _path in _must_not_be_exempt:
     ok(f"not exempt: {_path}") if not is_example(_path) else fail(f"self-test: exemption widened to {_path}")
