@@ -1,0 +1,198 @@
+{
+  "scan_date": "2026-09-04",
+  "usable": true,
+  "findings": [
+    "[WARN] gpt-6-astra.differentiator: non-independent evidence cannot affect verdict"
+  ],
+  "models": [
+    {
+      "name": "gpt-6-astra",
+      "vendor": "openai",
+      "profile": "ultimate",
+      "trusted_attributes": {
+        "open_weights": false,
+        "flagship_native_family": true,
+        "known": true
+      },
+      "candidate_for_roles": [
+        "hephaestus"
+      ],
+      "gates": [
+        {
+          "id": "cap",
+          "passed": true,
+          "status": "PASS",
+          "detail": "PASS: profile/roles are outside the metered non-exempt cap scope"
+        },
+        {
+          "id": "retired_vendor",
+          "passed": true,
+          "status": "PASS",
+          "detail": "PASS: candidate does not match retired vendor/model policy"
+        },
+        {
+          "id": "open_weight",
+          "passed": true,
+          "status": "PASS",
+          "detail": "PASS: no open-weight role conflict"
+        },
+        {
+          "id": "family_fit",
+          "passed": true,
+          "status": "PASS",
+          "detail": "PASS: family-fit requirement satisfied or not applicable"
+        }
+      ],
+      "blocked_by": [],
+      "policy_status": "ALLOWED",
+      "score": {
+        "skipped": [
+          [
+            "coding",
+            "non-independent (vendor)"
+          ],
+          [
+            "speed",
+            "no metric"
+          ],
+          [
+            "context",
+            "non-independent (vendor)"
+          ],
+          [
+            "multimodal",
+            "no metric"
+          ]
+        ],
+        "normalization": {
+          "intelligence": {
+            "norm": 1.0,
+            "ranked": true
+          },
+          "cost_efficiency": {
+            "norm": 0.0,
+            "ranked": true
+          }
+        }
+      },
+      "weight_covered": 0.55,
+      "total_score": 0.5455,
+      "ranking_status": "RANKED",
+      "role_recommendations": {
+        "hephaestus": {
+          "verdict": "HOLD",
+          "why": [
+            "does not beat best under-cap incumbent glm-5.3 (comm-xl): improvement 1 must be > absolute noise 2",
+            "no independently proven structured differentiator",
+            "outside cap scope, but high durable cost is not justified by the measured capability"
+          ]
+        }
+      },
+      "decision": "HOLD"
+    },
+    {
+      "name": "gemini-3.8-flash",
+      "vendor": "google",
+      "profile": "hybrid",
+      "trusted_attributes": {
+        "open_weights": false,
+        "flagship_native_family": false,
+        "known": true
+      },
+      "candidate_for_roles": [
+        "gen-pro",
+        "gen-flash",
+        "vision-lite"
+      ],
+      "gates": [
+        {
+          "id": "cap",
+          "passed": false,
+          "status": "FAIL",
+          "detail": "FAIL: durable output $7.5/1M vs cap $4.65 for ['gen-flash', 'gen-pro', 'vision-lite']"
+        },
+        {
+          "id": "retired_vendor",
+          "passed": false,
+          "status": "FAIL",
+          "detail": "FAIL: candidate matches retired vendor/model policy"
+        },
+        {
+          "id": "open_weight",
+          "passed": true,
+          "status": "PASS",
+          "detail": "PASS: no open-weight role conflict"
+        },
+        {
+          "id": "family_fit",
+          "passed": true,
+          "status": "PASS",
+          "detail": "PASS: family-fit requirement satisfied or not applicable"
+        }
+      ],
+      "blocked_by": [
+        "cap",
+        "retired_vendor"
+      ],
+      "policy_status": "BLOCKED",
+      "score": {
+        "skipped": [
+          [
+            "coding",
+            "non-independent (vendor)"
+          ],
+          [
+            "context",
+            "non-independent (vendor)"
+          ],
+          [
+            "multimodal",
+            "non-independent (vendor)"
+          ],
+          [
+            "speed",
+            "not_ranked: fewer than 2 distinct values"
+          ]
+        ],
+        "normalization": {
+          "intelligence": {
+            "norm": 0.0,
+            "ranked": true
+          },
+          "cost_efficiency": {
+            "norm": 1.0,
+            "ranked": true
+          },
+          "speed": {
+            "norm": 0.5,
+            "ranked": false
+          }
+        }
+      },
+      "weight_covered": 0.55,
+      "total_score": 0.4545,
+      "ranking_status": "RANKED",
+      "role_recommendations": {
+        "gen-pro": {
+          "verdict": "BLOCKED",
+          "why": [
+            "hard gate(s): cap, retired_vendor"
+          ]
+        },
+        "gen-flash": {
+          "verdict": "BLOCKED",
+          "why": [
+            "hard gate(s): cap, retired_vendor"
+          ]
+        },
+        "vision-lite": {
+          "verdict": "BLOCKED",
+          "why": [
+            "hard gate(s): cap, retired_vendor"
+          ]
+        }
+      },
+      "decision": "HOLD"
+    }
+  ]
+}

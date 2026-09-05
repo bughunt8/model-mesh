@@ -4,3 +4,5 @@ provider-map.local
 # framework-generated / deployed config
 ~/.omo/
 .DS_Store
+__pycache__/
+*.pyc

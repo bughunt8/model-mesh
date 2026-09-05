@@ -17,3 +17,23 @@ jobs:
         run: python .github/checks.py
       - name: Validate full deployable config example
         run: python scripts/validate-full-config.py
+      - name: Install YAML parser for landscape config drift check
+        run: python -m pip install pyyaml
+      - name: Validate landscape YAML and JSON mirror drift
+        run: |
+          python - <<'PY'
+          import json, yaml
+          from pathlib import Path
+          base = Path("scripts/landscape")
+          assert yaml.safe_load((base / "sources.yaml").read_text()) == json.loads((base / "sources.json").read_text())
+          print("landscape config mirrors match")
+          PY
+      - name: Run landscape regression suite
+        run: python scripts/landscape/landscape_scan.py --self-test
+      - name: Check committed landscape golden result
+        run: |
+          python scripts/landscape/landscape_scan.py \
+            --scan scripts/landscape/scans/scan-2026-09-04.example.json \
+            --golden scripts/landscape/expected/scan-2026-09-04.expected.json
+      - name: Run structured review-gate parser tests
+        run: python scripts/landscape/review_gate.py --self-test

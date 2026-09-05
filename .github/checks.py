@@ -64,12 +64,22 @@ def tracked_files():
 # them would be circular, exactly like .github/checks.py itself. Exempt them by an
 # explicit allowlist of paths, not a blanket scripts/ exclusion (materialize.py is
 # still scanned).
-DENY_EXEMPT_PATHS = {"scripts/validate-full-config.py"}
+DENY_EXEMPT_PATHS = {
+    "scripts/validate-full-config.py",
+    "scripts/landscape/sources.yaml",
+    "scripts/landscape/sources.json",
+}
+# Human research reports and the one deterministic golden result intentionally
+# preserve concrete research IDs. Keep both exemptions narrow and self-tested.
+DENY_EXEMPT_PREFIXES = ("docs/research/",)
+LANDSCAPE_GOLDEN_PATH = "scripts/landscape/expected/scan-2026-09-04.expected.json"
 
 def is_example(rel):
     r = rel.replace(os.sep, "/")
     return (r.endswith(".example.json")
             or r == "docs/EXAMPLE-MAPPING.md"
+            or r == LANDSCAPE_GOLDEN_PATH
+            or any(r.startswith(prefix) for prefix in DENY_EXEMPT_PREFIXES)
             or r in DENY_EXEMPT_PATHS)
 
 print("[1] vendor denylist")
@@ -113,6 +123,33 @@ for s in _must_fail:
     ok(f"still blocked: {s}") if deny_hit(s) else fail(f"self-test: should block but passed: {s}")
 for s in _must_pass:
     ok(f"allowed: {s}") if not deny_hit(s) else fail(f"self-test: should allow but blocked: {s}")
+
+# Negative self-test: landscape policy/report exemptions must remain exact.
+_expected_exempt_paths = {
+    "scripts/validate-full-config.py",
+    "scripts/landscape/sources.yaml",
+    "scripts/landscape/sources.json",
+}
+if DENY_EXEMPT_PATHS == _expected_exempt_paths:
+    ok("landscape denylist path exemptions remain exact")
+else:
+    fail(f"landscape denylist path exemptions widened: {sorted(DENY_EXEMPT_PATHS - _expected_exempt_paths)}")
+if DENY_EXEMPT_PREFIXES == ("docs/research/",):
+    ok("research report exemption remains exact")
+else:
+    fail(f"research report exemption widened: {DENY_EXEMPT_PREFIXES}")
+if LANDSCAPE_GOLDEN_PATH == "scripts/landscape/expected/scan-2026-09-04.expected.json":
+    ok("landscape golden exemption remains exact")
+else:
+    fail(f"landscape golden exemption widened: {LANDSCAPE_GOLDEN_PATH}")
+_must_not_be_exempt = [
+    "scripts/landscape/landscape_scan.py",
+    "scripts/landscape/review_gate.py",
+    "scripts/landscape/scans/live.json",
+    "docs/research-adjacent/report.md",
+]
+for _path in _must_not_be_exempt:
+    ok(f"not exempt: {_path}") if not is_example(_path) else fail(f"self-test: exemption widened to {_path}")
 
 # ---------------------------------------------------------------------------
 # 2. Manifests parse and identify as model-mesh
@@ -244,6 +281,18 @@ OVER_CAP = {"flagship-open", "div-flagship", "reasoner-xl", "coder-xl"}
 METERED_EXEMPT = {
     "coder-xl": "*",   # flagship coding tier + ultrawork escape hatch
 }
+# The unattended landscape gate must enforce the exact same placement policy.
+try:
+    _landscape_cfg = json.load(io.open(os.path.join(ROOT, "scripts", "landscape", "sources.json"), encoding="utf-8"))
+    _landscape_policy = _landscape_cfg["policy"]
+    if set(_landscape_policy.get("over_cap_roles", [])) != OVER_CAP:
+        fail("landscape over_cap_roles drifted from checks.py OVER_CAP")
+    elif set(_landscape_policy.get("metered_exempt_roles", [])) != set(METERED_EXEMPT):
+        fail("landscape metered_exempt_roles drifted from checks.py METERED_EXEMPT")
+    else:
+        ok("landscape cap policy mirrors checks.py")
+except Exception as e:
+    fail(f"could not verify landscape cap-policy mirror: {e}")
 def _role_of(pid):
     # ProviderX/role -> role
     return pid.split("/", 1)[1] if isinstance(pid, str) and "/" in pid else pid

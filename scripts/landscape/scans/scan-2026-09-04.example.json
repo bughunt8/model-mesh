@@ -1,0 +1,69 @@
+{
+  "scan_date": "2026-09-04",
+  "note": "Example weekly input. Gate attributes in this file are untrusted and cannot override committed policy.",
+  "incumbents": {
+    "gen-pro": {
+      "model": "qwen3.7-plus", "role_dimension": "intelligence", "value": 39,
+      "provenance": "independent", "source": "Artificial Analysis v4.1.1", "under_cap": true,
+      "metrics": {"speed": {"value": 90, "provenance": "independent", "source": "Artificial Analysis"}}
+    },
+    "gen-flash": {
+      "model": "qwen3.5-plus", "role_dimension": "intelligence", "value": 30,
+      "provenance": "independent", "source": "Artificial Analysis v4.1.1", "under_cap": true,
+      "metrics": {"speed": {"value": 150, "provenance": "independent", "source": "Artificial Analysis"}}
+    },
+    "vision-lite": {
+      "model": "glm-5.3-flash", "role_dimension": "multimodal", "value": true,
+      "provenance": "independent", "source": "Roboflow Vision Evals", "under_cap": true,
+      "metrics": {"multimodal": {"value": true, "provenance": "independent", "source": "Roboflow Vision Evals"}}
+    },
+    "comm-xl": {
+      "model": "glm-5.3", "role_dimension": "intelligence", "value": 60,
+      "provenance": "independent", "source": "Artificial Analysis v4.1.1", "under_cap": true,
+      "metrics": {}
+    },
+    "hephaestus": {
+      "model": "gpt-5.6-sol", "role_dimension": "intelligence", "value": 61,
+      "provenance": "independent", "source": "Artificial Analysis v4.1.1", "under_cap": false,
+      "metrics": {"speed": {"value": 100, "provenance": "independent", "source": "Artificial Analysis"}}
+    }
+  },
+  "models": [
+    {
+      "name": "gemini-3.8-flash",
+      "vendor": "google",
+      "profile": "hybrid",
+      "open_weights": false,
+      "flagship_native_family": false,
+      "reversal": false,
+      "candidate_for_roles": ["gen-pro", "gen-flash", "vision-lite"],
+      "differentiator": {"metric": "speed", "value": 326.9, "provenance": "independent", "source": "Artificial Analysis"},
+      "metrics": {
+        "intelligence_index": {"value": 59, "provenance": "independent", "source": "Artificial Analysis v4.1.1"},
+        "output_price": {"value": 3.75, "durable_value": 7.50, "introductory": true, "provenance": "vendor", "source": "Provider rate card"},
+        "blended_price": {"value": 0.58, "provenance": "independent", "source": "Artificial Analysis"},
+        "output_speed": {"value": 326.9, "provenance": "independent", "source": "Artificial Analysis"},
+        "context_window": {"value": 1000000, "provenance": "vendor", "source": "Provider documentation"},
+        "native_vision": {"value": true, "provenance": "vendor", "source": "Provider documentation"},
+        "deepswe": {"value": 73.8, "provenance": "vendor", "source": "Provider self-computed"}
+      }
+    },
+    {
+      "name": "gpt-6-astra",
+      "vendor": "openai",
+      "profile": "ultimate",
+      "open_weights": false,
+      "flagship_native_family": true,
+      "reversal": false,
+      "candidate_for_roles": ["hephaestus"],
+      "differentiator": {"metric": "speed", "value": 72.6, "provenance": "vendor", "source": "Provider self-computed"},
+      "metrics": {
+        "intelligence_index": {"value": 61, "provenance": "independent", "source": "Artificial Analysis v4.1.1"},
+        "output_price": {"value": 50.0, "durable_value": 50.0, "provenance": "vendor", "source": "Provider standard rate card"},
+        "blended_price": {"value": 7.70, "provenance": "independent", "source": "Artificial Analysis"},
+        "context_window": {"value": 1100000, "provenance": "vendor", "source": "Provider documentation"},
+        "deepswe": {"value": 74.1, "provenance": "vendor", "source": "Provider self-computed"}
+      }
+    }
+  ]
+}

@@ -1,0 +1,277 @@
+{
+  "version": 2,
+  "config_payload_sha256": "697e36b3a54af2b5bb906b59756d3b8e14344a1b3a9721393452e581a50df103",
+  "sources": {
+    "authoritative_independent": [
+      {
+        "name": "Artificial Analysis",
+        "url": "https://artificialanalysis.ai/leaderboards/models",
+        "provides": [
+          "intelligence_index",
+          "blended_price",
+          "output_speed"
+        ]
+      },
+      {
+        "name": "DeepSWE",
+        "url": "https://deepswe.ai/",
+        "provides": [
+          "deepswe"
+        ]
+      },
+      {
+        "name": "Vals.ai",
+        "url": "https://www.vals.ai/",
+        "provides": [
+          "swebench",
+          "domain_agents",
+          "vals_index"
+        ]
+      }
+    ],
+    "provider_blogs": [
+      {
+        "org": "OpenAI",
+        "url": "https://openai.com/news/"
+      },
+      {
+        "org": "Google DeepMind",
+        "url": "https://blog.google/technology/google-deepmind/"
+      },
+      {
+        "org": "Anthropic",
+        "url": "https://www.anthropic.com/news"
+      },
+      {
+        "org": "Meta",
+        "url": "https://ai.meta.com/blog/"
+      },
+      {
+        "org": "xAI",
+        "url": "https://x.ai/news"
+      },
+      {
+        "org": "DeepSeek",
+        "url": "https://api-docs.deepseek.com/news/"
+      },
+      {
+        "org": "Alibaba/Qwen",
+        "url": "https://qwenlm.github.io/blog/"
+      },
+      {
+        "org": "Moonshot/Kimi",
+        "url": "https://platform.moonshot.ai/"
+      },
+      {
+        "org": "Z.ai/GLM",
+        "url": "https://docs.z.ai/release-notes"
+      },
+      {
+        "org": "MiniMax",
+        "url": "https://www.minimax.io/news"
+      }
+    ]
+  },
+  "policy": {
+    "budget_cap_output_usd_per_1m": 4.65,
+    "metered_profiles": [
+      "hybrid",
+      "b4b"
+    ],
+    "ultimate_profile": "ultimate",
+    "over_cap_roles": [
+      "flagship-open",
+      "div-flagship",
+      "reasoner-xl",
+      "coder-xl"
+    ],
+    "metered_exempt_roles": [
+      "coder-xl"
+    ],
+    "cap_exempt_roles": [
+      "coder-xl"
+    ],
+    "retired_vendors": [
+      "google"
+    ],
+    "retired_model_patterns": [
+      "^gemini-"
+    ],
+    "known_vendors": [
+      "google",
+      "openai",
+      "anthropic",
+      "meta",
+      "xai",
+      "deepseek",
+      "alibaba",
+      "moonshot",
+      "zai",
+      "minimax",
+      "providerx",
+      "retired-vendor-1"
+    ],
+    "known_roles": [
+      "gen-pro",
+      "gen-flash",
+      "vision-lite",
+      "comm-xl",
+      "comm-lite",
+      "coder-xl",
+      "coder-mid",
+      "coder-swarm",
+      "oracle",
+      "ultrawork",
+      "hephaestus",
+      "prometheus",
+      "atlas",
+      "deep",
+      "ultrabrain",
+      "open-coder",
+      "open-reason-xl",
+      "open-reason-lite",
+      "flagship-open",
+      "div-flagship",
+      "reasoner-xl",
+      "flagship-xl",
+      "flagship-mid",
+      "flagship-lite",
+      "flagship-prev",
+      "retrieval-mid",
+      "creative-mid",
+      "util-misc",
+      "vision-xl",
+      "budget-low",
+      "unspecified-high",
+      "unspecified-low",
+      "artistry",
+      "quick",
+      "writing",
+      "visual-engineering",
+      "multimodal-looker",
+      "explore",
+      "librarian",
+      "metis",
+      "momus",
+      "sisyphus",
+      "sisyphus-junior"
+    ],
+    "open_weight_required_roles": [
+      "open-reason-xl",
+      "open-reason-lite",
+      "open-coder"
+    ],
+    "flagship_native_only_agent": "hephaestus"
+  },
+  "model_attributes": [
+    {
+      "pattern": "^gemini-3\\.8-flash$",
+      "open_weights": false,
+      "flagship_native_family": false
+    },
+    {
+      "pattern": "^gpt-6-astra$",
+      "open_weights": false,
+      "flagship_native_family": true
+    },
+    {
+      "pattern": "^candidate-open$",
+      "open_weights": true,
+      "flagship_native_family": false
+    },
+    {
+      "pattern": "^candidate-flagship$",
+      "open_weights": false,
+      "flagship_native_family": true
+    },
+    {
+      "pattern": "^candidate-A$",
+      "open_weights": false,
+      "flagship_native_family": false
+    }
+  ],
+  "rubric": {
+    "min_weight_covered": 0.5,
+    "dimensions": {
+      "intelligence": {
+        "weight": 0.3,
+        "source": "intelligence_index",
+        "higher_is_better": true,
+        "scale": "linear"
+      },
+      "cost_efficiency": {
+        "weight": 0.25,
+        "source": "blended_price",
+        "higher_is_better": false,
+        "scale": "log10"
+      },
+      "coding": {
+        "weight": 0.2,
+        "source": "deepswe",
+        "higher_is_better": true,
+        "scale": "linear"
+      },
+      "speed": {
+        "weight": 0.1,
+        "source": "output_speed",
+        "higher_is_better": true,
+        "scale": "linear"
+      },
+      "context": {
+        "weight": 0.05,
+        "source": "context_window",
+        "higher_is_better": true,
+        "scale": "linear"
+      },
+      "multimodal": {
+        "weight": 0.1,
+        "source": "native_vision",
+        "higher_is_better": true,
+        "scale": "categorical"
+      }
+    },
+    "noise": {
+      "intelligence": {
+        "type": "absolute",
+        "value": 2.0
+      },
+      "cost_efficiency": {
+        "type": "relative",
+        "value": 0.1
+      },
+      "coding": {
+        "type": "absolute",
+        "value": 2.0
+      },
+      "speed": {
+        "type": "relative",
+        "value": 0.1
+      },
+      "context": {
+        "type": "relative",
+        "value": 0.25
+      },
+      "multimodal": {
+        "type": "categorical"
+      }
+    }
+  },
+  "hard_gates": [
+    {
+      "id": "cap",
+      "desc": "Metered, non-exempt roles require a numeric durable output price at or below the policy cap."
+    },
+    {
+      "id": "retired_vendor",
+      "desc": "Retired vendor/family candidates remain blocked unless reversal is verified from repository state."
+    },
+    {
+      "id": "open_weight",
+      "desc": "Only curated open-weight models may fill sovereignty roles."
+    },
+    {
+      "id": "family_fit",
+      "desc": "The flagship-native agent accepts only curated flagship-native families."
+    }
+  ]
+}
