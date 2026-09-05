@@ -68,6 +68,9 @@ DENY_EXEMPT_PATHS = {
     "scripts/validate-full-config.py",
     "scripts/landscape/sources.yaml",
     "scripts/landscape/sources.json",
+    # Operational runbook for the weekly scan: intentionally names the reviewer
+    # model id + API host as literal run instructions. Doc-only, no config.
+    "scripts/landscape/CRON_TASK.md",
 }
 # Human research reports and the one deterministic golden result intentionally
 # preserve concrete research IDs. Keep both exemptions narrow and self-tested.
@@ -129,6 +132,7 @@ _expected_exempt_paths = {
     "scripts/validate-full-config.py",
     "scripts/landscape/sources.yaml",
     "scripts/landscape/sources.json",
+    "scripts/landscape/CRON_TASK.md",
 }
 if DENY_EXEMPT_PATHS == _expected_exempt_paths:
     ok("landscape denylist path exemptions remain exact")
