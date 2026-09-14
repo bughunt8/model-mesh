@@ -1,5 +1,5 @@
 version: 2
-config_payload_sha256: 697e36b3a54af2b5bb906b59756d3b8e14344a1b3a9721393452e581a50df103
+config_payload_sha256: 274fcf8d93e4eb1e1b94972504490244956c022b5d609d511d3951490ebdc019
 sources:
   authoritative_independent:
   - name: Artificial Analysis
@@ -58,6 +58,14 @@ policy:
   - google
   retired_model_patterns:
   - ^gemini-
+  region_available_owners:
+    ultimate:
+    - deepseek
+    - moonshot
+    - zai
+    - minimax
+    - alibaba
+    - providerx
   known_vendors:
   - google
   - openai
@@ -121,19 +129,28 @@ policy:
   - open-coder
   flagship_native_only_agent: hephaestus
 model_attributes:
+- pattern: ^deepseek-v4\.1-flash$
+  owner: deepseek
+  open_weights: true
+  flagship_native_family: false
 - pattern: ^gemini-3\.8-flash$
+  owner: google
   open_weights: false
   flagship_native_family: false
 - pattern: ^gpt-6-astra$
+  owner: openai
   open_weights: false
   flagship_native_family: true
 - pattern: ^candidate-open$
+  owner: providerx
   open_weights: true
   flagship_native_family: false
 - pattern: ^candidate-flagship$
+  owner: providerx
   open_weights: false
   flagship_native_family: true
 - pattern: ^candidate-A$
+  owner: providerx
   open_weights: false
   flagship_native_family: false
 rubric:
@@ -198,3 +215,7 @@ hard_gates:
   desc: Only curated open-weight models may fill sovereignty roles.
 - id: family_fit
   desc: The flagship-native agent accepts only curated flagship-native families.
+- id: region_availability
+  desc: A region-locked profile (the Hong Kong-native ultimate) rejects any vendor
+    whose developer API is not natively available in that region (OpenAI, Anthropic,
+    Google, xAI for Hong Kong).

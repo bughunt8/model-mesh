@@ -1,0 +1,93 @@
+{
+  "scan_date": "2026-09-14",
+  "note": "Weekly refresh after Artificial Analysis Intelligence Index v4.3 and Vals evaluation of DeepSeek V4.1 Flash on 2026-09-10. Scored values are independent Artificial Analysis measurements; Vals provides an independent corroborating benchmark snapshot; provider documentation supplies only specifications and durable peak output pricing.",
+  "incumbents": {
+    "open-reason-xl": {
+      "model": "deepseek-v4-pro-0813",
+      "role_dimension": "intelligence",
+      "value": 36,
+      "provenance": "independent",
+      "source": "https://artificialanalysis.ai/models/deepseek-v4-pro",
+      "under_cap": true,
+      "metrics": {
+        "speed": {
+          "value": 75.8,
+          "provenance": "independent",
+          "source": "https://artificialanalysis.ai/models/deepseek-v4-pro"
+        }
+      }
+    },
+    "gen-pro": {
+      "model": "qwen3.7-plus",
+      "role_dimension": "intelligence",
+      "value": 26,
+      "provenance": "independent",
+      "source": "https://artificialanalysis.ai/models/qwen3-7-plus",
+      "under_cap": true,
+      "metrics": {
+        "speed": {
+          "value": 65.9,
+          "provenance": "independent",
+          "source": "https://artificialanalysis.ai/models/qwen3-7-plus"
+        }
+      }
+    }
+  },
+  "models": [
+    {
+      "name": "deepseek-v4.1-flash",
+      "vendor": "deepseek",
+      "profile": "ultimate",
+      "open_weights": true,
+      "flagship_native_family": false,
+      "reversal": false,
+      "candidate_for_roles": [
+        "open-reason-xl"
+      ],
+      "differentiator": {
+        "metric": "speed",
+        "value": 214.4,
+        "provenance": "independent",
+        "source": "https://artificialanalysis.ai/models/deepseek-v4-1-flash"
+      },
+      "metrics": {
+        "intelligence_index": {
+          "value": 40,
+          "provenance": "independent",
+          "source": "https://artificialanalysis.ai/models/deepseek-v4-1-flash"
+        },
+        "output_price": {
+          "value": 1.2,
+          "durable_value": 1.2,
+          "provenance": "vendor",
+          "source": "https://api-docs.deepseek.com/quick_start/pricing"
+        },
+        "blended_price": {
+          "value": 0.18,
+          "provenance": "independent",
+          "source": "https://artificialanalysis.ai/models/deepseek-v4-1-flash"
+        },
+        "output_speed": {
+          "value": 214.4,
+          "provenance": "independent",
+          "source": "https://artificialanalysis.ai/models/deepseek-v4-1-flash"
+        },
+        "vals_index": {
+          "value": 57.86,
+          "provenance": "independent",
+          "source": "https://www.vals.ai/models/deepseek_deepseek-v4.1-flash"
+        },
+        "context_window": {
+          "value": 1000000,
+          "provenance": "vendor",
+          "source": "https://api-docs.deepseek.com/quick_start/pricing"
+        },
+        "native_vision": {
+          "value": true,
+          "provenance": "vendor",
+          "source": "https://api-docs.deepseek.com/quick_start/pricing"
+        }
+      }
+    }
+  ]
+}

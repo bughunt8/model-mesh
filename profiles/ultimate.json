@@ -2,72 +2,50 @@
   "agents": {
     "hephaestus": {
       "prompt_append": "You are the primary implementation agent. Own the codebase but delegate and review. Explore, decide, execute. Use LSP and AST-grep aggressively.",
-      "model": "ProviderA/flagship-xl",
-      "reasoning": "medium",
+      "model": "ProviderC/open-reason-xl",
+      "reasoning": "max",
       "fallback_models": [
         {
-          "model": "ProviderA/flagship-mid",
+          "model": "ProviderE/coder-xl",
           "reasoning": "high"
         },
         {
-          "model": "ProviderC/open-reason-xl",
-          "reasoning": "max"
-        },
-        {
-          "model": "ProviderA/flagship-prev",
-          "reasoning": "medium"
+          "model": "ProviderB/flagship-open"
         }
       ],
       "ultrawork": {
-        "model": "ProviderA/flagship-xl",
+        "model": "ProviderE/coder-xl",
         "reasoning": "max"
       }
     },
     "oracle": {
-      "model": "ProviderA/flagship-xl",
+      "model": "ProviderC/open-reason-xl",
       "reasoning": "max",
       "fallback_models": [
         {
-          "model": "ProviderA/flagship-mid",
+          "model": "ProviderE/coder-xl",
           "reasoning": "high"
-        },
-        {
-          "model": "ProviderA/flagship-prev",
-          "reasoning": "high"
-        },
-        {
-          "model": "ProviderA/reasoner-xl",
-          "reasoning": "high"
-        },
-        {
-          "model": "ProviderC/open-reason-xl",
-          "reasoning": "max"
         },
         {
           "model": "ProviderD/comm-xl",
           "reasoning": "high"
+        },
+        {
+          "model": "ProviderB/flagship-open"
         }
       ]
     },
     "momus": {
-      "model": "ProviderA/flagship-xl",
+      "model": "ProviderC/open-reason-xl",
       "reasoning": "max",
       "fallback_models": [
         {
-          "model": "ProviderA/flagship-mid",
-          "reasoning": "high"
-        },
-        {
-          "model": "ProviderA/flagship-prev",
+          "model": "ProviderE/coder-xl",
           "reasoning": "high"
         },
         {
           "model": "ProviderD/comm-xl",
           "reasoning": "high"
-        },
-        {
-          "model": "ProviderC/open-reason-xl",
-          "reasoning": "max"
         }
       ]
     },
@@ -101,11 +79,7 @@
       "temperature": 0.7,
       "fallback_models": [
         {
-          "model": "ProviderA/reasoner-xl",
-          "reasoning": "high"
-        },
-        {
-          "model": "ProviderA/flagship-xl",
+          "model": "ProviderC/open-reason-xl",
           "reasoning": "high"
         },
         {
@@ -113,9 +87,6 @@
         },
         {
           "model": "ProviderB/flagship-open"
-        },
-        {
-          "model": "ProviderG/div-flagship"
         }
       ]
     },
@@ -124,11 +95,7 @@
       "temperature": 0.8,
       "fallback_models": [
         {
-          "model": "ProviderA/reasoner-xl",
-          "reasoning": "high"
-        },
-        {
-          "model": "ProviderA/flagship-xl",
+          "model": "ProviderC/open-reason-xl",
           "reasoning": "high"
         },
         {
@@ -136,9 +103,6 @@
         },
         {
           "model": "ProviderB/flagship-open"
-        },
-        {
-          "model": "ProviderG/div-flagship"
         }
       ]
     },
@@ -178,10 +142,6 @@
       "model": "ProviderF/vision-xl",
       "fallback_models": [
         {
-          "model": "ProviderA/flagship-xl",
-          "reasoning": "medium"
-        },
-        {
           "model": "ProviderB/gen-pro",
           "reasoning": "high"
         },
@@ -209,7 +169,7 @@
     "ultrabrain": {
       "models": [
         {
-          "model": "ProviderA/flagship-xl",
+          "model": "ProviderC/open-reason-xl",
           "reasoning": "max"
         },
         {
@@ -217,8 +177,7 @@
           "reasoning": "max"
         },
         {
-          "model": "ProviderA/reasoner-xl",
-          "reasoning": "high"
+          "model": "ProviderB/flagship-open"
         },
         {
           "model": "ProviderB/gen-pro",
@@ -232,12 +191,8 @@
           "model": "ProviderE/coder-xl"
         },
         {
-          "model": "ProviderA/flagship-xl",
+          "model": "ProviderC/open-reason-xl",
           "reasoning": "max"
-        },
-        {
-          "model": "ProviderA/reasoner-xl",
-          "reasoning": "high"
         },
         {
           "model": "ProviderD/comm-xl"
@@ -293,11 +248,10 @@
     "unspecified-high": {
       "models": [
         {
-          "model": "ProviderA/flagship-mid",
-          "reasoning": "high"
+          "model": "ProviderC/open-reason-xl"
         },
         {
-          "model": "ProviderC/open-reason-xl"
+          "model": "ProviderB/flagship-open"
         },
         {
           "model": "ProviderB/gen-pro",
