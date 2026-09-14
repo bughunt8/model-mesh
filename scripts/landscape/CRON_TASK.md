@@ -26,8 +26,14 @@ checkout at `/home/user/workspace/open-model-method`.
    following `--print-schema`. Populate independent metrics from Artificial Analysis /
    DeepSWE / Vellum / Vals; set `provenance` honestly per cell; use the DURABLE (post-promo)
    price in `output_price.durable_value`; set each model's `profile`/`candidate_for_roles`;
-   pull `open_weights`/`flagship_native_family` ONLY from the curated `model_attributes`
+   pull `open_weights`/`flagship_native_family`/`owner` ONLY from the curated `model_attributes`
    table in `sources.yaml` (do not invent them). Provenance incumbents from the same table.
+   NOTE: the `region_availability` hard gate resolves a model's owner from that curated
+   table, NOT from the scan's `vendor` field, and fails closed for the HK-native `ultimate`
+   profile unless the owner is on `policy.region_available_owners.ultimate`. If a new model
+   is a candidate for `ultimate`, add a `model_attributes` row with its real `owner`; a
+   region-locked owner (OpenAI/Anthropic/Google/xAI) will be HOLD-blocked for `ultimate` by
+   design, so do not propose one there. `hybrid`/`b4b` stay global and are unaffected.
 3. **Run the framework:**
    `python3 scripts/landscape/landscape_scan.py --scan <dataset> --out-json out.json --out-md out.md --out-csv out.csv`
    If it exits non-zero (dataset rejected), notify with the rejection reasons and STOP.
