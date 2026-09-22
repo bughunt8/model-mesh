@@ -1,6 +1,8 @@
 # Model-mesh pilot task and benchmark options
 
-Selection draft | 22 September 2026 | Research and planning only
+Selection record and research | 22 September 2026 | Research and planning only
+
+See [the plan](PLAN.md), [analysis](ANALYSIS.md), and [decision log](DECISIONS.md). Options are preserved for traceability; the explicit owner selections govern the proposed scope.
 
 ## Rules already settled
 
@@ -38,7 +40,7 @@ The following is a proposed coverage assessment, not a claim that we have inspec
 
 ## Twelve candidate evaluation scenarios
 
-These are proposed evaluation cases, not descriptions of existing benchmarks or requests to justify usefulness. Select the capabilities you want tested. Selection indicates interest, not a commitment to run all of them.
+These are proposed evaluation cases, not descriptions of existing benchmarks or requests to justify usefulness. The menu is retained as the selection record. Only A01, A03, A05, A08, A09, A11, and A12 are selected, and selection does not authorize execution.
 
 | ID and task | Example pilot assignment | Proposed acceptance evidence | A result that must fail despite looking successful |
 |---|---|---|---|
@@ -55,13 +57,9 @@ These are proposed evaluation cases, not descriptions of existing benchmarks or 
 | A11. Browser administration | Complete a multi-step update across disposable project, content, or issue-management websites. | Verified final state, correct target records, no unintended changes, and an audit trail. | The right-looking page hides duplicate records, wrong recipients, or changes to the wrong account. |
 | A12. Cross-application office work | Assemble a decision pack from files, a spreadsheet, and a simulated communication thread. | Consistent figures, complete required artifacts, correct references, and verified handoffs. | Each artifact looks fine but the figures disagree, an attachment is missing, or a draft is sent prematurely. |
 
-### How I would narrow them
+### Interpretation of the selected scope
 
-For an engineering-focused pilot, I would consider A01 and A06 first. They directly test defect prevention and whether independent review helps rather than merely consuming attention.
-
-For a broader method claim, add one non-coding task such as A07, A08, or A10. A09 is useful but needs careful human adjudication; A11 and A12 add interface and environment complexity. Those are reasons to stage them, not reasons to exclude them.
-
-We should not pool all task types into one percentage. A method that improves research but damages code review has not demonstrated a universal gain.
+The seven selected scenarios include engineering, assurance, analysis, planning, browser work, and office work. Do not pool them into one percentage that hides a regression in a selected category. Independent review is still part of the quality process even though A06 is not a separately selected evaluation scenario.
 
 ## Ten researched benchmark options
 

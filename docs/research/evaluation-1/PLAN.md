@@ -1,12 +1,12 @@
 # Model-mesh portable method and pilot plan
 
-Discussion draft v0.2 | 22 September 2026 | Planning only
+Discussion draft v0.3 | 22 September 2026 | Planning only
 
 ## Agreed priorities
 
 Your confirmed priority order is fewer defects, less of your attention, faster accepted delivery, then lower total cost. Do not use a weighted score that allows lower-priority gains to compensate for higher-priority regressions. No compensating trade-offs are authorized.
 
-Task selection and benchmark selection will use separate multi-select menus. Include non-coding work. The companion document, "Model-mesh pilot task and benchmark options", supplies 12 proposed task types and 10 researched benchmark options.
+Scenario and benchmark selections were made separately, including non-coding work. [The benchmark research and selection record](BENCHMARKS.md) supplies the original 12 scenarios and 10 benchmark options. [Analysis](ANALYSIS.md) records experiment-design implications, and [the decision log](DECISIONS.md) separates settled instructions from open questions.
 
 The selected benchmark shortlist is B01 SWE-bench Verified, B06 GAIA, and B10 TheAgentCompany. All remain subject to access, evaluator, adapter, and security qualification. Selected scenarios are A01 regression bug repair, A03 behavior-preserving refactor, A05 security audit and remediation, A08 data reconciliation and analysis, A09 requirements and architecture planning, A11 browser administration, and A12 cross-application office work. Selection does not authorize execution.
 
@@ -131,7 +131,7 @@ Audit at release approval, per-run conformance checking, periodic usage reconcil
 
 Use the selected benchmark suites to propose a non-sensitive evaluation population and freeze an acceptance rubric before running anything. Use the settled client-evidence purpose and priority order. Agree the comparator, human assistance rules, safety boundaries, costs, and thresholds through the remaining measurement questions. Do not require useful-work discovery or reopen purpose and priorities.
 
-An illustrative starting task set is 20 to 30 distinct tasks across bug fixes, bounded features, refactors, and tests. Those numbers are a feasibility suggestion, not a powered statistical design. Choose the final count using task variability, the smallest worthwhile effect, budget, and available review capacity.
+No task count or allocation is agreed. Choose the final count across the seven selected scenarios using task variability, the smallest worthwhile effect, available review capacity, resource limits, and the statistical evidence standard. Do not reuse an arbitrary coding-only task count for this broader selection or present a small feasibility sample as a powered comparison.
 
 ### Qualify controls before measuring productivity
 
