@@ -32,7 +32,9 @@ Sampling follows minimum breadth, then depth. The feasibility proposal must prov
 
 A distinct case requires a different underlying task, such as a different defect, substantive dataset problem, requirements brief, target-system task, or office workflow. Prompt paraphrases, cosmetic variations, revision changes, and seeds alone do not create new cases. Different tasks may share a repository or application context.
 
-The coverage floor applies across the whole pilot, not separately to each comparison stage. Stage subsets may differ, but both stages retain matched comparisons and their claims cover only the scenarios actually tested in that stage.
+The coverage floor applies across the whole pilot, not separately to each comparison stage. Select two routine cases per scenario and keep that scenario's two-case floor together in one stage. Divide scenarios between the method and routing stages, with at least one scenario in each; the assignment remains to be approved. Both stages retain matched competing arms on each case. Claims cover only routine tasks and the effect tested for that scenario, not challenging-case reliability or an untested stage.
+
+Define routine eligibility before selecting cases or seeing results. This task mix does not weaken security qualification, mandatory adversarial control tests, or the any-confirmed-defect acceptance rule.
 
 The headline attention measure includes all active owner effort on the pilot, including preparation, setup, briefing, supervision, safety intervention, evaluation, dispute resolution, record keeping, and cleanup. Keep these categories visible and count time once. Passive waiting affects elapsed delivery time, not active attention; setup before the scored clock is not excluded from attention.
 

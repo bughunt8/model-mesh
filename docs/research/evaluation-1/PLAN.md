@@ -1,6 +1,6 @@
 # Model-mesh portable method and pilot plan
 
-Discussion draft v0.12 | 23 September 2026 | Planning only
+Discussion draft v0.13 | 23 September 2026 | Planning only
 
 ## Agreed priorities
 
@@ -145,7 +145,11 @@ The owner selected minimum breadth, then depth. First satisfy the two-distinct-c
 
 Count distinct underlying tasks, not distinct labels or prompts. Cases must differ in the actual defect, substantive dataset problem, requirements brief, target-system task, or office workflow being solved. Prompt paraphrases, cosmetic changes, revision changes, or different seeds alone do not qualify. A different repository or application is not additionally required when the underlying task differs. Record the underlying-task identity and reason for distinctness in the pre-run manifest so independent review can reject near-duplicates before they inflate the floor.
 
-Apply that floor across the whole pilot, not independently to both stages. Each stage may test a different predeclared subset, while preserving matched arms on the same tasks within that stage. A scenario tested only in the method stage does not establish a routing result, and the reverse also holds. Both stages still require explicit allocations; this choice does not authorize omitting either comparison. Report the scenario-by-stage coverage matrix and limit each claim to its tested subset rather than pooling unlike stage populations to imply a broader effect.
+The selected case mix is two routine tasks per scenario. Define routine eligibility and any relevant complexity criteria before case selection and results; do not label a task routine merely because an arm solved it or replace a difficult outcome after seeing results. This scope supports routine-work observations only, not challenging-case reliability or representativeness of all client work. Mandatory security qualification and adversarial control tests remain separate requirements, and every confirmed defect still fails local acceptance.
+
+Apply the fourteen-case floor across the whole pilot, not independently to both stages. Keep each scenario's two routine floor cases together in one stage rather than splitting them or reusing the floor across both stages. Partition the seven scenarios between method and routing comparisons, with at least one scenario in each stage. Which scenarios go where remains open and must be frozen before results. Within the assigned stage, run matched competing arms on each case; keeping two cases together does not mean assigning one case to each arm.
+
+A scenario tested in the method stage does not establish a routing result, and the reverse also holds. Both stages remain required. Report the scenario-by-stage coverage matrix and limit each claim to its tested routine scope rather than pooling unlike stage populations to imply a broader effect. Any proposal for cases or cross-stage runs beyond the agreed floor requires an explicit allocation and feasibility review; no additional work is authorized by this design.
 
 ### Qualify controls before measuring productivity
 
@@ -296,6 +300,7 @@ We will resolve this in rounds rather than ask dozens of abstract questions at o
 - Final adjudication: two independent AI judges; the project owner personally resolves disputes or uncertain findings on frozen outputs.
 - Dispute timing: eight elapsed minutes from escalation, or the global deadline if sooner; no ruling means frozen unresolved and not accepted.
 - Sampling: at least two distinct cases per selected scenario, fourteen across the whole pilot rather than per stage, then repeated paired trials; approve the case manifest and stage subsets, and return for a scope decision if infeasible.
+- Case mix and assignment: two routine cases per scenario, kept together in one stage; divide scenarios between the two required stages and freeze the assignment before results.
 - Case identity: a different underlying task is required; paraphrases, cosmetic variants, revision changes, and seeds alone do not count. A different repository or application context is not also required.
 - Attention: all active owner pilot effort, including setup and independent evaluation, with category breakdowns and no double counting; passive waiting is elapsed time.
 - Attention recording: owner-operated timer plus tagged activity log, with reconciliation and preserved corrections. Missed start/stop intervals remain missing, never estimated or zero; no missing-data analysis exception is currently agreed.
@@ -309,6 +314,7 @@ We will resolve this in rounds rather than ask dozens of abstract questions at o
 - For each selected scenario, which versioned reference/template and correctness criteria define defects? Every confirmed defect already causes failure.
 - Which judge configurations, calibration checks, and recorded escalation and notification mechanics implement adjudication within the settled eight-minute window? How are missing-judge cases and timely but inconclusive owner responses recorded without treating them as passes?
 - Which exact model, harness, prompts, tools, reasoning settings, visible checks, and agent-review procedures define each selected stage?
+- Which scenarios belong to the method stage and which to the routing stage, keeping each routine two-case floor together? Which predeclared eligibility criteria define routine work in each scenario?
 - Which timer/log tool, fields, reconciliation cadence, and shared-effort allocation will implement the settled recording method without double counting? The inclusion of setup and independent evaluation is settled.
 - What evidence is sufficient to distinguish improvement, regression, and an inconclusive result without allowing a prohibited trade-off?
 

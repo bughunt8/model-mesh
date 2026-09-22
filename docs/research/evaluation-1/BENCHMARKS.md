@@ -22,7 +22,9 @@ Sampling follows minimum breadth, then depth: use at least two distinct cases pe
 
 Require different underlying tasks, not just different benchmark IDs, prompts, revisions, seeds, or cosmetic variants. Record each case's actual defect, substantive dataset problem, brief, target-system task, or workflow and its distinctness rationale. A different repository or application context is not also required. Freeze this evidence before outcomes; two distinct cases do not by themselves imply independent observations.
 
-The floor applies across the whole pilot rather than separately to each stage. Freeze and report a scenario-by-stage matrix; stage subsets may differ, but matched comparisons and claims remain local to the tested stage and scenarios. A suite's inclusion somewhere in the pilot does not establish both method and routing results for it.
+The floor applies across the whole pilot rather than separately to each stage. Select two routine cases for every scenario and keep both together in one assigned stage. Divide scenarios between method and routing, with both stages represented, and freeze the assignment before results. Every case retains matched competing-arm attempts within its assigned stage. A suite's inclusion somewhere in the pilot does not establish both effects for it.
+
+Define routine eligibility before selecting benchmark cases; an upstream task label alone does not establish suitability for this local scope. Limit claims to the tested routine tasks and assigned effect, not challenging-case reliability or official full-suite performance. Failed cases remain in the record. Routine case selection does not exempt any selected suite from mandatory whole-stack security qualification or adversarial control tests.
 
 All active owner pilot attention is included in the headline, including benchmark setup, evidence preparation, evaluation, disputes, record keeping, and cleanup as well as operational work. Report categories separately without excluding experiment-only effort or duplicating shared minutes. Passive waiting is elapsed time, not active attention.
 

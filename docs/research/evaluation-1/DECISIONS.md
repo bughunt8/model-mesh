@@ -45,6 +45,8 @@ This log records owner instructions and explicit selections from the planning di
 | D35 | Record all active owner pilot attention with a timer plus activity log. | Settled on 23 September 2026. Owner-operated timer, activity tags, reconciliation, and preserved corrections. D37 subsequently fixes missing-interval treatment. Specific tooling and shared-effort attribution remain open; no recording system is implemented. |
 | D36 | Require a different underlying task for cases to count as distinct toward the fourteen-case floor. | Settled on 23 September 2026. Different actual defects, dataset problems, briefs, target-system tasks, or office workflows qualify; paraphrases, cosmetic variants, revision changes, and seeds alone do not. A different repository or application is not additionally required. |
 | D37 | Mark a missed timer start/stop interval missing, without estimating it or treating it as zero. | Settled on 23 September 2026. The affected attention comparison is inconclusive unless a missing-data threshold and analysis procedure are approved before runs; no exception is currently agreed. Preserve records and task outcomes; do not conceal gaps or invent duration observations. |
+| D38 | Use two routine cases within each selected scenario for the fourteen-case feasibility floor. | Settled on 23 September 2026. Define routine eligibility before selection and outcomes. Claims remain routine-work only; challenging-case reliability is not established, and mandatory adversarial security qualification is not waived. |
+| D39 | Keep each scenario's two-case floor together in one comparison stage. | Settled on 23 September 2026. Partition scenarios between method and routing with both stages represented; the scenario assignment remains open. Each case still receives matched competing-arm attempts within its assigned stage. No untested effect is inferred. |
 
 ## Superseded or constrained proposals
 
@@ -76,6 +78,8 @@ This log records owner instructions and explicit selections from the planning di
 | Use only a manual activity log or infer active minutes from interaction events alone. | Not selected. D35 chooses timer plus activity log; missing intervals must be flagged rather than silently inferred or treated as zero. |
 | Require a new context as well as a new task, or count new case IDs without an underlying-task distinction. | Not selected. D36 chooses different underlying tasks, with reasons recorded before results. |
 | Reconstruct forgotten timer intervals conservatively or estimate low/high sensitivity bounds. | Not selected. D37 chooses missing data. No duration imputation or default zero is authorized. |
+| Use one routine plus one challenging case, or two challenging cases, for each scenario's floor. | Not selected. D38 chooses two routine cases without waiving security gates or permitting post-outcome exclusions. |
+| Split each scenario's two floor cases across stages, or reuse all fourteen floor cases in both stages. | Not selected. D39 keeps each scenario's pair in one stage; any additional cross-stage proposal needs explicit allocation and feasibility review. |
 
 ## Open questions
 
@@ -93,7 +97,7 @@ These remain genuinely unresolved. Their presence does not prevent a documentati
 | O08 | Which exact benchmark releases, splits, task subsets, graders, and simulator configurations are available and appropriate? | Environment freeze. |
 | O09 | Can TheAgentCompany meet the complete security boundary without unsafe privileges on the user/shared host? | Its installation or execution. |
 | O10 | Which supplemental refactoring, security, and architecture cases are needed, and how will they be independently graded? | Coverage approval. |
-| O11 | What class taxonomy, assignment procedure, numeric task-level limits, safety stop rules, case manifest, repeats, and scenario-by-stage matrix fit the settled envelope? | Execution authorization; the two-distinct-cases-per-scenario whole-pilot floor is settled, but final cases and allocations are not. |
+| O11 | What routine-eligibility criteria, class taxonomy, numeric task-level limits, safety stop rules, case manifest, repeats, and scenario partition between stages fit the envelope? | Execution authorization; two distinct routine cases per scenario, fourteen across the pilot, with each pair together in one stage are settled. Final cases and the partition remain open. |
 | O12 | What time horizon and allocation rules define total cost, including setup and qualification? | Any total-cost comparison. |
 | O13 | Which project case studies may later be used, and what may be published? | Case-study disclosure; deferred for now. |
 | O14 | How are other pending, in-flight, unstarted, and missing-judge tasks classified at cutoff, and how do shutdown, evidence retention, and cleanup avoid extending scored execution? | Execution authorization; clock boundaries and unanswered-dispute classification under D30 are settled. |
