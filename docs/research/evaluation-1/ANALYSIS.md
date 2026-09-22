@@ -12,9 +12,9 @@ A future client statement must identify the evaluated scope, model and harness v
 
 ## Distinguish the experiment's causes
 
-Proposed comparisons should isolate the disciplined loop, role-specific model routing, harness portability, and optional parallel orchestration. Changing all four at once gives a system comparison, not an estimate of the method's individual contribution.
+The owner selected two separate stages: isolate the disciplined loop first, then the additional effect of role-specific routing. Portability and optional parallel orchestration remain later proposed comparisons. Changing all four at once gives a system comparison, not an estimate of the method's individual contribution.
 
-If the chosen reference is a compatible single-model harness, use the staged comparisons in [PLAN.md](PLAN.md). If the relevant reference is human-led or already multi-model, either add a separately named controlled reference or limit claims to whole-system differences. Do not rename an unmatched system comparison a controlled method-effect test.
+Use the matched single-model reference for the staged comparisons in [PLAN.md](PLAN.md), with exact configurations still to be agreed. If a human-led or already multi-model operational reference is later added, report it separately and limit its attribution to whole-system differences. Do not substitute it for either selected controlled stage.
 
 Use `arm-baseline`, `arm-method`, and `arm-routing` in a future protocol to avoid confusion with A-prefixed scenario IDs. These are labels only; no experiment runner is being introduced.
 
@@ -42,7 +42,11 @@ Supplemental case construction is a proposal awaiting the final protocol. It is 
 
 The primary objective is fewer defects, not a higher completion score alone. Report both task-level outcomes and severity-specific defect outcomes across the full assigned population.
 
-The next protocol must distinguish a defect caught before submission, a defect reaching the reviewer, a false acceptance, an escaped defect within a declared observation window, an incomplete task, and a correct safe refusal. Do not reward a system that avoids all defects by refusing every feasible task; completion, required behavior, and safety must be interpreted together.
+The scored defect outcome is the final frozen deliverable after at most one repair cycle, not first-handoff quality. Distinguish final defects, false acceptance, escaped defects within a declared observation window, incomplete tasks, and correct safe refusals. Retain repair traces for audit without creating a separate first-handoff defect target. Do not reward a system that avoids defects by refusing every feasible task; completion, required behavior, and safety must be interpreted together.
+
+No human rescue is permitted during scored work. Permitted repair feedback must be available under the same declared rules within a comparison, and final hidden evaluation remains separate. Otherwise, the experiment risks measuring privileged feedback or human coaching rather than the method.
+
+After initial submission, one repair opportunity is a maximum, not an instruction to use the final evaluator repeatedly. Final submission freezes the scoreable artifact; hidden final-evaluator findings cannot reopen the attempt. At a repair or resource limit, retain the failure even if a later separately authorized rescue succeeds.
 
 Within each scenario, freeze what counts as an opportunity for failure and how duplicate findings are deduplicated. Do not compare defect counts across tasks of very different scope without their task-level denominators.
 
@@ -50,17 +54,18 @@ Do not average a serious defect away with many trivial successes. Severity thres
 
 ## Human attention and cost boundaries
 
-Keep three ledgers distinct:
+Keep four ledgers distinct:
 
 | Ledger | Proposed contents | How it affects interpretation |
 |---|---|---|
-| Operational delivery | Briefing, clarifications, supervision, ordinary review, agent reviewer calls, corrections, recovery, tool and inference usage. | Counts in workflow attention, time, and cost. Normal model-mesh review is not experiment-only overhead. |
+| Operational delivery | Frozen briefing, supervision, ordinary final review, agent reviewer calls, the single permitted agent repair, safety interventions, tool and inference usage. | Counts in workflow attention, time, and cost. Normal model-mesh review is not experiment-only overhead; human coaching is prohibited during scored attempts. |
 | Independent evaluation | Hidden tests, benchmark grading, independent defect adjudication, simulator calls used only for evaluation, and experimental record keeping. | Report separately; apply equivalent evaluation requirements to comparison arms. |
 | Setup and qualification | Adapter work, installation audit, sandbox qualification, environment provisioning, and operator training. | Report cash and person-hours. Any amortization must state a horizon and deployment volume before comparison. |
+| Separately authorized rescue | Post-score recovery under a separate run identity, with any human effort, tools, and inference explicitly attributed. | Cannot change the scored failure, success denominator, or accepted-delivery result. Report separately and include in disclosed all-in observed expenditure. |
 
 If one action serves both delivery and evaluation, predeclare the allocation rule and report it once. Do not move inconvenient costs between ledgers after seeing results.
 
-The lower-total-cost objective must have a declared scope and horizon. A low steady-state token bill does not establish lower total adoption cost when setup or review effort is omitted. No rate for owner time or amortization horizon has been agreed.
+The lower-total-cost objective must have a declared scope and horizon. A low steady-state token bill does not establish lower total adoption cost when setup, review, or later rescue effort is omitted. Show the bounded scored comparison and broader observed expenditure separately. No rate for owner time or amortization horizon has been agreed.
 
 ## Enforce the no-trade-off instruction
 

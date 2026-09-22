@@ -21,6 +21,11 @@ This log records owner instructions and explicit selections from the planning di
 | D11 | Select A01 bug repair, A03 refactoring, A05 security audit and remediation, A08 data reconciliation and analysis, A09 requirements and architecture planning, A11 browser administration, A12 cross-application office work. | Settled scenario scope. A02, A04, A06, A07, A10 are not separately selected. |
 | D12 | Create a new branch named `evaluation-1`; keep plan, analysis, research, all documentation, and a decision log there; independently review the package. | Settled repository organization. Package location: docs/research/evaluation-1/. |
 | D13 | Update the original PR for this new organization rather than replacing it. | Settled. Retain PR #3 and its existing head branch; synchronize that branch to the reviewed `evaluation-1` commit. No second evaluation PR and no main update. |
+| D14 | Establish both comparisons in separate stages: method effect first, then added routing effect. | Settled on 22 September 2026. Exact pinned configurations and feedback remain open. |
+| D15 | Measure defect quality after bounded repair, rather than first handoff or both stages. | Settled. Do not add a separate first-handoff defect target; retain repair accounting and audit traces. |
+| D16 | Permit one repair cycle after the initial submission, with the same cap on both sides of each comparison. | Settled. At most one cycle; all work within it remains subject to task-level resource limits. |
+| D17 | No human rescue during scored attempts. | Settled. No coaching or fixes; humans may stop unsafe execution and evaluate frozen final results. |
+| D18 | Count failure at the repair/resource limit; rescue separately. | Settled. Freeze the failure. Later rescue requires separate authorization, remains unscored and disclosed, and cannot revise the original result. |
 
 ## Superseded or constrained proposals
 
@@ -32,6 +37,8 @@ This log records owner instructions and explicit selections from the planning di
 | Prefer other benchmark or scenario options based on the drafter's shortlist. | Owner selections D09 and D11 take precedence. Retain other options as research only. |
 | Replace PR #3 with a new evaluation PR. | Superseded by D13 before a replacement PR was created. |
 | Use an illustrative coding-only sample size for the entire evaluation. | Removed. Sample allocation must follow the selected scenario mix and evidence requirements. |
+| Measure first-handoff and final defect quality as coequal outcomes. | Not selected. D15 chooses post-repair defect quality only. |
+| Leave the number of repair cycles, human rescue, or failure overwrite policy open. | Superseded by D16 through D18. |
 
 ## Open questions
 
@@ -39,7 +46,7 @@ These remain genuinely unresolved. Their presence does not prevent a documentati
 
 | ID | Question to resolve | Decision needed before |
 |---|---|---|
-| O01 | What comparator supports the intended claim: a matched single-model setup, current complete workflow, or absolute qualification criteria? | Final experiment design and any improvement claim. |
+| O01 | Which exact model, harness, prompts, tools, reasoning settings, and non-holdout feedback define each of the two selected controlled comparisons? | Environment and protocol freeze; the two stages are already settled. |
 | O02 | What constitutes a defect for each selected scenario, how is severity assigned, and what is an automatic failure? | Task and evaluator freeze. |
 | O03 | Who independently adjudicates findings, false positives, and disagreements between tests or judges? | Evaluation approval. |
 | O04 | How are active owner attention and operational review separated from experimental adjudication? | Measurement instrumentation. |
@@ -49,7 +56,7 @@ These remain genuinely unresolved. Their presence does not prevent a documentati
 | O08 | Which exact benchmark releases, splits, task subsets, graders, and simulator configurations are available and appropriate? | Environment freeze. |
 | O09 | Can TheAgentCompany meet the complete security boundary without unsafe privileges on the user/shared host? | Its installation or execution. |
 | O10 | Which supplemental refactoring, security, and architecture cases are needed, and how will they be independently graded? | Coverage approval. |
-| O11 | What budget, concurrency, retries, time limits, stopping rules, and sampling plan apply? | Execution authorization. |
+| O11 | What task-level budget, concurrency, retry and time limits, broader safety stop rules, and sampling plan apply within the settled one-repair/no-human-rescue envelope? | Execution authorization. |
 | O12 | What time horizon and allocation rules define total cost, including setup and qualification? | Any total-cost comparison. |
 | O13 | Which project case studies may later be used, and what may be published? | Case-study disclosure; deferred for now. |
 
