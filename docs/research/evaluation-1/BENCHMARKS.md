@@ -1,6 +1,6 @@
 # Model-mesh pilot task and benchmark options
 
-Selection record and research | 22 September 2026 | Research and planning only
+Selection record and research | Updated 23 September 2026 | Research and planning only
 
 See [the plan](PLAN.md), [analysis](ANALYSIS.md), and [decision log](DECISIONS.md). Options are preserved for traceability; the explicit owner selections govern the proposed scope.
 
@@ -18,11 +18,13 @@ Two independent AI judges evaluate final frozen outputs, with the project owner 
 
 The selected suites share a continuous 10-hour scored-phase clock starting with the first scored-task dispatch, including queues, grading, and owner waits. Setup is before the clock, but all new pilot model/tool/compute charges, including setup and cleanup, share the USD 100 ceiling. No per-suite reset is allowed, and these limits do not imply that full runs of every suite fit. Task subsets and resource allocations remain to be approved.
 
-Sampling follows minimum breadth, then depth: propose a minimum floor across the seven selected scenarios, then repeated paired trials with remaining capacity. Qualify B01, B06, and B10 and retain explicit supplemental coverage gaps. Neither one benchmark task nor one repeated case automatically covers every mapped scenario. If the proposed floor is infeasible or a selected suite cannot meet security requirements, return for a scope decision; do not substitute a benchmark or waive controls silently.
+Sampling follows minimum breadth, then depth: use at least two distinct cases per selected scenario, fourteen across the whole pilot, then repeated paired trials with remaining capacity. Assign each floor case one primary scenario; a reused case or repeated run does not supply another distinct case. Qualify B01, B06, and B10 and retain explicit supplemental coverage gaps. If the floor is infeasible or a selected suite cannot meet security requirements, return for a scope decision; do not substitute a benchmark or waive controls silently.
 
 The floor applies across the whole pilot rather than separately to each stage. Freeze and report a scenario-by-stage matrix; stage subsets may differ, but matched comparisons and claims remain local to the tested stage and scenarios. A suite's inclusion somewhere in the pilot does not establish both method and routing results for it.
 
 All active owner pilot attention is included in the headline, including benchmark setup, evidence preparation, evaluation, disputes, record keeping, and cleanup as well as operational work. Report categories separately without excluding experiment-only effort or duplicating shared minutes. Passive waiting is elapsed time, not active attention.
+
+Record that attention using an owner-operated timer plus tagged activity log, with reconciliation and preserved corrections. Flag missing or estimated intervals, including setup and evaluation work outside scored execution; do not convert missing observations to zero.
 
 The owner has eight elapsed minutes from recorded dispute escalation to rule, capped by the global deadline. An unanswered dispute freezes as unresolved and not accepted under the local protocol. Keep this local outcome separate from the official benchmark grade, without adding late scored grading.
 
@@ -136,7 +138,7 @@ Your priority order is settled. These questions concern definitions and evidence
 - Which AI-judge configurations, calibration checks, and human dispute-resolution procedure apply? The adjudication model is already selected.
 - How much repeated evidence is required before calling a difference an improvement rather than run-to-run noise?
 - How should an uncertain comparison be treated? My recommendation is inconclusive, not an assumed pass.
-- How will all active owner pilot attention be recorded and allocated, including setup and independent evaluation, without double counting shared effort?
+- Which timer/log tool, reconciliation procedure, and shared-effort allocation will capture all active owner pilot attention without double counting? Timer plus activity log is settled.
 - Which exact configurations, visible checks, and agent-review procedures define each selected comparison stage? The feedback categories are already settled.
 - Deferred until requested: project case-study selection and publication permissions. Do not use this as a reason to delay benchmark selection.
 

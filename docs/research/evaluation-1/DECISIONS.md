@@ -1,6 +1,6 @@
 # Evaluation 1 decision log
 
-Status as of 22 September 2026 | Planning only
+Status as of 23 September 2026 | Planning only
 
 This log records owner instructions and explicit selections from the planning discussion. It does not treat the drafter's recommendation as approval. Ordering preserves the sequence of decisions; dates use Hong Kong time.
 
@@ -38,9 +38,11 @@ This log records owner instructions and explicit selections from the planning di
 | D28 | Start the continuous 10-hour clock at first scored-task dispatch; include subsequent execution, queues, grading, and waits for owner decisions, with no pauses. | Settled. Preparation is before the scored clock, without hiding scored solving or evaluation there. |
 | D29 | Count all new pilot-related model, tool, and compute charges toward USD 100, including setup, scored work, repairs, both judges, simulators, storage, and cleanup. | Settled. Being outside the scored clock does not exempt a new charge. Owner labor is separately measured. |
 | D30 | Allow eight elapsed minutes for the owner's dispute ruling, capped by the global deadline if sooner. Without a timely ruling, freeze the task as unresolved and not accepted. | Settled. Measure from recorded dispute escalation; no clock pause, late score rewrite, or automatic confirmation of a suspected defect. Notification mechanics remain open. |
-| D31 | Use minimum breadth, then depth when proposing sampling within the fixed limits. | Settled approach. Propose a minimum floor across the seven selected scenarios, then repeated paired trials. Numeric floor, cases, repeats, and stage allocations need approval. If the floor is infeasible, return for a scope decision. |
-| D32 | Apply the minimum coverage floor across the whole pilot, not separately to each comparison stage. | Settled. Stage subsets may differ, but both stages remain required; preserve matched comparisons within stages and limit each stage's claims to its tested scenarios. Numeric floor and stage matrix remain open. |
-| D33 | Use all active owner pilot attention as the headline attention measure. | Settled. Include preparation/setup, briefing, supervision, safety intervention, evaluation, disputes, record keeping, and cleanup, with category breakdowns. Passive waiting is elapsed time, not active attention. Recording and shared-effort allocation remain open; no double counting. |
+| D31 | Use minimum breadth, then depth when proposing sampling within the fixed limits. | Settled approach. D34 subsequently fixes the numeric floor; cases, repeats, and stage allocations need approval. If the floor is infeasible, return for a scope decision. |
+| D32 | Apply the minimum coverage floor across the whole pilot, not separately to each comparison stage. | Settled. Stage subsets may differ, but both stages remain required; preserve matched comparisons within stages and limit each stage's claims to its tested scenarios. D34 fixes the floor; the stage matrix remains open. |
+| D33 | Use all active owner pilot attention as the headline attention measure. | Settled. Include preparation/setup, briefing, supervision, safety intervention, evaluation, disputes, record keeping, and cleanup, with category breakdowns. Passive waiting is elapsed time, not active attention. D35 fixes the recording method; shared-effort allocation remains open and must not duplicate minutes. |
+| D34 | Use two distinct cases per selected scenario as the feasibility floor before allocating remaining capacity to repeats. | Settled on 23 September 2026. At least fourteen distinct cases across the whole pilot, not per stage. Final case selection, repeats, additional cases, and stage allocation remain open. Infeasibility requires an owner scope decision, not silent reduction. |
+| D35 | Record all active owner pilot attention with a timer plus activity log. | Settled on 23 September 2026. Owner-operated timer, activity tags, reconciliation, preserved corrections, and explicit missing/estimated intervals. Specific tooling and shared-effort attribution remain open; no recording system is implemented. |
 
 ## Superseded or constrained proposals
 
@@ -68,6 +70,8 @@ This log records owner instructions and explicit selections from the planning di
 | Prioritize breadth alone or silently reduce scope to maximize depth. | Not selected. D31 chooses minimum breadth, then depth, with an owner decision if the floor is infeasible. |
 | Require the full seven-scenario floor independently in both comparison stages. | Not selected. D32 applies the floor across the whole pilot; no claim extends to an untested stage/scenario combination. |
 | Use operational attention alone as the headline and omit setup or experimental adjudication. | Not selected. D33 includes all active owner pilot effort, while retaining separate categories. |
+| Use one or three distinct cases per scenario as the minimum floor, or call repeated runs new cases. | Not selected. D34 chooses two distinct cases per scenario; more cases may be proposed without redefining the floor. |
+| Use only a manual activity log or infer active minutes from interaction events alone. | Not selected. D35 chooses timer plus activity log; missing intervals must be flagged rather than silently inferred or treated as zero. |
 
 ## Open questions
 
@@ -78,14 +82,14 @@ These remain genuinely unresolved. Their presence does not prevent a documentati
 | O01 | Which exact model, harness, prompts, tools, reasoning settings, visible checks, and agent-review procedures define each selected controlled comparison? | Environment and protocol freeze; stages and feedback categories are settled. |
 | O02 | Which versioned references/templates, declared variable fields/exceptions, comparison representation, and correctness criteria define defects in each scenario? | Task and evaluator freeze; exact-template grading and every-confirmed-defect failure are settled. |
 | O03 | Which two AI-judge configurations, calibration/validation procedures, evidence access, and recorded escalation/notification mechanics implement final adjudication? | Evaluation approval; two judges, owner identity, eight-minute response window, and unanswered-dispute outcome are settled. |
-| O04 | How are all active owner minutes recorded and shared effort attributed to categories, tasks, arms, and stages without duplication? | Measurement instrumentation and comparative analysis; the all-pilot headline scope is settled. |
+| O04 | Which timer/log tool, fields, reconciliation cadence, missing-data procedure, and shared-effort allocation implement D35 without duplication? | Measurement instrumentation and comparative analysis; all-pilot scope and timer-plus-log method are settled. |
 | O05 | What evidence standard distinguishes improvement, regression, and inconclusive results without unauthorized regression margins? | Sample-size choice and preregistration. |
 | O06 | Which data classes, recipients, jurisdictions, retention rules, and tool permissions apply? | Any real-data or networked execution. |
 | O07 | Which second harness, pinned release, and adapter contract should test portability? | Adapter implementation authorization. |
 | O08 | Which exact benchmark releases, splits, task subsets, graders, and simulator configurations are available and appropriate? | Environment freeze. |
 | O09 | Can TheAgentCompany meet the complete security boundary without unsafe privileges on the user/shared host? | Its installation or execution. |
 | O10 | Which supplemental refactoring, security, and architecture cases are needed, and how will they be independently graded? | Coverage approval. |
-| O11 | What class taxonomy, assignment procedure, numeric task-level limits, safety stop rules, whole-pilot coverage floor, distinct cases, repeats, and scenario-by-stage matrix fit the settled envelope? | Execution authorization; minimum breadth, then depth across the whole pilot is settled, but numeric allocation is not. |
+| O11 | What class taxonomy, assignment procedure, numeric task-level limits, safety stop rules, case manifest, repeats, and scenario-by-stage matrix fit the settled envelope? | Execution authorization; the two-distinct-cases-per-scenario whole-pilot floor is settled, but final cases and allocations are not. |
 | O12 | What time horizon and allocation rules define total cost, including setup and qualification? | Any total-cost comparison. |
 | O13 | Which project case studies may later be used, and what may be published? | Case-study disclosure; deferred for now. |
 | O14 | How are other pending, in-flight, unstarted, and missing-judge tasks classified at cutoff, and how do shutdown, evidence retention, and cleanup avoid extending scored execution? | Execution authorization; clock boundaries and unanswered-dispute classification under D30 are settled. |

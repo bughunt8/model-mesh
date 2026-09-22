@@ -1,6 +1,6 @@
 # Model-mesh portable method and pilot plan
 
-Discussion draft v0.10 | 22 September 2026 | Planning only
+Discussion draft v0.11 | 23 September 2026 | Planning only
 
 ## Agreed priorities
 
@@ -139,9 +139,9 @@ Audit at release approval, per-run conformance checking, periodic usage reconcil
 
 Use the selected benchmark suites to propose a non-sensitive evaluation population and freeze an acceptance rubric before running anything. Use the settled client-evidence purpose, priority order, comparison stages, repair rules, feedback categories, acceptance rule, and cap structure. Agree exact model/harness configurations, visible test and review procedures, safety boundaries, numeric caps, costs, and adoption evidence requirements through the remaining measurement questions. Do not reopen settled decisions or require useful-work discovery.
 
-No task count or allocation is agreed. Choose the final count across the seven selected scenarios using task variability, the smallest worthwhile effect, available review capacity, the 10-hour/USD 100 ceilings, and the statistical evidence standard. Do not assume that all selected suites, both stages, supplemental cases, repeats, and two-judge grading fit those limits. Propose a predeclared balanced subset or deferral if necessary; do not silently drop difficult tasks or claim that a small feasibility sample establishes a powered comparison.
+The agreed feasibility floor is two distinct cases per selected scenario, fourteen distinct cases across the seven scenarios. Final case selection, counts beyond that minimum, repeats, and stage allocation remain open. Use task variability, the smallest worthwhile effect, available review capacity, the 10-hour/USD 100 ceilings, and the statistical evidence standard to assess feasibility. Do not assume that all selected suites, both stages, supplemental cases, repeats, and two-judge grading fit those limits. Return for an owner scope decision if the floor is infeasible; do not silently reduce it or claim that this small feasibility floor establishes a powered comparison.
 
-The owner selected minimum breadth, then depth. First propose a minimum coverage floor across all seven selected scenarios, using qualified selected benchmarks and the necessary supplemental cases. Then allocate remaining capacity to repeated paired trials. Freeze the numeric floor, distinct cases, repeats, stage allocation, and selection procedure before results. A repeated run does not supply a missing scenario or count as a new distinct task. If the floor cannot fit safely within the aggregate limits, return to the owner for a scope decision before execution. No selection is silently dropped and no safety boundary is waived.
+The owner selected minimum breadth, then depth. First satisfy the two-distinct-case floor for each scenario in the feasibility proposal, using qualified selected benchmarks and necessary supplemental cases. Then allocate remaining capacity to repeated paired trials. Freeze the case manifest, repeats, stage allocation, and selection procedure before results. Assign each floor case one primary scenario so the fourteen-case minimum is not reduced by counting one case toward several scenario floors. A case reused in another arm or stage, a repair, or a repeated run is not a new distinct case. If the floor cannot fit safely within the aggregate limits, return to the owner for a scope decision before execution. No selection is silently dropped and no safety boundary is waived.
 
 Apply that floor across the whole pilot, not independently to both stages. Each stage may test a different predeclared subset, while preserving matched arms on the same tasks within that stage. A scenario tested only in the method stage does not establish a routing result, and the reverse also holds. Both stages still require explicit allocations; this choice does not authorize omitting either comparison. Report the scenario-by-stage coverage matrix and limit each claim to its tested subset rather than pooling unlike stage populations to imply a broader effect.
 
@@ -227,7 +227,7 @@ Finish with one of four outcomes: reject, revise and retest, continue a limited 
 
 ## Candidate measurement dictionary
 
-The headline attention scope is settled as all active owner effort on the pilot. Detailed recording and allocation procedures and other operational definitions remain proposals unless fixed by an explicit decision. Apply the confirmed priority order: defects first, then your attention, then accepted-delivery time, then total cost. Retain non-negotiable safety gates separately. Avoid hiding unacceptable behavior inside a weighted overall score.
+The headline attention scope is settled as all active owner effort on the pilot, recorded with a timer plus activity log. Specific tooling, reconciliation and allocation procedures, and other operational definitions remain proposals unless fixed by an explicit decision. Apply the confirmed priority order: defects first, then your attention, then accepted-delivery time, then total cost. Retain non-negotiable safety gates separately. Avoid hiding unacceptable behavior inside a weighted overall score.
 
 | Metric | Proposed operational definition | Trap to avoid |
 |---|---|---|
@@ -249,6 +249,8 @@ The headline attention scope is settled as all active owner effort on the pilot.
 Task success requires the frozen checks and independent AI-judge assessment, with human resolution of disputes or uncertainty. Apply the exact reference/template to cosmetic criteria and keep final evaluation outside worker write access. Do not assume AI-judge agreement is proof of correctness; calibration and validation checks must be specified before execution. Code volume, token count, number of agents, or a leaderboard score should not be primary success measures.
 
 All active owner pilot effort belongs in the headline attention ledger even outside the scored runtime clock. Keep operational, setup, independent-evaluation, and separately authorized rescue categories distinct without dropping their pilot effort from the total. Passive waiting belongs in elapsed-time reporting; active monitoring during a wait counts as attention. Shared preparation and evaluation effort needs a fixed allocation rule before comparative analysis, with one raw total and no duplicated minutes across concurrent tasks. Separately authorized rescue cannot rewrite scored outcomes, and a separate follow-on effort must be disclosed separately rather than hidden or retroactively folded into scored success. These accounting rules grant no permission for human rescue or extra work.
+
+The owner starts and stops a timer and tags each activity in the log, including pilot work outside the scored clock. Reconcile timer intervals with the activity log; preserve the original record and a reason for each correction. Flag missing or estimated intervals explicitly, not as zero effort or precise timed observations. Prevent overlapping timers from duplicating the same active minute. Reconciliation effort itself counts as pilot attention. Exact tool, log fields, reconciliation cadence, and shared-effort allocation remain to be agreed; this specifies a measurement method without implementing it.
 
 ### Comparison and uncertainty
 
@@ -289,8 +291,9 @@ We will resolve this in rounds rather than ask dozens of abstract questions at o
 - Resource envelope: predeclared by scenario or difficulty class, matched for competing arms on the same task.
 - Final adjudication: two independent AI judges; the project owner personally resolves disputes or uncertain findings on frozen outputs.
 - Dispute timing: eight elapsed minutes from escalation, or the global deadline if sooner; no ruling means frozen unresolved and not accepted.
-- Sampling: minimum breadth across the whole pilot, not per stage, then repeated paired trials; approve the numeric floor and stage subsets, and return for a scope decision if infeasible.
+- Sampling: at least two distinct cases per selected scenario, fourteen across the whole pilot rather than per stage, then repeated paired trials; approve the case manifest and stage subsets, and return for a scope decision if infeasible.
 - Attention: all active owner pilot effort, including setup and independent evaluation, with category breakdowns and no double counting; passive waiting is elapsed time.
+- Attention recording: owner-operated timer plus tagged activity log, with reconciliation, preserved corrections, and explicitly flagged missing or estimated intervals.
 - Cosmetic grading: exact reference or template, with exceptions declared before execution.
 - Aggregate limits: 10 hours total elapsed pilot runtime and USD 100 combined model/tool/compute charges. These do not reset per task or stage.
 - Clock boundary: first scored-task dispatch through final evaluation, continuously including queues, grading, and owner waits; setup precedes the clock.
@@ -301,7 +304,7 @@ We will resolve this in rounds rather than ask dozens of abstract questions at o
 - For each selected scenario, which versioned reference/template and correctness criteria define defects? Every confirmed defect already causes failure.
 - Which judge configurations, calibration checks, and recorded escalation and notification mechanics implement adjudication within the settled eight-minute window? How are missing-judge cases and timely but inconclusive owner responses recorded without treating them as passes?
 - Which exact model, harness, prompts, tools, reasoning settings, visible checks, and agent-review procedures define each selected stage?
-- How will all active owner pilot time be recorded and attributed across shared preparation, tasks, arms, and stages without double counting? The inclusion of setup and independent evaluation is settled.
+- Which timer/log tool, fields, reconciliation cadence, and shared-effort allocation will implement the settled recording method without double counting? The inclusion of setup and independent evaluation is settled.
 - What evidence is sufficient to distinguish improvement, regression, and an inconclusive result without allowing a prohibited trade-off?
 
 ### Later rounds

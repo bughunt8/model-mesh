@@ -1,6 +1,6 @@
 # Evaluation 1 analysis
 
-Design analysis, not experimental results | 22 September 2026
+Design analysis, not experimental results | 23 September 2026
 
 ## What the evaluation can establish
 
@@ -74,7 +74,7 @@ The one-cycle limit applies within the total task envelope, not as a fresh allow
 
 The monetary and elapsed-time caps are feasibility constraints, not evidence that the full selected scope can be completed or that the sample will support a comparative claim. Count both judge calls and likely dispute workload in design estimates. If adequate coverage or evidence cannot fit, propose a bounded subset or deferral rather than quietly weakening controls, dropping one judge, or extending the pilot.
 
-Minimum breadth, then depth is the agreed sampling approach, not an agreed sample size. Propose a coverage floor across the seven selected scenarios before assigning remaining capacity to repeated paired trials. Distinct cases and repeats must remain separate in the analysis, and both comparison stages need explicit allocations. An infeasible floor requires an owner scope decision before execution. Sparse coverage may support feasibility observations while leaving comparative improvement inconclusive; breadth alone does not establish statistical adequacy.
+Minimum breadth, then depth now has a feasibility floor of two distinct cases per selected scenario, fourteen distinct cases across the pilot before repeats. This is a minimum, not a final powered sample size or a promise that the limits accommodate it. Case selection, counts beyond the floor, repeats, and both-stage allocations remain open. Assign each floor case one primary scenario; reuse across arms or stages and repeated runs cannot inflate distinct-case coverage. An infeasible floor requires an owner scope decision before execution. Sparse coverage may support feasibility observations while leaving comparative improvement inconclusive; breadth alone does not establish statistical adequacy.
 
 The floor applies across the whole pilot. Preserve a scenario-by-stage coverage matrix and matched tasks within each stage, even when stage subsets differ. Evidence for a scenario in one stage cannot stand in for the other stage's missing comparison. Do not pool different stage populations to infer an overall method-plus-routing effect; any cross-stage interpretation must respect the actual task populations and untested combinations.
 
@@ -87,6 +87,8 @@ Pending disputes at the deadline cannot be treated as accepted results, nor can 
 ## Human attention and cost boundaries
 
 All active owner pilot effort is the headline attention measure, including preparation/setup, briefing, supervision, safety intervention, independent evaluation, dispute resolution, record keeping, and cleanup. Being experiment-only or outside the scored clock does not exempt active effort. Passive waiting is elapsed time, while active monitoring during a wait consumes attention. Report the raw total and category breakdowns; the operational-only subset is diagnostic, not a replacement headline.
+
+Use an owner-operated timer plus a tagged activity log and reconcile the two. Keep original entries, explained corrections, and labels for missing or estimated intervals. A forgotten timer does not establish zero attention, and a reconstructed duration is not a precise timed observation. Overlapping entries must not duplicate active minutes. Report recording gaps and their effect on comparative conclusions; insufficient attention evidence remains inconclusive rather than demonstrating an improvement. Time spent recording and reconciling is itself included, and equivalent recording procedures apply across arms.
 
 Keep four ledgers distinct:
 
