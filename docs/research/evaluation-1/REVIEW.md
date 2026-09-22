@@ -6,79 +6,83 @@ Review date: 22 September 2026, Hong Kong time.
 
 Reviewer: Independent read-only adversarial review agent.
 
-No substantive blocker was found in the D30/D31 update. The documents implement an eight-minute elapsed dispute window bounded by the earlier global deadline, freeze unanswered disputes as unresolved and not accepted, and adopt minimum breadth followed by depth without inventing a numeric coverage floor or silently reducing scope. This verdict applies to the five substantive document versions fingerprinted below. ([PLAN.md](PLAN.md), [ANALYSIS.md](ANALYSIS.md), [BENCHMARKS.md](BENCHMARKS.md), [DECISIONS.md](DECISIONS.md), [README.md](README.md))
+No substantive blocker was found in the D32/D33 update. The coverage floor applies across the combined pilot, with both matched comparison stages preserved and claims limited to tested combinations. The headline attention measure includes all active owner pilot effort, including setup and experimental evaluation, without counting passive waiting or duplicating shared minutes. This verdict applies to the five substantive document versions fingerprinted below. ([PLAN.md](PLAN.md), [ANALYSIS.md](ANALYSIS.md), [BENCHMARKS.md](BENCHMARKS.md), [DECISIONS.md](DECISIONS.md), [README.md](README.md))
 
 ## Scope and method
 
-I reviewed the uncommitted changes on local branch `evaluation-1`, based on HEAD `6b4b9baf484ff46b037c282ccecc401f4ad71107`. That commit identifies the baseline, not the new working-tree content.
+I reviewed the uncommitted changes on local branch `evaluation-1`, based on HEAD `d7507cee307be51ab242e3535b4e32cedff9c828`. That commit identifies the baseline, not the new working-tree content.
 
-I inspected the complete diff to all five substantive documents, checked related dispute, escalation, timeout, unresolved-outcome, denominator, sampling, allocation, scope, and authorization wording, and read the previous review record for continuity. I verified that each committed substantive baseline document matches its fingerprint in my preceding clock-and-cost review.
+I inspected the complete diff to all five substantive documents, checked related coverage, stage matching, attention, allocation, overhead, rescue, claim, and authorization wording across the package, and read the previous review record for continuity. I verified that each committed substantive baseline document matches its fingerprint in my preceding dispute-and-sampling review, including its two resolved cleanup notes.
 
-After the first D30/D31 review, I inspected two targeted consistency cleanups in the plan and analysis. Reversing those two replacements in memory reproduced the previously reviewed file hashes, confirming that no other content in those files changed. The refreshed fingerprints below identify the final reviewed versions.
+I subsequently inspected the exact matching-scope clarification in `PLAN.md`. Reversing that replacement in memory reproduced the preceding reviewed hash; the other four documents were unchanged. The fingerprints below identify the final reviewed versions.
 
-I made no target-file, branch, or git-state changes. This report was authored outside the repository for incorporation as `REVIEW.md` and preserves the earlier review history.
+I made no target-file, branch, or git-state changes. This report was authored outside the repository for incorporation as `REVIEW.md` and preserves the prior review history.
 
 ## Prior review history
 
-The original two-document review returned REVISE with R1 through R3. The corrected two-document package then received SHIP for documentation only. The expanded-package review and subsequent reviews of owner decisions through D29 also returned SHIP within that boundary. None authorized execution, certified runtime safety, established measured effectiveness, or guaranteed feasibility.
+The original two-document review returned REVISE with R1 through R3. The corrected two-document package then received SHIP for documentation only. Reviews of the expanded package and subsequent owner decisions through D31 also returned SHIP within that boundary. Two nonblocking D30/D31 wording notes were subsequently corrected and independently rechecked. None of these reviews authorized execution or established runtime safety, effectiveness, feasibility, or statistical adequacy.
 
 | Finding | Original severity | Current disposition |
 |---|---|---|
-| R1: Adoption wording permitted compensated regressions and weakened mandatory controls. | High | Resolved. Mandatory controls and evidence remain required, objective regressions cannot be compensated by other improvements, and uncertainty remains inconclusive without an unauthorized regression margin. ([Plan: Comparison and uncertainty](PLAN.md#comparison-and-uncertainty)) |
-| R2: Discovery questions reopened settled purpose, usefulness, and priorities. | Medium | Resolved. The client purpose and priorities remain fixed; useful-work discovery remains deferred. ([Plan: Measurement interview](PLAN.md#measurement-interview), [DECISIONS.md](DECISIONS.md)) |
-| R3: Benchmark privilege review did not adequately cover the complete execution stack. | High | Resolved. Whole-stack qualification and deferral for unmet controls remain mandatory. ([Plan: Before execution](PLAN.md#before-execution), [Benchmark evidence rules](BENCHMARKS.md#how-benchmark-evidence-will-count)) |
+| R1: Adoption wording allowed compensated regressions and weakened mandatory controls. | High | Resolved. Mandatory controls and evidence remain required; objective regressions cannot be compensated by other improvements, and uncertainty remains inconclusive without an unauthorized regression margin. ([Plan: Comparison and uncertainty](PLAN.md#comparison-and-uncertainty)) |
+| R2: Discovery questions reopened settled purpose, usefulness, and priorities. | Medium | Resolved. The client purpose and priorities remain fixed, and useful-work discovery remains deferred. ([Plan: Measurement interview](PLAN.md#measurement-interview), [DECISIONS.md](DECISIONS.md)) |
+| R3: Benchmark privilege review did not cover the complete execution stack adequately. | High | Resolved. Whole-stack qualification and deferral for unmet controls remain mandatory. ([Plan: Before execution](PLAN.md#before-execution), [Benchmark evidence rules](BENCHMARKS.md#how-benchmark-evidence-will-count)) |
 
-The expanded-package review confirmed consistent selections, explicit coverage gaps, cautious causal claims, separate accounting, and the distinction between documentation and measured outcomes. These protections remain present. ([BENCHMARKS.md](BENCHMARKS.md), [ANALYSIS.md](ANALYSIS.md))
+The expanded-package review confirmed consistent selections, explicit coverage gaps, cautious causal attribution, separate accounting, and the distinction between documentation and measured outcomes. These protections remain present. ([BENCHMARKS.md](BENCHMARKS.md), [ANALYSIS.md](ANALYSIS.md))
 
-Previously reviewed decisions remain intact:
+The previously reviewed decisions remain intact:
 
 - D14 through D18: method-first and routing-second comparisons, final post-repair defect scoring, at most one repair inside the task envelope, no scored human rescue, frozen failures, and separately authorized unscored rescue without rewriting outcomes. ([Plan: Bounded repair and final evaluation](PLAN.md#bounded-repair-and-final-evaluation), [DECISIONS.md](DECISIONS.md))
-- D19 through D21: checks plus agent-review feedback without hidden final-evaluator information, failure for every confirmed defect including cosmetic defects, and predeclared matched scenario/difficulty-class caps. ([PLAN.md](PLAN.md), [ANALYSIS.md](ANALYSIS.md))
-- D22 through D25: exact references/templates with advance exceptions, protected hidden answers, two independent AI judges, and personal owner dispute resolution after artifact freeze without edits or renewed repair. ([Plan: Final task acceptance](PLAN.md#final-task-acceptance), [DECISIONS.md](DECISIONS.md))
-- D26 through D29: a continuous 10-hour clock from first scored-task dispatch including grading and owner waits, no concealed scored solving during setup, and an aggregate USD 100 cap covering all new pilot model/tool/compute charges including setup and cleanup. ([Plan: Pilot-wide time and cash limits](PLAN.md#pilot-wide-time-and-cash-limits), [DECISIONS.md](DECISIONS.md))
+- D19 through D25: checks plus agent-review repair feedback without hidden final-evaluator information; failure for every confirmed defect including cosmetic defects; matched class-based caps; exact references/templates with advance exceptions; two independent AI judges; and personal owner dispute resolution after artifact freeze. ([PLAN.md](PLAN.md), [DECISIONS.md](DECISIONS.md))
+- D26 through D29: a continuous 10-hour clock from first scored-task dispatch including grading and owner waits, no concealed scored solving during setup, and USD 100 covering all new pilot model/tool/compute charges including setup and cleanup. ([Plan: Pilot-wide time and cash limits](PLAN.md#pilot-wide-time-and-cash-limits), [DECISIONS.md](DECISIONS.md))
+- D30 and D31: eight elapsed minutes from recorded dispute escalation or the earlier global deadline, unanswered disputes frozen as unresolved and not accepted, no late score rewrite, and minimum breadth followed by repeated paired trials with an owner scope decision if the floor is infeasible. ([PLAN.md](PLAN.md), [ANALYSIS.md](ANALYSIS.md), [DECISIONS.md](DECISIONS.md))
 
 ## Current findings
 
 **No new substantive blockers.**
 
-### Timeout fidelity and escalation
+### Whole-pilot coverage floor
 
-D30 sets eight continuous elapsed minutes from recorded dispute escalation, truncated by the global scored deadline if earlier. Owner waiting does not pause the pilot clock, and notification delay cannot silently reset the timer. The existing rule that disagreement, conflicting checks, or uncertain findings trigger owner dispute resolution remains in place; exact escalation and notification mechanics remain open. ([Plan: Final task acceptance](PLAN.md#final-task-acceptance), [Decision D30](DECISIONS.md#settled-decisions))
+D32 applies the minimum floor across the combined pilot, not independently to each stage. Stage subsets may differ, but neither the method comparison nor the routing comparison may be omitted. The plan requires matched arms on the same tasks within each stage, a predeclared scenario-by-stage matrix, and approval of numeric floor and stage allocation rather than inventing a sample count. ([Plan: Agree the experiment](PLAN.md#agree-the-experiment), [Decision D32](DECISIONS.md#settled-decisions))
 
-The timeout requires a recorded ruling, not merely permission to keep waiting. If no ruling arrives by the cutoff, the task is frozen as unresolved and not accepted. Both judge findings and evidence are preserved, and a late ruling cannot change the scored outcome or reopen the attempt. Other eligible work may continue only within the existing resource limits. ([Plan: Final task acceptance](PLAN.md#final-task-acceptance))
+Evidence from a scenario in one stage cannot fill the missing comparison in another. The analysis expressly prohibits pooling unlike stage populations into an inferred overall method-plus-routing effect, and the benchmark document warns that including a suite somewhere does not establish both effects for it. This prevents pilot-wide breadth from becoming an unsupported claim about every stage/scenario combination. ([Analysis: Resource-cap classification](ANALYSIS.md#resource-cap-classification), [BENCHMARKS.md](BENCHMARKS.md))
 
-### Unresolved is not a confirmed defect
+### All active owner effort is included
 
-The package distinguishes a timeout from an adjudicated defect and from a pass. Unresolved tasks remain in assigned-outcome reporting and cannot be removed to inflate accepted-delivery rates. Dispute frequency and response delays are reported instead of attributing every unresolved case to defective model output. The local unresolved outcome also remains separate from the official benchmark grade. ([Analysis: Define defects before optimizing anything](ANALYSIS.md#define-defects-before-optimizing-anything), [BENCHMARKS.md](BENCHMARKS.md), [README.md](README.md))
+D33 is reflected in the headline metric, analysis ledgers, benchmark rules, index, and decision log. Preparation/setup, briefing, supervision, safety intervention, independent evaluation, disputes, record keeping, and cleanup all count as active owner pilot attention. Being experiment-only or outside the scored clock is not an exclusion. Operational-only attention may be shown as a diagnostic subset but cannot replace the all-pilot headline. ([Plan: Candidate measurement dictionary](PLAN.md#candidate-measurement-dictionary), [Analysis: Human attention and cost boundaries](ANALYSIS.md#human-attention-and-cost-boundaries), [Decision D33](DECISIONS.md#settled-decisions))
 
-### Minimum breadth before depth
+Passive waiting belongs in elapsed-time reporting, while active monitoring during a wait consumes attention. Economic amortization does not erase observed active minutes. The raw owner-time total is therefore distinct from the 10-hour scored clock and the USD 100 charged-resource ceiling. ([PLAN.md](PLAN.md), [ANALYSIS.md](ANALYSIS.md))
 
-D31 is an agreed sampling approach, not an agreed sample size. A minimum coverage floor must first be proposed across all seven selected scenarios, using qualified selected benchmarks and needed supplemental cases. Remaining capacity may then support repeated paired trials. Numeric floor, distinct cases, repeats, selection procedure, and allocation across both comparison stages must be approved and frozen before results. ([Plan: Agree the experiment](PLAN.md#agree-the-experiment), [Analysis: Resource-cap classification](ANALYSIS.md#resource-cap-classification), [Decision D31](DECISIONS.md#settled-decisions))
+### Allocation, double counting, and comparative claims
 
-Repeated runs do not become new distinct tasks or supply a missing scenario. A loosely mapped benchmark task cannot automatically satisfy every associated scenario. The package does not claim that sparse breadth proves a comparative improvement or a powered design. ([PLAN.md](PLAN.md), [ANALYSIS.md](ANALYSIS.md), [BENCHMARKS.md](BENCHMARKS.md))
+The package requires one raw pilot total plus category breakdowns and predeclared attribution across tasks, arms, and stages. Shared setup, evaluation, and simultaneous monitoring cannot duplicate the same owner minutes. Allocation rules cannot be moved opportunistically after results, and a raw total spanning unlike populations cannot alone demonstrate an attention improvement. ([Plan: Candidate measurement dictionary](PLAN.md#candidate-measurement-dictionary), [Analysis: Human attention and cost boundaries](ANALYSIS.md#human-attention-and-cost-boundaries))
 
-### Infeasibility and authority boundaries
+This preserves the distinction between complete workload reporting and a causal comparison. Exact recording and allocation procedures remain open, but the scope of included effort is settled rather than left available for later exclusion. ([Decision log: Open questions](DECISIONS.md#open-questions), [ANALYSIS.md](ANALYSIS.md))
 
-If the proposed floor cannot fit safely within the aggregate limits, the plan requires an owner scope decision before execution. It does not authorize silent selection removal, benchmark substitution, a security waiver, reduced judging, or an extended budget. B01, B06, and B10 and scenarios A01, A03, A05, A08, A09, A11, and A12 remain the selected scope pending any explicit new decision. ([Plan: Agree the experiment](PLAN.md#agree-the-experiment), [BENCHMARKS.md](BENCHMARKS.md), [README.md](README.md))
+### Rescue and authorization boundaries
 
-The update does not introduce runtime or spending permission, a compensated tradeoff, useful-work rediscovery, or direct changes to main. Original PR #3 remains the documented publication route. ([README.md](README.md), [DECISIONS.md](DECISIONS.md))
+Active owner effort for separately authorized rescue that remains part of this pilot is included under its own identity, without changing the original failure, success denominator, or accepted-delivery outcome. A separate follow-on must be disclosed separately. These accounting provisions do not authorize rescue, additional work, execution, or spending. ([Plan: Candidate measurement dictionary](PLAN.md#candidate-measurement-dictionary), [Analysis: Human attention and cost boundaries](ANALYSIS.md#human-attention-and-cost-boundaries))
 
-## Resolved consistency notes
+B01, B06, and B10 remain the selected benchmarks, and A01, A03, A05, A08, A09, A11, and A12 remain the selected scenarios. No compensated tradeoff, useful-work rediscovery, silent scope removal, or security waiver is introduced. Original PR #3 remains the documented publication route without direct main changes. ([README.md](README.md), [DECISIONS.md](DECISIONS.md))
 
-Both nonblocking consistency notes from the first D30/D31 review are now resolved:
+## Resolved consistency note
 
-- `PLAN.md`, next measurement round, line 297, now asks about recorded escalation and notification mechanics within the settled eight-minute window, and how missing-judge cases or timely but inconclusive responses are recorded without becoming passes. It no longer reopens the selected duration. ([Plan: Next measurement round](PLAN.md#next-measurement-round))
-- `ANALYSIS.md`, resource-cap classification, line 83, now limits the open classification work to other pending, in-flight, unstarted, and missing-judge tasks plus shutdown mechanics. It explicitly states that the unanswered-dispute outcome is settled, consistent with O14. ([Analysis: Resource-cap classification](ANALYSIS.md#resource-cap-classification), [Decision log: Open questions](DECISIONS.md#open-questions))
+The nonblocking matching-scope ambiguity from the first D32/D33 review is resolved. `PLAN.md`, "Isolate the method and routing effects," line 154, now states:
+
+> Within each stage, use the same task instances, base revisions, infrastructure class, tool access, safety policy, and agreed resource envelope for its competing arms. The two stages may use different predeclared subsets.
+
+This explicitly confines matching to competing arms within each stage while preserving different predeclared stage subsets. It is consistent with D32 and does not change the approved design. No substantive blocker or unresolved consistency note remains from this review. ([Plan: Isolate the method and routing effects](PLAN.md#isolate-the-method-and-routing-effects), [Plan: Agree the experiment](PLAN.md#agree-the-experiment))
 
 ## Nonblocking details before execution
 
-- Define the escalation event, notification channel, timestamps, delivery-failure handling, and evidence required for a valid ruling. Acknowledgment or a request for more time must not silently restart or extend the fixed deadline.
-- Specify handling of timely but still inconclusive responses and multiple findings on a task without weakening the no-default-pass rule or freezing an invented confirmed defect.
-- Define missing-judge and other global-cutoff outcomes, preserving assigned denominators and the prohibition on late scored grading.
-- Propose the numeric coverage floor, qualified case inventory, distinct-task/repeat counts, and both-stage allocations within the two-judge, one-repair, 10-hour, USD 100 envelope. If infeasible, return for the required scope decision.
-- Complete resource reservations, exact templates, comparator and judge configurations, calibration, accounting, statistical evidence rules, whole-stack security qualification, and separate execution authorization.
+- Propose and approve the numeric whole-pilot coverage floor and scenario-by-stage matrix, preserving both matched comparisons and the distinction between distinct cases and repeats.
+- Limit stage-specific and combined claims to supported task populations. Do not infer untested routing effects from method-stage coverage or vice versa.
+- Define how all active owner pilot work is captured, including preparation before scored dispatch and evaluation/cleanup afterward. Missing time records must not be treated as zero effort.
+- Predeclare allocation of shared setup, evaluation, and concurrent monitoring before outcomes influence attribution. Reconcile allocated minutes and any explicit shared/unallocated category to the single raw total.
+- Preserve raw attention totals, diagnostic categories, and comparable task-level attribution without subtracting experiment-only effort or using different stage populations as an improvement baseline.
+- Complete comparator and judge configurations, templates, class caps, sample design, cutoff rules, reservations, security qualification, and separate execution authorization within the existing limits.
 
-These details implement settled choices; they do not authorize changing the timeout, unanswered-dispute outcome, breadth-first minimum, no-compensation rule, or selected scope. ([Decision log: Open questions](DECISIONS.md#open-questions), [PLAN.md](PLAN.md), [ANALYSIS.md](ANALYSIS.md))
+These details implement D32/D33; they do not reopen the whole-pilot floor, all-attention headline, no-compensation rule, or no-human-rescue boundary. ([Decision log: Open questions](DECISIONS.md#open-questions), [PLAN.md](PLAN.md), [ANALYSIS.md](ANALYSIS.md))
 
 ## Reviewed document fingerprints
 
@@ -86,11 +90,11 @@ SHA-256 values are relative to `docs/research/evaluation-1/`:
 
 | Document | SHA-256 |
 |---|---|
-| `README.md` | `f60569abcacda087e8e2eeb3c975264f7aaa60d6cfff35664640e6a0cb5c6fda` |
-| `PLAN.md` | `b46d7b0e53b229692021f05fc09730911c054b619e80648f453869a02d942255` |
-| `BENCHMARKS.md` | `9cb51de2e2caac9ffc302472f16e8d9184067ffff21a44d633cbbb42bb109e46` |
-| `ANALYSIS.md` | `b3daea69aa4d4201bf5108927d28fcabecd339f2106b563b7b91c7498fc679ab` |
-| `DECISIONS.md` | `4592ed4db411f465c166075fbb4f103d23f9d30ac33f963c76b9d88a364e9983` |
+| `README.md` | `516f7359fb412c67b8856434c9c343090025907b50c15f38233b2ccb1940297d` |
+| `PLAN.md` | `eae0582515ccfe505b83497a653b90418357f94a8fbd56446cb801ccba8dcb53` |
+| `BENCHMARKS.md` | `c2a2df1c964c7ddb744e62e9f361befc9265156c0bda932e17709f96b94569dc` |
+| `ANALYSIS.md` | `a40145d121b705effdfa32c6356691223faa9e334b3b921e92478247209ca6a9` |
+| `DECISIONS.md` | `14a94db8949a52bcb176b4efa0a11f959a625c881184a24ae6d09ffbe967c1c8` |
 
 `REVIEW.md` is excluded to avoid a self-referential hash. Material changes to substantive documents require renewed review.
 
@@ -99,7 +103,7 @@ SHA-256 values are relative to `docs/research/evaluation-1/`:
 - This is an independent read-only document review, not execution or expenditure approval, runtime certification, a benchmark result, or a guarantee of improved outcomes.
 - I performed no installation, benchmark execution, model runtime test, penetration test, implementation audit, cost simulation, or feasibility trial. None is required for this documentation-only update.
 - I did not run or certify repository gates. They remain the integrating agent's separate responsibility.
-- No external research was performed for these owner-decision changes. Earlier source checks were selective, not exhaustive verification of all benchmark descriptions, licenses, dependencies, or execution requirements.
+- No external research was performed for these owner-decision changes. Earlier source checks were selective rather than exhaustive verification of every benchmark, license, dependency, or execution requirement.
 - Fidelity was assessed against supplied owner decisions and review context, not an independently authenticated transcript of every historical discussion.
 - I did not change or independently verify the remote state of PR #3, either branch, or main.
 

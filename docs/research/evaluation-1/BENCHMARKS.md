@@ -20,6 +20,10 @@ The selected suites share a continuous 10-hour scored-phase clock starting with 
 
 Sampling follows minimum breadth, then depth: propose a minimum floor across the seven selected scenarios, then repeated paired trials with remaining capacity. Qualify B01, B06, and B10 and retain explicit supplemental coverage gaps. Neither one benchmark task nor one repeated case automatically covers every mapped scenario. If the proposed floor is infeasible or a selected suite cannot meet security requirements, return for a scope decision; do not substitute a benchmark or waive controls silently.
 
+The floor applies across the whole pilot rather than separately to each stage. Freeze and report a scenario-by-stage matrix; stage subsets may differ, but matched comparisons and claims remain local to the tested stage and scenarios. A suite's inclusion somewhere in the pilot does not establish both method and routing results for it.
+
+All active owner pilot attention is included in the headline, including benchmark setup, evidence preparation, evaluation, disputes, record keeping, and cleanup as well as operational work. Report categories separately without excluding experiment-only effort or duplicating shared minutes. Passive waiting is elapsed time, not active attention.
+
 The owner has eight elapsed minutes from recorded dispute escalation to rule, capped by the global deadline. An unanswered dispute freezes as unresolved and not accepted under the local protocol. Keep this local outcome separate from the official benchmark grade, without adding late scored grading.
 
 This document separates two choices. Evaluation scenarios define capabilities and failure modes to test. Benchmarks provide reusable test material and evaluation procedures. A benchmark is not the baseline workflow: a comparative improvement claim will still require a declared comparator.
@@ -132,7 +136,7 @@ Your priority order is settled. These questions concern definitions and evidence
 - Which AI-judge configurations, calibration checks, and human dispute-resolution procedure apply? The adjudication model is already selected.
 - How much repeated evidence is required before calling a difference an improvement rather than run-to-run noise?
 - How should an uncertain comparison be treated? My recommendation is inconclusive, not an assumed pass.
-- What counts toward your attention: initial briefing, clarification, monitoring, review, correction, and recovery?
+- How will all active owner pilot attention be recorded and allocated, including setup and independent evaluation, without double counting shared effort?
 - Which exact configurations, visible checks, and agent-review procedures define each selected comparison stage? The feedback categories are already settled.
 - Deferred until requested: project case-study selection and publication permissions. Do not use this as a reason to delay benchmark selection.
 

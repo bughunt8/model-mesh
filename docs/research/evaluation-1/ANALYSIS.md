@@ -76,6 +76,8 @@ The monetary and elapsed-time caps are feasibility constraints, not evidence tha
 
 Minimum breadth, then depth is the agreed sampling approach, not an agreed sample size. Propose a coverage floor across the seven selected scenarios before assigning remaining capacity to repeated paired trials. Distinct cases and repeats must remain separate in the analysis, and both comparison stages need explicit allocations. An infeasible floor requires an owner scope decision before execution. Sparse coverage may support feasibility observations while leaving comparative improvement inconclusive; breadth alone does not establish statistical adequacy.
 
+The floor applies across the whole pilot. Preserve a scenario-by-stage coverage matrix and matched tasks within each stage, even when stage subsets differ. Evidence for a scenario in one stage cannot stand in for the other stage's missing comparison. Do not pool different stage populations to infer an overall method-plus-routing effect; any cross-stage interpretation must respect the actual task populations and untested combinations.
+
 Ten hours is a continuous window starting with the first scored-task dispatch. Queues, grading, and waits for the owner's decisions consume it; they do not pause it. Setup precedes the clock, but solving scored tasks in advance cannot be relabeled as preparation. This is not an active-human-time allowance.
 
 USD 100 includes all new pilot model/tool/compute charges, including setup and cleanup even when outside the scored clock. Per-task and per-stage allocations draw from that aggregate balance. Pre-existing sunk expenditure and owner labor remain visible in economic cost accounting without being falsely counted as new pilot charges.
@@ -84,16 +86,18 @@ Pending disputes at the deadline cannot be treated as accepted results, nor can 
 
 ## Human attention and cost boundaries
 
+All active owner pilot effort is the headline attention measure, including preparation/setup, briefing, supervision, safety intervention, independent evaluation, dispute resolution, record keeping, and cleanup. Being experiment-only or outside the scored clock does not exempt active effort. Passive waiting is elapsed time, while active monitoring during a wait consumes attention. Report the raw total and category breakdowns; the operational-only subset is diagnostic, not a replacement headline.
+
 Keep four ledgers distinct:
 
 | Ledger | Proposed contents | How it affects interpretation |
 |---|---|---|
 | Operational delivery | Frozen briefing, supervision, ordinary final review, agent reviewer calls, the single permitted agent repair, safety interventions, tool and inference usage. | Counts in workflow attention, time, and cost. Normal model-mesh review is not experiment-only overhead; human coaching is prohibited during scored attempts. |
-| Independent evaluation | Hidden tests, benchmark grading, independent defect adjudication, simulator calls used only for evaluation, and experimental record keeping. | Report separately; apply equivalent evaluation requirements to comparison arms. |
-| Setup and qualification | Adapter work, installation audit, sandbox qualification, environment provisioning, and operator training before scored-task dispatch. | New model/tool/compute charges count toward USD 100 despite being before the runtime clock. Report labor separately; any economic amortization needs a declared horizon. |
+| Independent evaluation | Hidden tests, benchmark grading, independent defect adjudication, simulator calls used only for evaluation, and experimental record keeping. | All active owner effort counts in headline attention, with a separate category breakdown; apply equivalent evaluation requirements to comparison arms. |
+| Setup and qualification | Adapter work, installation audit, sandbox qualification, environment provisioning, and operator training before scored-task dispatch. | Active owner effort counts in headline attention, and new model/tool/compute charges count toward USD 100 despite being before the runtime clock. Any economic amortization needs a declared horizon and does not erase observed active minutes. |
 | Separately authorized rescue | Post-score recovery under a separate run identity, with any human effort, tools, and inference explicitly attributed. | Cannot change the scored failure, success denominator, or accepted-delivery result. Report separately and include in disclosed all-in observed expenditure. |
 
-If one action serves both delivery and evaluation, predeclare the allocation rule and report it once. Do not move inconvenient costs between ledgers after seeing results.
+If one action serves both delivery and evaluation, predeclare the allocation rule and report it once. Shared setup, evaluation, or simultaneous task monitoring must not produce duplicated owner minutes across tasks, arms, or stages. Publish the raw pilot total alongside attributed comparisons; a raw total across different populations alone cannot establish an attention improvement. Include active owner effort for any separately authorized rescue that remains part of this pilot, with its separate identity and immutable original outcome. Disclose separate follow-on effort separately. Do not move inconvenient effort or costs between ledgers after seeing results.
 
 The lower-total-cost objective must have a declared scope and horizon. A low steady-state token bill does not establish lower total adoption cost when setup, review, cleanup, or later rescue effort is omitted. Show the bounded scored comparison and broader observed expenditure separately. The all-new-charges USD 100 cap is not a valuation of owner time; no hourly rate or amortization horizon has been agreed.
 

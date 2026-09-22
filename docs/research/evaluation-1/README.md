@@ -30,6 +30,10 @@ The owner has eight elapsed minutes from recorded dispute escalation to supply a
 
 Sampling follows minimum breadth, then depth. Propose a minimum coverage floor across the seven selected scenarios, then use remaining capacity for repeated paired trials. The numeric floor and allocation need approval. If that floor is infeasible, return for a scope decision rather than silently dropping selections.
 
+The coverage floor applies across the whole pilot, not separately to each comparison stage. Stage subsets may differ, but both stages retain matched comparisons and their claims cover only the scenarios actually tested in that stage.
+
+The headline attention measure includes all active owner effort on the pilot, including preparation, setup, briefing, supervision, safety intervention, evaluation, dispute resolution, record keeping, and cleanup. Keep these categories visible and count time once. Passive waiting affects elapsed delivery time, not active attention; setup before the scored clock is not excluded from attention.
+
 The continuous 10-hour clock starts at the first scored-task dispatch and includes subsequent execution, queues, grading, and waits for the owner's decisions, with no pauses. Preparatory setup is before the clock. USD 100 covers all new pilot-related model, tool, and compute charges, including setup, scored work, repairs, both judges, simulators, storage, and cleanup. Neither ceiling resets per task, suite, stage, or retry, and owner labor is measured separately. No claim is made that the full selected scope fits.
 
 The working branch is `evaluation-1`. The existing [draft PR #3](https://github.com/bughunt8/model-mesh/pull/3) is retained at the owner's request; its branch, `docs/portable-method-pilot`, will be synchronized to the same reviewed commit. Do not merge either branch or treat a documentation merge as pilot authorization.

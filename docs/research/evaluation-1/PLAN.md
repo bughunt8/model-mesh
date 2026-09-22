@@ -1,6 +1,6 @@
 # Model-mesh portable method and pilot plan
 
-Discussion draft v0.9 | 22 September 2026 | Planning only
+Discussion draft v0.10 | 22 September 2026 | Planning only
 
 ## Agreed priorities
 
@@ -143,13 +143,15 @@ No task count or allocation is agreed. Choose the final count across the seven s
 
 The owner selected minimum breadth, then depth. First propose a minimum coverage floor across all seven selected scenarios, using qualified selected benchmarks and the necessary supplemental cases. Then allocate remaining capacity to repeated paired trials. Freeze the numeric floor, distinct cases, repeats, stage allocation, and selection procedure before results. A repeated run does not supply a missing scenario or count as a new distinct task. If the floor cannot fit safely within the aggregate limits, return to the owner for a scope decision before execution. No selection is silently dropped and no safety boundary is waived.
 
+Apply that floor across the whole pilot, not independently to both stages. Each stage may test a different predeclared subset, while preserving matched arms on the same tasks within that stage. A scenario tested only in the method stage does not establish a routing result, and the reverse also holds. Both stages still require explicit allocations; this choice does not authorize omitting either comparison. Report the scenario-by-stage coverage matrix and limit each claim to its tested subset rather than pooling unlike stage populations to imply a broader effect.
+
 ### Qualify controls before measuring productivity
 
 Perform install and rollback review, adapter conformance checks, synthetic recipient tests, cancellation, boundary violations, and evidence-tampering tests. Use synthetic canaries rather than real secrets. Stop on any mandatory-control failure and do not start real-code trials.
 
 ### Isolate the method and routing effects
 
-Use the same task instances, base revisions, infrastructure class, tool access, safety policy, and agreed resource envelope across comparisons.
+Within each stage, use the same task instances, base revisions, infrastructure class, tool access, safety policy, and agreed resource envelope for its competing arms. The two stages may use different predeclared subsets.
 
 | Arm | Condition to configure and qualify | Question |
 |---|---|---|
@@ -225,13 +227,13 @@ Finish with one of four outcomes: reject, revise and retest, continue a limited 
 
 ## Candidate measurement dictionary
 
-All operational definitions below remain proposals. Apply the confirmed priority order: defects first, then your attention, then accepted-delivery time, then total cost. Retain non-negotiable safety gates separately. Avoid hiding unacceptable behavior inside a weighted overall score.
+The headline attention scope is settled as all active owner effort on the pilot. Detailed recording and allocation procedures and other operational definitions remain proposals unless fixed by an explicit decision. Apply the confirmed priority order: defects first, then your attention, then accepted-delivery time, then total cost. Retain non-negotiable safety gates separately. Avoid hiding unacceptable behavior inside a weighted overall score.
 
 | Metric | Proposed operational definition | Trap to avoid |
 |---|---|---|
 | Accepted-task rate | Assigned tasks meeting all frozen criteria within budget, with no confirmed defect including cosmetic defects and no mandatory safety failure, divided by all eligible assigned tasks. | Dropping failed, timed-out, or abandoned tasks, or ignoring a cosmetic defect because the official grader passed. |
 | Final-defect outcomes | Independently adjudicated defects and severity on the final frozen artifact after the permitted repair, alongside all-assigned completion and failure outcomes. Exact severity rules remain open. | Adding an unselected first-handoff quality target or hiding no-output failures behind a low defect count. |
-| Human attention per task | Active briefing, supervision, ordinary final review, safety intervention, and other authorized operational attention, recorded for every task. Scored repairs receive no human coaching. | Ignoring review effort, silently treating human rescue as autonomous performance, or mixing post-score rescue into a successful scored attempt. |
+| All pilot owner attention | All active owner minutes on preparation, setup, briefing, supervision, safety intervention, evaluation, disputes, record keeping, and cleanup. Report the pilot total, categories, and predeclared task/arm/stage attribution without double counting. Scored repairs receive no human coaching. | Excluding experiment-only adjudication or pre-clock setup, counting passive waiting as active effort, or attributing shared work opportunistically after results. |
 | Fully loaded cost per accepted task | Total inference, retry, reviewer, tool, infrastructure, and priced human effort across all assigned work, divided by accepted tasks. Report setup cost separately and amortize transparently if requested. | Excluding failed attempts or claiming zero subscription cost. With no successes, report undefined, not zero. |
 | Time to accepted change | Elapsed time from task release to independent acceptance; separately show queue, execution, review, and rework. | Reporting only successful latency while failures disappear. Show capped-run failures separately. |
 | False acceptance | Independently adjudicated unacceptable outputs initially marked acceptable, divided by outputs initially marked acceptable. | Using the implementer's tests or verdict as the only truth. |
@@ -245,6 +247,8 @@ All operational definitions below remain proposals. Apply the confirmed priority
 | Parallel coordination | Lost changes, conflicting writes, duplicated work, stale approvals, integration repair, and accepted throughput per available human hour. | Rewarding agent activity or raw concurrent task count. |
 
 Task success requires the frozen checks and independent AI-judge assessment, with human resolution of disputes or uncertainty. Apply the exact reference/template to cosmetic criteria and keep final evaluation outside worker write access. Do not assume AI-judge agreement is proof of correctness; calibration and validation checks must be specified before execution. Code volume, token count, number of agents, or a leaderboard score should not be primary success measures.
+
+All active owner pilot effort belongs in the headline attention ledger even outside the scored runtime clock. Keep operational, setup, independent-evaluation, and separately authorized rescue categories distinct without dropping their pilot effort from the total. Passive waiting belongs in elapsed-time reporting; active monitoring during a wait counts as attention. Shared preparation and evaluation effort needs a fixed allocation rule before comparative analysis, with one raw total and no duplicated minutes across concurrent tasks. Separately authorized rescue cannot rewrite scored outcomes, and a separate follow-on effort must be disclosed separately rather than hidden or retroactively folded into scored success. These accounting rules grant no permission for human rescue or extra work.
 
 ### Comparison and uncertainty
 
@@ -285,7 +289,8 @@ We will resolve this in rounds rather than ask dozens of abstract questions at o
 - Resource envelope: predeclared by scenario or difficulty class, matched for competing arms on the same task.
 - Final adjudication: two independent AI judges; the project owner personally resolves disputes or uncertain findings on frozen outputs.
 - Dispute timing: eight elapsed minutes from escalation, or the global deadline if sooner; no ruling means frozen unresolved and not accepted.
-- Sampling: minimum breadth across selected scenarios, then repeated paired trials; approve the numeric floor and return for a scope decision if infeasible.
+- Sampling: minimum breadth across the whole pilot, not per stage, then repeated paired trials; approve the numeric floor and stage subsets, and return for a scope decision if infeasible.
+- Attention: all active owner pilot effort, including setup and independent evaluation, with category breakdowns and no double counting; passive waiting is elapsed time.
 - Cosmetic grading: exact reference or template, with exceptions declared before execution.
 - Aggregate limits: 10 hours total elapsed pilot runtime and USD 100 combined model/tool/compute charges. These do not reset per task or stage.
 - Clock boundary: first scored-task dispatch through final evaluation, continuously including queues, grading, and owner waits; setup precedes the clock.
@@ -296,7 +301,7 @@ We will resolve this in rounds rather than ask dozens of abstract questions at o
 - For each selected scenario, which versioned reference/template and correctness criteria define defects? Every confirmed defect already causes failure.
 - Which judge configurations, calibration checks, and recorded escalation and notification mechanics implement adjudication within the settled eight-minute window? How are missing-judge cases and timely but inconclusive owner responses recorded without treating them as passes?
 - Which exact model, harness, prompts, tools, reasoning settings, visible checks, and agent-review procedures define each selected stage?
-- Which activities count toward your attention, and how will active time be recorded?
+- How will all active owner pilot time be recorded and attributed across shared preparation, tasks, arms, and stages without double counting? The inclusion of setup and independent evaluation is settled.
 - What evidence is sufficient to distinguish improvement, regression, and an inconclusive result without allowing a prohibited trade-off?
 
 ### Later rounds

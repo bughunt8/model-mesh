@@ -39,6 +39,8 @@ This log records owner instructions and explicit selections from the planning di
 | D29 | Count all new pilot-related model, tool, and compute charges toward USD 100, including setup, scored work, repairs, both judges, simulators, storage, and cleanup. | Settled. Being outside the scored clock does not exempt a new charge. Owner labor is separately measured. |
 | D30 | Allow eight elapsed minutes for the owner's dispute ruling, capped by the global deadline if sooner. Without a timely ruling, freeze the task as unresolved and not accepted. | Settled. Measure from recorded dispute escalation; no clock pause, late score rewrite, or automatic confirmation of a suspected defect. Notification mechanics remain open. |
 | D31 | Use minimum breadth, then depth when proposing sampling within the fixed limits. | Settled approach. Propose a minimum floor across the seven selected scenarios, then repeated paired trials. Numeric floor, cases, repeats, and stage allocations need approval. If the floor is infeasible, return for a scope decision. |
+| D32 | Apply the minimum coverage floor across the whole pilot, not separately to each comparison stage. | Settled. Stage subsets may differ, but both stages remain required; preserve matched comparisons within stages and limit each stage's claims to its tested scenarios. Numeric floor and stage matrix remain open. |
+| D33 | Use all active owner pilot attention as the headline attention measure. | Settled. Include preparation/setup, briefing, supervision, safety intervention, evaluation, disputes, record keeping, and cleanup, with category breakdowns. Passive waiting is elapsed time, not active attention. Recording and shared-effort allocation remain open; no double counting. |
 
 ## Superseded or constrained proposals
 
@@ -64,6 +66,8 @@ This log records owner instructions and explicit selections from the planning di
 | Count only scored-run charges while excluding new setup or cleanup costs from the pilot ceiling. | Not selected. D29 includes all new pilot charges. |
 | Wait 15, 30, or 60 minutes, or until the global deadline without a shorter dispute window. | Not selected. D30 chooses eight minutes, capped by the global deadline. |
 | Prioritize breadth alone or silently reduce scope to maximize depth. | Not selected. D31 chooses minimum breadth, then depth, with an owner decision if the floor is infeasible. |
+| Require the full seven-scenario floor independently in both comparison stages. | Not selected. D32 applies the floor across the whole pilot; no claim extends to an untested stage/scenario combination. |
+| Use operational attention alone as the headline and omit setup or experimental adjudication. | Not selected. D33 includes all active owner pilot effort, while retaining separate categories. |
 
 ## Open questions
 
@@ -74,14 +78,14 @@ These remain genuinely unresolved. Their presence does not prevent a documentati
 | O01 | Which exact model, harness, prompts, tools, reasoning settings, visible checks, and agent-review procedures define each selected controlled comparison? | Environment and protocol freeze; stages and feedback categories are settled. |
 | O02 | Which versioned references/templates, declared variable fields/exceptions, comparison representation, and correctness criteria define defects in each scenario? | Task and evaluator freeze; exact-template grading and every-confirmed-defect failure are settled. |
 | O03 | Which two AI-judge configurations, calibration/validation procedures, evidence access, and recorded escalation/notification mechanics implement final adjudication? | Evaluation approval; two judges, owner identity, eight-minute response window, and unanswered-dispute outcome are settled. |
-| O04 | How are active owner attention and operational review separated from experimental adjudication? | Measurement instrumentation. |
+| O04 | How are all active owner minutes recorded and shared effort attributed to categories, tasks, arms, and stages without duplication? | Measurement instrumentation and comparative analysis; the all-pilot headline scope is settled. |
 | O05 | What evidence standard distinguishes improvement, regression, and inconclusive results without unauthorized regression margins? | Sample-size choice and preregistration. |
 | O06 | Which data classes, recipients, jurisdictions, retention rules, and tool permissions apply? | Any real-data or networked execution. |
 | O07 | Which second harness, pinned release, and adapter contract should test portability? | Adapter implementation authorization. |
 | O08 | Which exact benchmark releases, splits, task subsets, graders, and simulator configurations are available and appropriate? | Environment freeze. |
 | O09 | Can TheAgentCompany meet the complete security boundary without unsafe privileges on the user/shared host? | Its installation or execution. |
 | O10 | Which supplemental refactoring, security, and architecture cases are needed, and how will they be independently graded? | Coverage approval. |
-| O11 | What class taxonomy, assignment procedure, numeric task-level limits, safety stop rules, minimum coverage floor, distinct cases, repeats, and stage allocation fit the settled envelope? | Execution authorization; minimum breadth, then depth is settled, but numeric allocation is not. |
+| O11 | What class taxonomy, assignment procedure, numeric task-level limits, safety stop rules, whole-pilot coverage floor, distinct cases, repeats, and scenario-by-stage matrix fit the settled envelope? | Execution authorization; minimum breadth, then depth across the whole pilot is settled, but numeric allocation is not. |
 | O12 | What time horizon and allocation rules define total cost, including setup and qualification? | Any total-cost comparison. |
 | O13 | Which project case studies may later be used, and what may be published? | Case-study disclosure; deferred for now. |
 | O14 | How are other pending, in-flight, unstarted, and missing-judge tasks classified at cutoff, and how do shutdown, evidence retention, and cleanup avoid extending scored execution? | Execution authorization; clock boundaries and unanswered-dispute classification under D30 are settled. |
