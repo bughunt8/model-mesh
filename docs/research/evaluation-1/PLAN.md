@@ -1,6 +1,6 @@
 # Model-mesh portable method and pilot plan
 
-Discussion draft v0.7 | 22 September 2026 | Planning only
+Discussion draft v0.8 | 22 September 2026 | Planning only
 
 ## Agreed priorities
 
@@ -20,9 +20,9 @@ Both executable checks and agent review are permitted repair feedback. Any confi
 
 Two independent AI judges assess frozen final deliverables, with the project owner personally resolving disagreements or uncertain findings. Cosmetic grading uses an exact reference or template; any exceptions must be declared in advance. This is final evaluation, not human rescue.
 
-The total elapsed pilot runtime is capped at 10 hours. The combined pilot-wide ceiling for model, tool, and compute charges is USD 100. These are aggregate limits, not per-task, per-benchmark, or per-stage allowances. No separate 10-hour active-human-time allowance was selected.
+The continuous 10-hour elapsed clock starts at the first scored-task dispatch. It includes subsequent execution, queues, grading, and waits for owner decisions, without pauses; preparatory setup occurs before the scored clock. USD 100 covers all new pilot-related model, tool, and compute charges, including setup, scored work, repairs, both judges, simulators, storage, and cleanup. These are aggregate limits, not per-task, per-benchmark, or per-stage allowances. Owner labor is measured separately.
 
-Exact comparator configurations, defect criteria, versioned templates/references, judge configurations, dispute procedure, class-level limits, clock/cost boundaries, and adoption evidence requirements remain unresolved. Continued planning does not authorize implementation.
+Exact comparator configurations, defect criteria, versioned templates/references, judge configurations, dispute procedure, class-level limits, cutoff/cleanup mechanics, budget reservations, and adoption evidence requirements remain unresolved. Continued planning does not authorize implementation.
 
 ## Decision sought
 
@@ -30,7 +30,7 @@ Determine what defensible claims can be made about an already-useful engineering
 
 For each proposed client case study, require a named scope, initial state, comparator, task outcomes, independently checked defects, your active attention, accepted-delivery time, full cost, and limitations. Include unsuccessful eligible tasks in the evidence even if the public case study focuses on a successful project. Retrospective project success without a suitable comparator cannot establish that model-mesh caused the improvement.
 
-This document proposes architecture, controls, experiments, and measurement definitions. No implementation, installation, pilot execution, repository modification, AWS deployment, or new scheduled task is authorized by this plan. The 10-hour and USD 100 ceilings are settled; sample sizes, statistical evidence rules, allocations within those ceilings, exact timing and billing boundaries, repositories, and provider permissions remain open.
+This document proposes architecture, controls, experiments, and measurement definitions. No implementation, installation, pilot execution, repository modification, AWS deployment, or new scheduled task is authorized by this plan. The continuous 10-hour clock and all-new-charges USD 100 ceiling are settled; sample sizes, statistical evidence rules, allocations and enforcement within those ceilings, repositories, and provider permissions remain open.
 
 ## Answer to the DeepSeek assessment
 
@@ -165,13 +165,19 @@ Report outcomes within that matched envelope and each arm's actual operational c
 
 ### Pilot-wide time and cash limits
 
-Treat 10 hours as total elapsed pilot runtime, not a sum of agent CPU hours or an active-human allowance. Define the start/end anchors and treatment of setup, queues, pauses, grading, and owner-adjudication waits before execution. Until those boundaries are approved, do not assume that any waiting period pauses the clock or that setup is automatically excluded.
+Set the clock at the first scored-task dispatch and allow at most 10 continuous elapsed hours for the scored phase through final evaluation. Execution, queues, retries, grading, and waits for owner adjudication all consume this same clock; there are no pauses or per-stage resets. This is neither a sum of CPU hours nor a cap on active human minutes.
 
-Treat USD 100 as the combined model, tool, and compute ceiling for the pilot. It is not USD 100 for each benchmark, model, worker, comparison, or judge. Include all proposed charged roles in the budget ledger, including repair review, both final judges, retries, simulators, and compute; agree detailed setup, existing-subscription, tax/fee, and later-rescue treatment before execution. Do not presume that an unclassified charge falls outside the ceiling.
+Preparatory setup takes place before that clock, but no scored-task solving, rehearsal, or grading may be hidden as setup. Any preparation or calibration must preserve the separation from scored holdouts and remain subject to independent qualification. Setup before the scored clock is not authority to install or spend before the separate execution approval.
+
+USD 100 covers all new pilot-related model, tool, and compute charges across the complete pilot, including setup, scored execution, repairs, both final judges, simulators, storage, and cleanup. New charges outside the scored clock still count. This is not an allowance per benchmark, model, worker, stage, or judge.
+
+Record new paid provisioning, usage, upgrades, overages, and applicable billing charges in the cash ledger. Pre-existing sunk expenditure and owner labor are separately disclosed in economic cost accounting, not misrepresented as new cash payments. Pin billing rates, allocation, reconciliation, and storage/retention/cleanup reservations before execution; uncertain charges are not presumed free.
 
 Before dispatch, account for spent, committed, and reserved charges, including in-flight work and final judging, rather than checking only the last invoice. Reserve capacity for safe termination and evidence retention. Specify enforceable usage bounds and cost assumptions first; if an activity's charge cannot be bounded within the remaining allowance, do not launch it.
 
-Reaching a global ceiling must not reset the budget, create an extra repair attempt, or promote unfinished/disputed work to a pass. Exact global-stop classification and finalization rules remain to be agreed. Later rescue requires separate authorization and an explicit remaining or additional resource envelope; its existence is not automatic permission to exceed USD 100 or 10 hours.
+Reaching a global ceiling must not reset the budget, create an extra repair attempt, or promote unfinished/disputed work to a pass. At the scored deadline, no additional scored task work or grading may be performed to finish a late result. Predeclare how in-flight work stops, how pending results are classified, and how reserved evidence retention and cleanup finish safely without extending the scored phase. Any new cleanup charges still count toward USD 100.
+
+Later rescue requires separate authorization and an explicit remaining or additional resource envelope. If kept within this pilot, its new charges still count toward USD 100, and it cannot extend the scored phase. A separately approved follow-on effort must be labeled and reported separately, not used to retroactively expand this pilot's allowance or repair its score.
 
 ### Bounded repair and final evaluation
 
@@ -276,6 +282,8 @@ We will resolve this in rounds rather than ask dozens of abstract questions at o
 - Final adjudication: two independent AI judges; the project owner personally resolves disputes or uncertain findings on frozen outputs.
 - Cosmetic grading: exact reference or template, with exceptions declared before execution.
 - Aggregate limits: 10 hours total elapsed pilot runtime and USD 100 combined model/tool/compute charges. These do not reset per task or stage.
+- Clock boundary: first scored-task dispatch through final evaluation, continuously including queues, grading, and owner waits; setup precedes the clock.
+- Cash boundary: all new pilot charges, including setup and cleanup; owner labor and sunk expenditure are separately reported.
 
 ### Next measurement round
 
@@ -290,7 +298,7 @@ We will resolve this in rounds rather than ask dozens of abstract questions at o
 - Define acceptance, unresolved-work classification, defect severity, and acceptance ownership without reopening the settled repair and rescue rules.
 - Decide the data classes, jurisdictions, approved recipients, fallbacks, tools, and actions that must never be permitted.
 - Price human effort, subscriptions, infrastructure, setup, and failed attempts; separate economic cost from cash expenditure.
-- Agree clock/cost boundaries, task mix and class-level allocation within the settled aggregate ceilings, meaningful effect, uncertainty standard, and stopping conditions.
+- Agree task mix, class-level allocation, cost reservations, cutoff/cleanup mechanics, meaningful effect, and uncertainty standard within the settled clock and cash boundaries.
 - Select the alternative harness and define what counts as portable, including adapter effort and unsupported capabilities.
 - Challenge the proposed decision with adverse examples: a cheap but wrong patch, a perfect patch sent to an unapproved provider, a safe refusal, a very slow success, a green CI run on the wrong commit, and an experiment too small to distinguish the alternatives.
 

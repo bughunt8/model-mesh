@@ -72,7 +72,11 @@ The one-cycle limit applies within the total task envelope, not as a fresh allow
 
 The monetary and elapsed-time caps are feasibility constraints, not evidence that the full selected scope can be completed or that the sample will support a comparative claim. Count both judge calls and likely dispute workload in design estimates. If adequate coverage or evidence cannot fit, propose a bounded subset or deferral rather than quietly weakening controls, dropping one judge, or extending the pilot.
 
-Ten hours refers to elapsed pilot runtime, not active owner minutes. The precise treatment of setup, queues, and adjudication waits still needs approval; do not infer a pause or exemption from the choice. USD 100 is combined model/tool/compute expenditure, not a cap per arm or benchmark. Cost-boundary details remain explicit open questions, not permission to omit inconvenient charges.
+Ten hours is a continuous window starting with the first scored-task dispatch. Queues, grading, and waits for the owner's decisions consume it; they do not pause it. Setup precedes the clock, but solving scored tasks in advance cannot be relabeled as preparation. This is not an active-human-time allowance.
+
+USD 100 includes all new pilot model/tool/compute charges, including setup and cleanup even when outside the scored clock. Per-task and per-stage allocations draw from that aggregate balance. Pre-existing sunk expenditure and owner labor remain visible in economic cost accounting without being falsely counted as new pilot charges.
+
+Pending disputes at the deadline cannot be treated as accepted results, nor can further scored grading extend the clock. The exact incomplete/unresolved classification and shutdown procedure remain open. Reserve resources and money for safe stopping and cleanup before admitting more work; a late invoice or post-run storage charge still belongs to the cash ledger if incurred by this pilot.
 
 ## Human attention and cost boundaries
 
@@ -82,12 +86,12 @@ Keep four ledgers distinct:
 |---|---|---|
 | Operational delivery | Frozen briefing, supervision, ordinary final review, agent reviewer calls, the single permitted agent repair, safety interventions, tool and inference usage. | Counts in workflow attention, time, and cost. Normal model-mesh review is not experiment-only overhead; human coaching is prohibited during scored attempts. |
 | Independent evaluation | Hidden tests, benchmark grading, independent defect adjudication, simulator calls used only for evaluation, and experimental record keeping. | Report separately; apply equivalent evaluation requirements to comparison arms. |
-| Setup and qualification | Adapter work, installation audit, sandbox qualification, environment provisioning, and operator training. | Report cash and person-hours. Any amortization must state a horizon and deployment volume before comparison. |
+| Setup and qualification | Adapter work, installation audit, sandbox qualification, environment provisioning, and operator training before scored-task dispatch. | New model/tool/compute charges count toward USD 100 despite being before the runtime clock. Report labor separately; any economic amortization needs a declared horizon. |
 | Separately authorized rescue | Post-score recovery under a separate run identity, with any human effort, tools, and inference explicitly attributed. | Cannot change the scored failure, success denominator, or accepted-delivery result. Report separately and include in disclosed all-in observed expenditure. |
 
 If one action serves both delivery and evaluation, predeclare the allocation rule and report it once. Do not move inconvenient costs between ledgers after seeing results.
 
-The lower-total-cost objective must have a declared scope and horizon. A low steady-state token bill does not establish lower total adoption cost when setup, review, or later rescue effort is omitted. Show the bounded scored comparison and broader observed expenditure separately. The USD 100 charged-resource cap is not a valuation of owner time; no hourly rate or amortization horizon has been agreed.
+The lower-total-cost objective must have a declared scope and horizon. A low steady-state token bill does not establish lower total adoption cost when setup, review, cleanup, or later rescue effort is omitted. Show the bounded scored comparison and broader observed expenditure separately. The all-new-charges USD 100 cap is not a valuation of owner time; no hourly rate or amortization horizon has been agreed.
 
 ## Enforce the no-trade-off instruction
 

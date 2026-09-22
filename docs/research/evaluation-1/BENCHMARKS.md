@@ -16,7 +16,7 @@ Both executable checks and agent review may inform repair, excluding hidden fina
 
 Two independent AI judges evaluate final frozen outputs, with the project owner personally resolving disagreements or uncertain findings. Cosmetic grading uses an exact reference or template, with any exceptions declared before execution. Formatting templates may be task-visible; hidden answers and completed benchmark solutions must remain final-evaluator-only.
 
-The selected suites share an aggregate 10-hour elapsed pilot limit and USD 100 combined model/tool/compute ceiling across the complete pilot. This does not imply a full run of every suite fits. Exact time/cost boundaries and predeclared task subsets must be agreed before execution; no per-suite budget reset is allowed.
+The selected suites share a continuous 10-hour scored-phase clock starting with the first scored-task dispatch, including queues, grading, and owner waits. Setup is before the clock, but all new pilot model/tool/compute charges, including setup and cleanup, share the USD 100 ceiling. No per-suite reset is allowed, and these limits do not imply that full runs of every suite fit. Task subsets and resource allocations remain to be approved.
 
 This document separates two choices. Evaluation scenarios define capabilities and failure modes to test. Benchmarks provide reusable test material and evaluation procedures. A benchmark is not the baseline workflow: a comparative improvement claim will still require a declared comparator.
 

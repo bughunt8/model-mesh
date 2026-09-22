@@ -33,8 +33,10 @@ This log records owner instructions and explicit selections from the planning di
 | D23 | Grade cosmetic correctness against an exact reference or template, with exceptions declared in advance. | Settled. Freeze the comparison contract before execution; do not expose hidden answers through task-visible formatting templates. Specific artifacts and variable fields remain to be agreed. |
 | D24 | Use two independent AI judges per final deliverable. | Settled. Both must participate under the declared protocol; disagreement or uncertainty goes to the human dispute path. Exact models remain open. |
 | D25 | The project owner will personally resolve disputes. | Settled. No delegated colleague or external reviewer is selected for this role. Active effort and waiting are recorded separately. |
-| D26 | The 10-hour limit means total elapsed pilot runtime. | Settled after explicit clarification. It is not a 10-hour active-adjudication allowance and does not reset per task, suite, or stage. Clock anchors and setup/waiting treatment remain open. |
-| D27 | Cap combined model, tool, and compute charges at USD 100 for the pilot. | Settled monetary ceiling and currency. Detailed cost boundaries and allocations remain open; no per-arm or per-suite reset. |
+| D26 | The 10-hour limit means total elapsed pilot runtime. | Settled after explicit clarification. It is not an active-adjudication allowance and does not reset per task, suite, or stage. D28 subsequently fixes clock boundaries. |
+| D27 | Cap combined model, tool, and compute charges at USD 100 for the pilot. | Settled monetary ceiling and currency; no per-arm or per-suite reset. D29 subsequently fixes the all-new-charges boundary; allocations remain open. |
+| D28 | Start the continuous 10-hour clock at first scored-task dispatch; include subsequent execution, queues, grading, and waits for owner decisions, with no pauses. | Settled. Preparation is before the scored clock, without hiding scored solving or evaluation there. |
+| D29 | Count all new pilot-related model, tool, and compute charges toward USD 100, including setup, scored work, repairs, both judges, simulators, storage, and cleanup. | Settled. Being outside the scored clock does not exempt a new charge. Owner labor is separately measured. |
 
 ## Superseded or constrained proposals
 
@@ -56,6 +58,8 @@ This log records owner instructions and explicit selections from the planning di
 | Use three judges or delegate dispute resolution to a colleague or external reviewer. | Not selected. D24 and D25 choose two judges and the owner. |
 | Interpret the owner's initial "10 hours" as active adjudication time or both time measures. | Superseded by D26's clarification: total elapsed pilot runtime. |
 | Treat the overall cash amount or currency as undecided, or allocate USD 100 separately to each arm. | Superseded or prohibited by D27. |
+| Start the clock when environment setup begins, or pause it during grading or owner waits. | Not selected or prohibited by D28. |
+| Count only scored-run charges while excluding new setup or cleanup costs from the pilot ceiling. | Not selected. D29 includes all new pilot charges. |
 
 ## Open questions
 
@@ -76,8 +80,8 @@ These remain genuinely unresolved. Their presence does not prevent a documentati
 | O11 | What class taxonomy, assignment procedure, numeric task-level limits, broader safety stop rules, and sampling plan fit the settled one-repair, 10-hour, and USD 100 envelope? | Execution authorization. |
 | O12 | What time horizon and allocation rules define total cost, including setup and qualification? | Any total-cost comparison. |
 | O13 | Which project case studies may later be used, and what may be published? | Case-study disclosure; deferred for now. |
-| O14 | What starts and ends the 10-hour clock; how do setup, queues, pauses, grading, and owner waiting count; how is a global stop finalized without extending execution? | Execution authorization; total elapsed-time meaning and 10-hour ceiling are settled. |
-| O15 | How do setup/provisioning, existing subscriptions, billing fees, and separately authorized rescue count toward USD 100; what reservations cover in-flight calls and both judges? | Execution authorization; cash ceiling and currency are settled. No unapproved exemptions. |
+| O14 | How are pending, in-flight, unstarted, and disputed tasks classified at cutoff, and how do shutdown, evidence retention, and cleanup avoid extending scored execution? | Execution authorization; first-dispatch start, continuous waits, setup exclusion from the clock, and 10-hour ceiling are settled. |
+| O15 | Which billing rates, allocation and reconciliation rules, and non-overlapping reservations cover in-flight calls, both judges, storage retention, and safe cleanup? | Execution authorization; all new pilot charges, including setup/cleanup, already count toward USD 100. |
 
 ## Change protocol
 
