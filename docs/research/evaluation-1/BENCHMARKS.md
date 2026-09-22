@@ -14,6 +14,8 @@ The comparison stages are settled: method effect first, then routing effect. Sco
 
 Both executable checks and agent review may inform repair, excluding hidden final-evaluator information. Any confirmed defect, including cosmetic defects against predeclared criteria, fails local task acceptance even if the official benchmark grade passes. Caps are predeclared by scenario or difficulty class, not chosen after observing results; numeric values remain open.
 
+Independent AI judges evaluate final frozen outputs, with a human resolving disagreements or uncertain findings. Cosmetic grading uses an exact reference or template, with any exceptions declared before execution. Formatting templates may be task-visible; hidden answers and completed benchmark solutions must remain final-evaluator-only.
+
 This document separates two choices. Evaluation scenarios define capabilities and failure modes to test. Benchmarks provide reusable test material and evaluation procedures. A benchmark is not the baseline workflow: a comparative improvement claim will still require a declared comparator.
 
 The confirmed business purpose is to offer model-mesh to clients using measured success on your own projects as evidence. Usefulness is already established and is not being reassessed. For now, defer personally useful task discovery and project selection; focus on qualification scenarios, external benchmarks, and defensible claims.
@@ -38,7 +40,7 @@ The following is a proposed coverage assessment, not a claim that we have inspec
 | A03. Behavior-preserving refactor | Supplemental bounded refactoring cases with independent differential tests. | Do not relabel repository bug-fix tasks as a refactoring benchmark. Case construction and grading remain to be specified. |
 | A05. Security audit and remediation | Supplemental seeded vulnerabilities with controlled exploit and repair checks. | The selected suites are not substitutes for a dedicated security-audit evaluation. Agree severity and false-positive handling. |
 | A08. Data reconciliation and analysis | Inspect B06 GAIA and B10 TheAgentCompany for suitable task subsets. | If coverage is inadequate, propose supplemental known-answer data cases rather than silently claiming benchmark coverage. |
-| A09. Requirements and architecture planning | Supplemental frozen briefs, traceability checks, and independent human adjudication. | No selected benchmark has yet been qualified as a complete architecture-planning evaluation. Define the rubric and reviewer agreement. |
+| A09. Requirements and architecture planning | Supplemental frozen briefs, exact output templates, traceability checks, independent AI judges, and human dispute resolution. | No selected benchmark has yet been qualified as a complete architecture-planning evaluation. Define the rubric, judge calibration, and dispute procedure. |
 | A11. Browser administration | Inspect B10 TheAgentCompany for browser-based workflow tasks. | Separate browser-admin completion from answer retrieval; qualify permissions and final-state checks. B08 WebArena is not selected. |
 | A12. Cross-application office work | Inspect B10 TheAgentCompany for multi-application deliverables; use B06 only where appropriate. | Check artifact consistency and handoffs rather than assuming a correct final answer proves the entire workflow. |
 
@@ -120,8 +122,8 @@ Freeze dataset, environment, evaluator, adapter, model, prompt, and policy versi
 
 Your priority order is settled. These questions concern definitions and evidence, not a request to renegotiate it.
 
-- What frozen correctness and cosmetic criteria define defects in each selected task class? Every confirmed defect already makes the task fail.
-- Who independently decides whether a defect is real, especially when tests or an LLM judge disagree?
+- Which versioned references/templates and correctness criteria define defects in each task class? Every confirmed defect already makes the task fail.
+- Which AI-judge configurations, calibration checks, and human dispute-resolution procedure apply? The adjudication model is already selected.
 - How much repeated evidence is required before calling a difference an improvement rather than run-to-run noise?
 - How should an uncertain comparison be treated? My recommendation is inconclusive, not an assumed pass.
 - What counts toward your attention: initial briefing, clarification, monitoring, review, correction, and recovery?

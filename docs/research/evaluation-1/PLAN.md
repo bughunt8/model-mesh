@@ -1,6 +1,6 @@
 # Model-mesh portable method and pilot plan
 
-Discussion draft v0.5 | 22 September 2026 | Planning only
+Discussion draft v0.6 | 22 September 2026 | Planning only
 
 ## Agreed priorities
 
@@ -18,7 +18,9 @@ Two comparison stages are agreed: isolate the method first, then routing's added
 
 Both executable checks and agent review are permitted repair feedback. Any confirmed defect, including cosmetic defects, fails final task acceptance. Define the criteria before scoring; this is not a guarantee of no undiscovered defects. Resource caps are set by scenario or difficulty class and matched between arms on each task.
 
-Exact comparator configurations, defect and cosmetic criteria, numeric caps, adoption evidence requirements, and the adjudication process remain unresolved. Continued planning does not authorize implementation.
+Independent AI judges assess frozen final deliverables, with a human resolving disagreements or uncertain findings. Cosmetic grading uses an exact reference or template; any exceptions must be declared in advance. This is final evaluation, not human rescue.
+
+Exact comparator configurations, defect criteria, versioned templates/references, judge configurations, human adjudicator identity and procedure, numeric caps, and adoption evidence requirements remain unresolved. Continued planning does not authorize implementation.
 
 ## Decision sought
 
@@ -177,7 +179,13 @@ Later rescue requires separate authorization and a separate run identity. It is 
 
 Any confirmed defect against the frozen task and policy criteria makes the final task fail, including cosmetic defects. Passing an official benchmark grader is necessary where applicable but cannot override this stricter local acceptance rule or mandatory safety failures. Report the official grade separately.
 
-Specify cosmetic requirements such as formatting, layout, naming, or presentation constraints before the scored run. Do not invent new aesthetic preferences after seeing an output. Distinguish confirmed deviations from unsubstantiated reviewer findings, and do not declare an unresolved finding a pass by default. The adjudication and unresolved-result handling procedure remains to be agreed.
+Freeze an exact reference or template for each cosmetically graded output before the run, covering the applicable formatting, layout, naming, and presentation. Declare any variable content slots, exceptions, comparison representation, and normalization rules in advance. Do not substitute broad stylistic constraints, fuzzy visual similarity, or new preferences after seeing an output. Exact conformance is to that versioned reference/template and its declared exceptions, not an assertion that every file type should be compared byte-for-byte.
+
+Make the required presentation template available equally to competing arms without revealing hidden correct answers, completed benchmark solutions, or final-evaluator findings. Separate task-visible formatting requirements from final-only correctness evidence. If those cannot be separated, the task design is not ready for execution.
+
+Independent AI judges apply the frozen rubric to the final artifact and evidence. A human resolves judge disagreements, conflicting checks, or uncertain defect findings after the artifact is frozen, without editing the output, providing repair feedback, or restarting the attempt. Record the finding, evidence, judge decisions, human disposition, artifact identity, and evaluation effort.
+
+Do not treat an unresolved finding as a pass or turn a suspected defect into a confirmed defect merely by assertion. Panel composition, calibration, consensus handling, human adjudicator identity, response window, and unresolved-result disposition remain to be agreed. The selected workflow does not require a human to rejudge every undisputed task.
 
 Severity labels explain defects and inform analysis; they do not exempt minor or cosmetic defects from failure. A zero-confirmed-defect result is scoped to the declared rubric, checks, and observation window. It does not prove universal correctness or eliminate the possibility of an escaped defect.
 
@@ -214,7 +222,7 @@ All operational definitions below remain proposals. Apply the confirmed priority
 | Portability effort | Person-hours to map, implement, audit, and qualify the adapter; unsupported requirements and runtime differences. | Ignoring the engineering cost of moving to a new harness. |
 | Parallel coordination | Lost changes, conflicting writes, duplicated work, stale approvals, integration repair, and accepted throughput per available human hour. | Rewarding agent activity or raw concurrent task count. |
 
-Task success should require hidden or independently owned checks where appropriate, plus human acceptance of requirements not captured by tests. Freeze the acceptance suite outside worker write access. Code volume, token count, number of agents, or a leaderboard score should not be primary success measures.
+Task success requires the frozen checks and independent AI-judge assessment, with human resolution of disputes or uncertainty. Apply the exact reference/template to cosmetic criteria and keep final evaluation outside worker write access. Do not assume AI-judge agreement is proof of correctness; calibration and validation checks must be specified before execution. Code volume, token count, number of agents, or a leaderboard score should not be primary success measures.
 
 ### Comparison and uncertainty
 
@@ -253,11 +261,13 @@ We will resolve this in rounds rather than ask dozens of abstract questions at o
 - Repair feedback: both executable checks and agent review, excluding hidden final-evaluator information.
 - Final task acceptance: any confirmed defect, including cosmetic defects, fails.
 - Resource envelope: predeclared by scenario or difficulty class, matched for competing arms on the same task.
+- Final adjudication: independent AI judges; a human resolves disputes or uncertain findings on frozen outputs.
+- Cosmetic grading: exact reference or template, with exceptions declared before execution.
 
 ### Next measurement round
 
-- For each selected scenario, what objective criteria define correctness and cosmetic defects before scoring? Every confirmed defect already causes failure.
-- Who adjudicates defects, false positives, and disagreements between tests and reviewers?
+- For each selected scenario, which versioned reference/template and correctness criteria define defects? Every confirmed defect already causes failure.
+- Which judge configurations, calibration checks, and human dispute-resolution procedure implement the selected adjudication model?
 - Which exact model, harness, prompts, tools, reasoning settings, visible checks, and agent-review procedures define each selected stage?
 - Which activities count toward your attention, and how will active time be recorded?
 - What evidence is sufficient to distinguish improvement, regression, and an inconclusive result without allowing a prohibited trade-off?

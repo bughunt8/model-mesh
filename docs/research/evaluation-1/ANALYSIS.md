@@ -34,7 +34,7 @@ Propose supplemental cases for A03, A05, and A09. Do not quietly replace an unre
 
 - **Refactoring.** Specify the preserved contract and independent differential tests. A cleaner-looking patch with a changed edge case fails.
 - **Security audit and remediation.** Use controlled vulnerabilities, independent exploit checks, severity adjudication, and false-positive accounting. Safe execution boundaries are prerequisites for these cases.
-- **Architecture planning.** Freeze a brief and constraint set, then independently assess traceability, feasibility, and contradictions. Document assessor disagreement; an LLM score alone is not sufficient evidence.
+- **Architecture planning.** Freeze a brief and exact output template, then have independent AI judges assess traceability, feasibility, and contradictions, with human dispute resolution. Document the supporting evidence and disagreement; a bare model score is not sufficient.
 
 Supplemental case construction is a proposal awaiting the final protocol. It is not already performed, approved for execution, or an official score from a selected public benchmark.
 
@@ -52,9 +52,15 @@ After initial submission, one repair opportunity is a maximum, not an instructio
 
 Within each scenario, freeze what counts as an opportunity for failure and how duplicate findings are deduplicated. Do not compare defect counts across tasks of very different scope without their task-level denominators.
 
-Do not average a defect away with successes. The owner selected failure for any confirmed defect, including cosmetic defects. Severity classification remains useful for explanation, but no severity category is exempt from task failure. The task acceptance rule is settled; detailed correctness and cosmetic criteria and the adjudication owner remain open.
+Do not average a defect away with successes. The owner selected failure for any confirmed defect, including cosmetic defects. Severity classification remains useful for explanation, but no severity category is exempt from task failure. Independent AI judges assess final outputs and a human resolves disputes; exact judge configurations, the human adjudicator identity, and detailed reference/template artifacts remain open.
 
-This strict rule requires a frozen rubric. An objectively specified formatting deviation can fail a task; an evaluator's newly invented style preference cannot. Report unconfirmed or disputed findings explicitly until the agreed adjudication process resolves them. Never promote uncertainty to a pass or describe a scoped zero-confirmed-defect observation as proof that no defects exist.
+This strict rule uses an exact reference or template frozen before execution, not general constraints permitting varied presentations. Predeclare variable fields, exceptions, comparison representation, and any normalization; do not add them after observing failures. A reference violation can fail a task, while an evaluator's new style preference cannot.
+
+The presentation contract must be visible equally to competing arms without exposing hidden expected answers or completed solutions. Keep template conformance distinct from correctness so that literal imitation of a reference cannot stand in for solving the task.
+
+Report unconfirmed or disputed findings explicitly until the human adjudicator resolves them on the frozen output. Adjudication supplies no hints to workers, alters no deliverable, and does not reopen repair. Record its human minutes, waiting time, and cost under the declared accounting rules. Never promote uncertainty to a pass or describe a scoped zero-confirmed-defect observation as proof that no defects exist.
+
+Agreement between AI judges can still be wrong. Before execution, define calibration cases, independence controls, and any validation sampling. Those details remain proposals; this selection does not silently authorize human review of every task or an unapproved recurring validation workload.
 
 The official benchmark result and stricter local task acceptance are distinct outcomes. A benchmark pass may be a local failure due to a confirmed cosmetic defect or policy breach. Both results should remain visible.
 

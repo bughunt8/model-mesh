@@ -24,12 +24,14 @@ Run two comparisons in separate stages: isolate the method first, then the added
 
 Permitted repair feedback combines executable checks and agent review, without hidden final-evaluator information. Any confirmed defect against the frozen criteria, including cosmetic defects, fails task acceptance. Set resource caps by predeclared scenario or difficulty class, with identical caps for competing arms on the same task; numeric values remain open.
 
+Independent AI judges assess final outputs, with a human resolving disagreements or uncertain findings after artifacts are frozen. Cosmetic grading uses an exact reference or template, with any variable fields or exceptions declared before execution. Neither adjudication nor a template permits post-score edits, human rescue, or disclosure of hidden benchmark answers.
+
 The working branch is `evaluation-1`. The existing [draft PR #3](https://github.com/bughunt8/model-mesh/pull/3) is retained at the owner's request; its branch, `docs/portable-method-pilot`, will be synchronized to the same reviewed commit. Do not merge either branch or treat a documentation merge as pilot authorization.
 
 ## Status and boundaries
 
 No adapters, benchmark runner, metrics collector, sandbox, runtime guardrail, production configuration, or infrastructure are implemented by this package. No benchmark results exist from this evaluation. Existing repository checks validate repository consistency, not the method's effectiveness or runtime safety.
 
-Exact comparator configurations, defect and cosmetic criteria, adjudication, attention accounting, evidence standard, sample allocation, numeric cap values, and execution environment remain open. The comparison stages, repair cap, feedback categories, zero-confirmed-defect acceptance rule, cap structure, no-human-rescue rule, and failure disposition are settled in the decision log.
+Exact comparator configurations, defect criteria, versioned references/templates, judge configurations, human adjudicator identity and procedure, attention accounting, evidence standard, sample allocation, numeric cap values, and execution environment remain open. The comparison stages, repair cap, feedback categories, acceptance rule, cap structure, adjudication model, exact-template requirement, no-human-rescue rule, and failure disposition are settled.
 
 All further documentation belongs in this package and is proposed through the same PR. Require fresh independent review for material changes, especially claims, scope, decision rules, or security boundaries.

@@ -29,6 +29,8 @@ This log records owner instructions and explicit selections from the planning di
 | D19 | Permit both executable checks and agent review during the one repair cycle, excluding hidden final-evaluator information. | Settled. Exact visible checks, prompts, reviewer configuration, and delivery remain to be pinned. |
 | D20 | Any defect, including cosmetic defects, fails final task acceptance, in addition to mandatory safety failures. | Settled. Use confirmed deviations from predeclared criteria; severity does not excuse a defect. This is not a guarantee of no undiscovered defects. |
 | D21 | Structure time and resource caps by scenario or difficulty class. | Settled. Assign classes before scored outcomes, match caps across arms on the same task, and decide numeric values before execution. |
+| D22 | Use independent AI judges; a human resolves disagreements or uncertain defect findings on frozen final outputs. | Settled. Human adjudication is not rescue, may not edit outputs, and cannot reopen repair. Judge configuration, calibration, adjudicator identity, and timing remain open. |
+| D23 | Grade cosmetic correctness against an exact reference or template, with exceptions declared in advance. | Settled. Freeze the comparison contract before execution; do not expose hidden answers through task-visible formatting templates. Specific artifacts and variable fields remain to be agreed. |
 
 ## Superseded or constrained proposals
 
@@ -45,6 +47,8 @@ This log records owner instructions and explicit selections from the planning di
 | Choose between test-only and agent-review-only repair feedback. | Superseded by D19; both categories are selected. |
 | Accept minor or cosmetic defects when substantive requirements pass. | Rejected by D20. |
 | Use one uniform cap for every task or assign caps only by benchmark suite. | Not selected. D21 chooses scenario or difficulty classes. |
+| Require a human to judge every task, or use AI-only adjudication with no human dispute path. | Not selected. D22 uses AI judges with human dispute resolution. |
+| Grade cosmetic correctness using only broad constraints that permit varied presentations, or an unspecified hybrid chosen afterwards. | Not selected. D23 requires an exact reference/template with advance exceptions. |
 
 ## Open questions
 
@@ -53,8 +57,8 @@ These remain genuinely unresolved. Their presence does not prevent a documentati
 | ID | Question to resolve | Decision needed before |
 |---|---|---|
 | O01 | Which exact model, harness, prompts, tools, reasoning settings, visible checks, and agent-review procedures define each selected controlled comparison? | Environment and protocol freeze; stages and feedback categories are settled. |
-| O02 | What predeclared correctness and cosmetic criteria identify a defect in each scenario, and how is severity reported? | Task and evaluator freeze; every confirmed defect already causes failure. |
-| O03 | Who independently adjudicates findings, false positives, and disagreements between tests or judges? | Evaluation approval. |
+| O02 | Which versioned references/templates, declared variable fields/exceptions, comparison representation, and correctness criteria define defects in each scenario? | Task and evaluator freeze; exact-template grading and every-confirmed-defect failure are settled. |
+| O03 | Which independent AI-judge configurations, calibration/validation procedures, human adjudicator, response window, and unresolved-result disposition implement D22? | Evaluation approval; AI judges with human dispute resolution are settled. |
 | O04 | How are active owner attention and operational review separated from experimental adjudication? | Measurement instrumentation. |
 | O05 | What evidence standard distinguishes improvement, regression, and inconclusive results without unauthorized regression margins? | Sample-size choice and preregistration. |
 | O06 | Which data classes, recipients, jurisdictions, retention rules, and tool permissions apply? | Any real-data or networked execution. |
