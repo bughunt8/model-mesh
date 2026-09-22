@@ -1,6 +1,6 @@
 # Model-mesh portable method and pilot plan
 
-Discussion draft v0.11 | 23 September 2026 | Planning only
+Discussion draft v0.12 | 23 September 2026 | Planning only
 
 ## Agreed priorities
 
@@ -143,6 +143,8 @@ The agreed feasibility floor is two distinct cases per selected scenario, fourte
 
 The owner selected minimum breadth, then depth. First satisfy the two-distinct-case floor for each scenario in the feasibility proposal, using qualified selected benchmarks and necessary supplemental cases. Then allocate remaining capacity to repeated paired trials. Freeze the case manifest, repeats, stage allocation, and selection procedure before results. Assign each floor case one primary scenario so the fourteen-case minimum is not reduced by counting one case toward several scenario floors. A case reused in another arm or stage, a repair, or a repeated run is not a new distinct case. If the floor cannot fit safely within the aggregate limits, return to the owner for a scope decision before execution. No selection is silently dropped and no safety boundary is waived.
 
+Count distinct underlying tasks, not distinct labels or prompts. Cases must differ in the actual defect, substantive dataset problem, requirements brief, target-system task, or office workflow being solved. Prompt paraphrases, cosmetic changes, revision changes, or different seeds alone do not qualify. A different repository or application is not additionally required when the underlying task differs. Record the underlying-task identity and reason for distinctness in the pre-run manifest so independent review can reject near-duplicates before they inflate the floor.
+
 Apply that floor across the whole pilot, not independently to both stages. Each stage may test a different predeclared subset, while preserving matched arms on the same tasks within that stage. A scenario tested only in the method stage does not establish a routing result, and the reverse also holds. Both stages still require explicit allocations; this choice does not authorize omitting either comparison. Report the scenario-by-stage coverage matrix and limit each claim to its tested subset rather than pooling unlike stage populations to imply a broader effect.
 
 ### Qualify controls before measuring productivity
@@ -250,7 +252,9 @@ Task success requires the frozen checks and independent AI-judge assessment, wit
 
 All active owner pilot effort belongs in the headline attention ledger even outside the scored runtime clock. Keep operational, setup, independent-evaluation, and separately authorized rescue categories distinct without dropping their pilot effort from the total. Passive waiting belongs in elapsed-time reporting; active monitoring during a wait counts as attention. Shared preparation and evaluation effort needs a fixed allocation rule before comparative analysis, with one raw total and no duplicated minutes across concurrent tasks. Separately authorized rescue cannot rewrite scored outcomes, and a separate follow-on effort must be disclosed separately rather than hidden or retroactively folded into scored success. These accounting rules grant no permission for human rescue or extra work.
 
-The owner starts and stops a timer and tags each activity in the log, including pilot work outside the scored clock. Reconcile timer intervals with the activity log; preserve the original record and a reason for each correction. Flag missing or estimated intervals explicitly, not as zero effort or precise timed observations. Prevent overlapping timers from duplicating the same active minute. Reconciliation effort itself counts as pilot attention. Exact tool, log fields, reconciliation cadence, and shared-effort allocation remain to be agreed; this specifies a measurement method without implementing it.
+The owner starts and stops a timer and tags each activity in the log, including pilot work outside the scored clock. Reconcile timer intervals with the activity log; preserve the original record and a reason for each correction. If a start or stop is missed, mark the affected interval missing. Do not reconstruct a duration from memory, the log, or event timestamps, and do not enter zero. Corrections may repair labels or transcription against existing valid timer evidence, but may not manufacture a missing timing observation. Prevent overlapping timers from duplicating the same active minute. Reconciliation effort itself counts as pilot attention. Exact tool, log fields, reconciliation cadence, and shared-effort allocation remain to be agreed; this specifies a measurement method without implementing it.
+
+Retain the task and its other outcomes when attention timing is missing. Report observed active minutes as an incomplete observed sum, with missing interval identities and affected tasks, categories, arms, and stages; do not present it as the complete all-pilot total. The affected attention comparison is inconclusive unless a missing-data threshold and analysis procedure are approved before runs. No exception or tolerance has been selected. Any future procedure must preserve missingness, prohibit duration imputation and outcome-driven exclusions, and remain consistent with the no-compensated-regression rule. If uncertainty prevents that rule from being assessed, the conclusion remains inconclusive.
 
 ### Comparison and uncertainty
 
@@ -292,8 +296,9 @@ We will resolve this in rounds rather than ask dozens of abstract questions at o
 - Final adjudication: two independent AI judges; the project owner personally resolves disputes or uncertain findings on frozen outputs.
 - Dispute timing: eight elapsed minutes from escalation, or the global deadline if sooner; no ruling means frozen unresolved and not accepted.
 - Sampling: at least two distinct cases per selected scenario, fourteen across the whole pilot rather than per stage, then repeated paired trials; approve the case manifest and stage subsets, and return for a scope decision if infeasible.
+- Case identity: a different underlying task is required; paraphrases, cosmetic variants, revision changes, and seeds alone do not count. A different repository or application context is not also required.
 - Attention: all active owner pilot effort, including setup and independent evaluation, with category breakdowns and no double counting; passive waiting is elapsed time.
-- Attention recording: owner-operated timer plus tagged activity log, with reconciliation, preserved corrections, and explicitly flagged missing or estimated intervals.
+- Attention recording: owner-operated timer plus tagged activity log, with reconciliation and preserved corrections. Missed start/stop intervals remain missing, never estimated or zero; no missing-data analysis exception is currently agreed.
 - Cosmetic grading: exact reference or template, with exceptions declared before execution.
 - Aggregate limits: 10 hours total elapsed pilot runtime and USD 100 combined model/tool/compute charges. These do not reset per task or stage.
 - Clock boundary: first scored-task dispatch through final evaluation, continuously including queues, grading, and owner waits; setup precedes the clock.

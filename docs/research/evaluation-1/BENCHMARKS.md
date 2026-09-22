@@ -20,11 +20,13 @@ The selected suites share a continuous 10-hour scored-phase clock starting with 
 
 Sampling follows minimum breadth, then depth: use at least two distinct cases per selected scenario, fourteen across the whole pilot, then repeated paired trials with remaining capacity. Assign each floor case one primary scenario; a reused case or repeated run does not supply another distinct case. Qualify B01, B06, and B10 and retain explicit supplemental coverage gaps. If the floor is infeasible or a selected suite cannot meet security requirements, return for a scope decision; do not substitute a benchmark or waive controls silently.
 
+Require different underlying tasks, not just different benchmark IDs, prompts, revisions, seeds, or cosmetic variants. Record each case's actual defect, substantive dataset problem, brief, target-system task, or workflow and its distinctness rationale. A different repository or application context is not also required. Freeze this evidence before outcomes; two distinct cases do not by themselves imply independent observations.
+
 The floor applies across the whole pilot rather than separately to each stage. Freeze and report a scenario-by-stage matrix; stage subsets may differ, but matched comparisons and claims remain local to the tested stage and scenarios. A suite's inclusion somewhere in the pilot does not establish both method and routing results for it.
 
 All active owner pilot attention is included in the headline, including benchmark setup, evidence preparation, evaluation, disputes, record keeping, and cleanup as well as operational work. Report categories separately without excluding experiment-only effort or duplicating shared minutes. Passive waiting is elapsed time, not active attention.
 
-Record that attention using an owner-operated timer plus tagged activity log, with reconciliation and preserved corrections. Flag missing or estimated intervals, including setup and evaluation work outside scored execution; do not convert missing observations to zero.
+Record that attention using an owner-operated timer plus tagged activity log, with reconciliation and preserved corrections. A missed start or stop is missing data, including setup and evaluation outside scored execution; do not estimate it or substitute zero. Report the incomplete observed sum and affected attention comparisons. No missing-data analysis exception is currently agreed, and missing attention does not erase task outcomes or change the official benchmark grade.
 
 The owner has eight elapsed minutes from recorded dispute escalation to rule, capped by the global deadline. An unanswered dispute freezes as unresolved and not accepted under the local protocol. Keep this local outcome separate from the official benchmark grade, without adding late scored grading.
 

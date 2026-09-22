@@ -30,11 +30,13 @@ The owner has eight elapsed minutes from recorded dispute escalation to supply a
 
 Sampling follows minimum breadth, then depth. The feasibility proposal must provide at least two distinct cases per selected scenario, fourteen distinct cases across the seven scenarios, before allocating remaining capacity to repeats. Case selection and stage allocation still need approval. If that floor is infeasible, return for a scope decision rather than silently dropping selections.
 
+A distinct case requires a different underlying task, such as a different defect, substantive dataset problem, requirements brief, target-system task, or office workflow. Prompt paraphrases, cosmetic variations, revision changes, and seeds alone do not create new cases. Different tasks may share a repository or application context.
+
 The coverage floor applies across the whole pilot, not separately to each comparison stage. Stage subsets may differ, but both stages retain matched comparisons and their claims cover only the scenarios actually tested in that stage.
 
 The headline attention measure includes all active owner effort on the pilot, including preparation, setup, briefing, supervision, safety intervention, evaluation, dispute resolution, record keeping, and cleanup. Keep these categories visible and count time once. Passive waiting affects elapsed delivery time, not active attention; setup before the scored clock is not excluded from attention.
 
-Record active attention with an owner-operated timer plus a tagged activity log, then reconcile them. Preserve corrections and flag missing or estimated intervals rather than treating missing time as zero. The specific tool and shared-effort allocation remain open.
+Record active attention with an owner-operated timer plus a tagged activity log, then reconcile them. If a start or stop is missed, mark the affected interval missing; do not estimate it or enter zero. Preserve original records and corrections. The affected attention comparison is inconclusive unless a missing-data analysis rule is approved before runs; no such exception is currently agreed. The specific tool and shared-effort allocation remain open.
 
 The continuous 10-hour clock starts at the first scored-task dispatch and includes subsequent execution, queues, grading, and waits for the owner's decisions, with no pauses. Preparatory setup is before the clock. USD 100 covers all new pilot-related model, tool, and compute charges, including setup, scored work, repairs, both judges, simulators, storage, and cleanup. Neither ceiling resets per task, suite, stage, or retry, and owner labor is measured separately. No claim is made that the full selected scope fits.
 

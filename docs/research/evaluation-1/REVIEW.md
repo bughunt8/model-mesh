@@ -6,80 +6,78 @@ Review date: 23 September 2026, Hong Kong time.
 
 Reviewer: Independent read-only adversarial review agent.
 
-No substantive blocker was found in the D34/D35 update. The package faithfully specifies a feasibility floor of two distinct cases per selected scenario, fourteen distinct cases across the whole pilot before repeats, and an owner-operated timer plus tagged activity log for all active owner pilot attention. It does not claim that the floor is powered, affordable, executable, or already implemented. ([PLAN.md](PLAN.md), [ANALYSIS.md](ANALYSIS.md), [BENCHMARKS.md](BENCHMARKS.md), [DECISIONS.md](DECISIONS.md), [README.md](README.md))
+No substantive blocker was found in the D36/D37 update. Distinct cases must represent different underlying tasks without requiring different repository or application contexts. Forgotten timer intervals remain missing rather than estimated, reconstructed, or zero; affected attention comparisons are inconclusive under the currently agreed rules. The package preserves task outcomes and does not treat missing data as permission to accept unassessable regression risk. ([PLAN.md](PLAN.md), [ANALYSIS.md](ANALYSIS.md), [BENCHMARKS.md](BENCHMARKS.md), [DECISIONS.md](DECISIONS.md), [README.md](README.md))
 
 ## Scope and method
 
-I reviewed the uncommitted changes on local branch `evaluation-1`, based on HEAD `79034dc217a7500d3cd25e4b5a0b35116b170b0a`. That commit identifies the baseline, not the new working-tree content.
+I reviewed the uncommitted changes on local branch `evaluation-1`, based on HEAD `6782dd3a7cc9d84977c5e2023909734be572c5ef`. That commit identifies the baseline, not the new working-tree content.
 
-I inspected the complete diff to all five substantive documents and checked case distinctness, floor counting, stage allocation, timer/log recording, corrections, missing data, overlapping intervals, dates, remaining questions, and authorization wording. I read the preceding review record and verified that each committed substantive baseline document matches its fingerprint in my preceding coverage-and-attention attestation, including its resolved matching-scope clarification.
+I inspected the complete diff to all five substantive documents and checked task identity, case counts, statistical independence, missing versus estimated attention, correction authority, totals, threshold language, outcome retention, remaining questions, and authorization boundaries. I read the preceding review record and verified that every committed substantive baseline matches its fingerprint in my preceding case-floor-and-timer review.
 
 I made no target-file, branch, or git-state changes. This report was authored outside the repository for incorporation as `REVIEW.md` and preserves the prior review history.
 
 ## Prior review history
 
-The original two-document review returned REVISE with R1 through R3. The corrected two-document package received SHIP for documentation only. Independent reviews of the expanded package and later owner-decision updates through D33 also returned SHIP within that boundary. Earlier nonblocking wording notes were corrected and independently rechecked. None of those reviews authorized execution, certified runtime safety, established effectiveness, or guaranteed feasibility.
+The original two-document review returned REVISE with R1 through R3. The corrected two-document package received SHIP for documentation only. Independent reviews of the expanded package and owner-decision updates through D35 also returned SHIP within that boundary. Earlier nonblocking wording notes were corrected and independently rechecked. None of those reviews authorized execution, certified runtime safety, established effectiveness, or guaranteed feasibility.
 
 | Finding | Original severity | Current disposition |
 |---|---|---|
-| R1: Adoption wording allowed compensated regressions and weakened mandatory controls. | High | Resolved. Mandatory controls and evidence remain required, objective regressions cannot be compensated by improvements elsewhere, and uncertainty remains inconclusive without an unauthorized regression margin. ([Plan: Comparison and uncertainty](PLAN.md#comparison-and-uncertainty)) |
+| R1: Adoption wording allowed compensated regressions and weakened mandatory controls. | High | Resolved. Mandatory controls and evidence remain required; objective regressions cannot be compensated by improvements elsewhere, and uncertainty remains inconclusive without an unauthorized regression margin. ([Plan: Comparison and uncertainty](PLAN.md#comparison-and-uncertainty)) |
 | R2: Discovery questions reopened settled purpose, usefulness, and priorities. | Medium | Resolved. The client purpose and priorities remain fixed; useful-work discovery remains deferred. ([Plan: Measurement interview](PLAN.md#measurement-interview), [DECISIONS.md](DECISIONS.md)) |
-| R3: Benchmark privilege review did not adequately cover the full execution stack. | High | Resolved. Whole-stack qualification and deferral for unmet controls remain mandatory. ([Plan: Before execution](PLAN.md#before-execution), [Benchmark evidence rules](BENCHMARKS.md#how-benchmark-evidence-will-count)) |
+| R3: Benchmark privilege review did not adequately cover the complete execution stack. | High | Resolved. Whole-stack qualification and deferral for unmet controls remain mandatory. ([Plan: Before execution](PLAN.md#before-execution), [Benchmark evidence rules](BENCHMARKS.md#how-benchmark-evidence-will-count)) |
 
-The expanded-package review confirmed consistent selections, explicit coverage gaps, cautious causal claims, separate accounting, and the distinction between documentation and measured outcomes. Those protections remain present. ([BENCHMARKS.md](BENCHMARKS.md), [ANALYSIS.md](ANALYSIS.md))
+The expanded-package review confirmed consistent selections, explicit coverage gaps, cautious causal claims, separate accounting, and the distinction between documentation and measured outcomes. These protections remain present. ([BENCHMARKS.md](BENCHMARKS.md), [ANALYSIS.md](ANALYSIS.md))
 
-Previously reviewed decisions remain intact:
+Previously reviewed decisions remain in force as refined by subsequent owner choices:
 
-- D14 through D18: method-first and routing-second comparisons, final post-repair defect scoring, at most one repair within the task envelope, no scored human rescue, frozen failures, and separately authorized unscored rescue without rewriting outcomes. ([Plan: Bounded repair and final evaluation](PLAN.md#bounded-repair-and-final-evaluation), [DECISIONS.md](DECISIONS.md))
-- D19 through D25: checks plus agent-review repair feedback without hidden final-evaluator information; failure for every confirmed defect including cosmetic defects; matched class-based caps; exact references/templates with advance exceptions; two independent AI judges; and personal owner dispute resolution after artifact freeze. ([PLAN.md](PLAN.md), [DECISIONS.md](DECISIONS.md))
-- D26 through D29: a continuous 10-hour clock from first scored-task dispatch including grading and owner waits, no concealed scored solving during setup, and USD 100 covering all new pilot model/tool/compute charges including setup and cleanup. ([Plan: Pilot-wide time and cash limits](PLAN.md#pilot-wide-time-and-cash-limits), [DECISIONS.md](DECISIONS.md))
-- D30 and D31: eight elapsed minutes from recorded escalation or the earlier global deadline, unanswered disputes frozen as unresolved and not accepted, no late score rewrite, and minimum breadth followed by paired depth with an owner scope decision if infeasible. ([PLAN.md](PLAN.md), [ANALYSIS.md](ANALYSIS.md))
-- D32 and D33: the coverage floor applies across the combined pilot rather than separately to each stage, both matched comparisons remain required, claims stay within tested scope, and all active owner pilot effort is included with category breakdowns and no duplicated minutes. ([PLAN.md](PLAN.md), [ANALYSIS.md](ANALYSIS.md), [DECISIONS.md](DECISIONS.md))
+- D14 through D18 retain method-first and routing-second comparisons, final post-repair defect scoring, one repair within the task envelope, no scored human rescue, frozen failures, and separately authorized unscored rescue without rewriting outcomes. ([PLAN.md](PLAN.md), [DECISIONS.md](DECISIONS.md))
+- D19 through D25 retain checks plus agent-review feedback without hidden final-evaluator information, failure for every confirmed defect including cosmetic defects, matched class-based caps, exact templates with advance exceptions, two independent judges, and personal owner dispute resolution after artifact freeze. ([PLAN.md](PLAN.md), [DECISIONS.md](DECISIONS.md))
+- D26 through D29 retain the continuous 10-hour clock from first scored dispatch and the USD 100 cap on all new pilot model/tool/compute charges, including setup and cleanup, without hidden pre-clock solving or spending authorization. ([Plan: Pilot-wide time and cash limits](PLAN.md#pilot-wide-time-and-cash-limits), [DECISIONS.md](DECISIONS.md))
+- D30 through D33 retain the eight-minute dispute window capped by the global deadline, unresolved/not-accepted timeout outcomes, minimum breadth before depth, whole-pilot coverage with stage-local matched claims, and all active owner attention without double counting. ([PLAN.md](PLAN.md), [ANALYSIS.md](ANALYSIS.md), [DECISIONS.md](DECISIONS.md))
+- D34 and D35 retain two distinct cases per selected scenario, fourteen across the pilot rather than per stage, and owner-operated timer plus activity-log recording with preserved corrections. D36 defines underlying-task distinctness; D37 now specifically replaces the earlier open missing/estimated-interval treatment with missing data and no imputation. ([DECISIONS.md](DECISIONS.md), [PLAN.md](PLAN.md))
 
 ## Current findings
 
 **No new substantive blockers or required corrections.**
 
-### Distinct-case floor
+### Underlying-task distinctness
 
-D34 consistently fixes two distinct cases for each of the seven selected scenarios, yielding a minimum of fourteen distinct cases across the whole pilot. The plan gives each floor case one primary scenario, so one case cannot satisfy several scenario floors. Reuse in another arm or stage, repairs, and repeated runs cannot inflate the distinct-case total. ([Plan: Agree the experiment](PLAN.md#agree-the-experiment), [Decision D34](DECISIONS.md#settled-decisions), [BENCHMARKS.md](BENCHMARKS.md))
+D36 consistently requires a different actual defect, substantive dataset problem, requirements brief, target-system task, or office workflow. New case IDs, prompt paraphrases, cosmetic variants, revision changes, or seeds alone do not qualify. A different repository or application is not additionally required when the underlying task differs. The pre-run manifest must record task identities and reasons for distinctness so near-duplicates can be challenged before outcomes. ([Plan: Agree the experiment](PLAN.md#agree-the-experiment), [Decision D36](DECISIONS.md#settled-decisions), [BENCHMARKS.md](BENCHMARKS.md))
 
-The floor is not imposed separately on each stage, and it is not represented as fourteen executions or a fixed final sample size. The existing design still requires matched competing arms within each stage, explicit allocations to both stages, and claims limited to tested stage/scenario combinations. Case selection, additional cases, repeats, and the stage matrix remain open. ([Plan: Agree the experiment](PLAN.md#agree-the-experiment), [Plan: Isolate the method and routing effects](PLAN.md#isolate-the-method-and-routing-effects), [Analysis: Resource-cap classification](ANALYSIS.md#resource-cap-classification))
+This does not change the fourteen-distinct-case floor, allow one case to fill several primary scenario floors, or count arm/stage reuse and repeats as new cases. Both stages retain matched comparisons, and claims remain limited to tested stage/scenario combinations. ([Plan: Agree the experiment](PLAN.md#agree-the-experiment), [Analysis: Resource-cap classification](ANALYSIS.md#resource-cap-classification))
 
-### Feasibility and scope safeguards
+### Case identity is not statistical independence
 
-The package explicitly distinguishes the feasibility floor from a powered statistical design and does not claim that fourteen cases, both stages, repeats, two judges, and required controls fit the 10-hour/USD 100 limits. Infeasibility requires a new owner scope decision before execution, not silent case reduction, selection removal, benchmark substitution, or a security waiver. ([Plan: Agree the experiment](PLAN.md#agree-the-experiment), [Analysis: Resource-cap classification](ANALYSIS.md#resource-cap-classification), [BENCHMARKS.md](BENCHMARKS.md))
+The analysis expressly states that distinct tasks can still be correlated and that fourteen distinct identities do not establish fourteen statistically independent observations. The benchmark record makes the same distinction. The feasibility floor remains separate from a powered design or an affordability claim. ([Analysis: Resource-cap classification](ANALYSIS.md#resource-cap-classification), [BENCHMARKS.md](BENCHMARKS.md))
 
-### Timer plus activity log
+### Missing means missing
 
-D35 is implemented as a measurement requirement: the owner starts and stops a timer, tags activities in a log, and reconciles the records. The plan requires preservation of original entries and reasons for corrections. Missing or estimated intervals must be labeled rather than converted to zero effort or represented as precise timed observations. No recording tool is claimed to exist or to have been deployed. ([Plan: Candidate measurement dictionary](PLAN.md#candidate-measurement-dictionary), [Decision D35](DECISIONS.md#settled-decisions))
+D37 is consistently represented: a missed timer start or stop leaves the affected interval missing, not reconstructed from memory, activity logs, or event timestamps, and not replaced with zero. Corrections may repair labels or transcription using existing valid timer evidence but may not manufacture an unobserved duration. Original records and correction reasons remain preserved, and overlapping intervals cannot duplicate owner minutes. ([Plan: Candidate measurement dictionary](PLAN.md#candidate-measurement-dictionary), [Analysis: Human attention and cost boundaries](ANALYSIS.md#human-attention-and-cost-boundaries), [Decision D37](DECISIONS.md#settled-decisions))
 
-The method covers pilot work outside the scored clock as well as operational work. Time spent recording and reconciling itself counts as attention. Passive waiting remains elapsed time, active monitoring remains attention, overlapping records cannot duplicate the same active minute, and equivalent recording procedures apply across arms. ([Plan: Candidate measurement dictionary](PLAN.md#candidate-measurement-dictionary), [Analysis: Human attention and cost boundaries](ANALYSIS.md#human-attention-and-cost-boundaries))
+The earlier affirmative permission to flag estimated intervals has been removed from the substantive instructions and D35's status. References to reconstruction, estimates, or imputation now prohibit those treatments for forgotten intervals or identify superseded alternatives; they do not silently authorize estimates. ([PLAN.md](PLAN.md), [ANALYSIS.md](ANALYSIS.md), [BENCHMARKS.md](BENCHMARKS.md), [DECISIONS.md](DECISIONS.md), [README.md](README.md))
 
-### Missing data and claim integrity
+### Incomplete attention evidence and conditional future analysis
 
-The analysis requires reporting recording gaps and their effect on comparative conclusions. A forgotten timer cannot establish zero effort; reconstructed durations cannot be passed off as precise observations; insufficient attention evidence remains inconclusive rather than proving an improvement. Existing predeclared shared-effort allocation and raw-total reporting remain in place. ([Analysis: Human attention and cost boundaries](ANALYSIS.md#human-attention-and-cost-boundaries))
+When intervals are missing, the observed sum is explicitly incomplete and cannot be presented as the complete all-pilot attention total. Gaps and affected tasks, categories, arms, and stages must be reported. The affected comparison is inconclusive unless an owner-approved missing-data threshold and analysis procedure were fixed before runs; no current exception or tolerance is asserted. ([Plan: Candidate measurement dictionary](PLAN.md#candidate-measurement-dictionary), [Analysis: Human attention and cost boundaries](ANALYSIS.md#human-attention-and-cost-boundaries))
 
-### Remaining questions and dates
+The future-procedure clause is not permission to impute durations, hide missingness, select exclusions after outcomes, assume missingness is random or balanced, or pass a no-regression gate that cannot be assessed. It leaves a protocol question open without weakening the settled missing-data treatment or compensating-tradeoff prohibition. ([PLAN.md](PLAN.md), [ANALYSIS.md](ANALYSIS.md), [Decision log: Open questions](DECISIONS.md#open-questions))
 
-The current questions concern implementation details: final case manifest, additional cases, repeats, stage allocations, numeric resource caps, timer/log tooling, fields, reconciliation cadence, missing-data handling, and shared-effort attribution. They do not reopen the two-case floor, whole-pilot scope, all-attention headline, or timer-plus-log choice. General references to open sample sizes are consistent with an agreed minimum and an unagreed final statistical design. ([Plan: Measurement interview](PLAN.md#measurement-interview), [Benchmark measurement questions](BENCHMARKS.md#measurement-questions-that-remain-open), [Decision log: Open questions](DECISIONS.md#open-questions))
+### Outcomes and authority remain intact
 
-Document update dates and D34/D35 use 23 September 2026, while the benchmark research statement retains its 22 September 2026 review date. This separates a planning update from an assertion that external sources were reverified on the new date. ([BENCHMARKS.md](BENCHMARKS.md), [DECISIONS.md](DECISIONS.md))
+Missing attention does not erase the task, its other outcomes, or its official benchmark grade. Assigned outcomes remain reportable rather than being removed to create a favorable attention comparison. Recording and reconciliation effort still counts toward attention, and equivalent procedures apply across arms. ([BENCHMARKS.md](BENCHMARKS.md), [Analysis: Human attention and cost boundaries](ANALYSIS.md#human-attention-and-cost-boundaries))
 
-### Preserved authority boundaries
-
-B01, B06, and B10 remain the selected benchmarks, and A01, A03, A05, A08, A09, A11, and A12 remain the selected scenarios. No useful-work rediscovery, compensated tradeoff, human-rescue permission, runtime change, or direct main update is introduced. Original PR #3 remains the documented publication route, and implementation and spending require separate authorization. ([README.md](README.md), [PLAN.md](PLAN.md), [DECISIONS.md](DECISIONS.md))
+B01, B06, and B10 remain the selected benchmarks; A01, A03, A05, A08, A09, A11, and A12 remain the selected scenarios. No useful-work rediscovery, human-rescue permission, runtime change, security waiver, or direct main update is introduced. Original PR #3 remains the documented publication route. ([README.md](README.md), [PLAN.md](PLAN.md), [DECISIONS.md](DECISIONS.md))
 
 ## Nonblocking details before execution
 
-- Approve a case manifest with at least fourteen distinct case identities and one primary floor scenario per case. Define distinctness sufficiently to avoid relabeling the same case as new coverage.
-- Allocate cases and repeats to both matched comparison stages, preserve stage-local claims, and assess feasibility without treating the minimum as evidence of statistical power.
-- Select the timer/log tool and fields, start/stop conventions, reconciliation cadence, correction provenance, and missing/estimated interval procedure. Preserve raw records and do not treat missing data as zero.
-- Predeclare overlap handling and shared-effort allocation across categories, tasks, arms, and stages. Reconcile attributed records to one all-pilot owner-time total.
-- Define the evidence treatment of incomplete timing records before making an attention-improvement claim; a chosen timer does not itself establish measurement accuracy.
-- Complete comparator and judge configurations, templates, class caps, sampling/evidence rules, budget reservations, cutoff mechanics, whole-stack qualification, and separate execution authorization.
+- Approve a case manifest with underlying-task identities, distinctness rationales, primary scenario assignment, and stage allocations. Review near-duplicates before results rather than relying on unique IDs.
+- Specify how correlated cases and repeated runs enter the analysis without treating distinct labels as independent samples.
+- Select the timer/log tool, valid timing-evidence format, correction provenance, overlap handling, and shared-effort attribution. Record missing interval identities without estimating their durations.
+- Define which comparisons are affected by shared or task-specific timing gaps. Publish observed sums with clear incompleteness labels and retain all assigned task outcomes.
+- If a missing-data analysis threshold is proposed, obtain owner approval and freeze the complete procedure before runs. It must preserve missingness and the no-regression evidence gate; no such exception currently exists.
+- Complete comparator and judge configurations, templates, class caps, sample design, budget reservations, cutoff mechanics, whole-stack qualification, and separate execution authorization.
 
-These details implement D34/D35 rather than reopen the settled floor or recording method. ([Decision log: Open questions](DECISIONS.md#open-questions), [PLAN.md](PLAN.md), [ANALYSIS.md](ANALYSIS.md))
+These details implement D36/D37 rather than reopen the underlying-task rule, add a context requirement, or authorize reconstructed timing data. ([Decision log: Open questions](DECISIONS.md#open-questions), [PLAN.md](PLAN.md), [ANALYSIS.md](ANALYSIS.md))
 
 ## Reviewed document fingerprints
 
@@ -87,11 +85,11 @@ SHA-256 values are relative to `docs/research/evaluation-1/`:
 
 | Document | SHA-256 |
 |---|---|
-| `README.md` | `fd00d05a8d7cd9db229b6f4a88efbe8c4237703223b6496a112ce375fa0a4a31` |
-| `PLAN.md` | `a796b607aff0cbd1f442e71f5e15251ebe23f6a895e5263ca53719c8bc1e5819` |
-| `BENCHMARKS.md` | `743a61fee85b10b7b33e07b82e1ab2aaab84e4c506242b4a7fe1acc971d6783a` |
-| `ANALYSIS.md` | `1904613e5afc17a6a2eb0de03110ecdc9bf83bfe2a375d32251276a81185bf21` |
-| `DECISIONS.md` | `b3d73ef4609531cb571646ada11f35bf30895d41ecce96b1f8ff019d3411726a` |
+| `README.md` | `a5be895f8f7ba82b4eff0d1f370b2a5bd4da04c85cd170382893a84a634f6c1f` |
+| `PLAN.md` | `040aacf9fa70f069a1629335a27d59c1db8a32df1dc9e288289b323e53e2d08e` |
+| `BENCHMARKS.md` | `466328aff2f22d7af9fab18c2730d77da522bc5a765d0b3cf23f7099e2da26ca` |
+| `ANALYSIS.md` | `cf4e930c11bd49c38de2f4700518203fb91441f6e9e1842955697b7e3553eaa3` |
+| `DECISIONS.md` | `882e5ff4f5ec675e0d224cf073979e14ef1fbc3259d23cefedb71c373489ff20` |
 
 `REVIEW.md` is excluded to avoid a self-referential hash. Material changes to substantive documents require renewed review.
 
