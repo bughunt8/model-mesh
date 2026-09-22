@@ -1,6 +1,6 @@
 # Model-mesh portable method and pilot plan
 
-Discussion draft v0.4 | 22 September 2026 | Planning only
+Discussion draft v0.5 | 22 September 2026 | Planning only
 
 ## Agreed priorities
 
@@ -16,7 +16,9 @@ For now, focus on evaluation scenarios and existing benchmarks that can substant
 
 Two comparison stages are agreed: isolate the method first, then routing's added effect. Defect quality is measured after bounded repair, with at most one repair cycle after the initial submission, the same cap for both sides, and no human rescue. Any attempt still failing at its repair or resource limit is frozen and counted as a failure; separately authorized later rescue is unscored and cannot revise that result.
 
-Exact comparator configurations, defect definitions, acceptance thresholds, resource caps, and the evidence standard remain unresolved. Continued planning does not authorize implementation.
+Both executable checks and agent review are permitted repair feedback. Any confirmed defect, including cosmetic defects, fails final task acceptance. Define the criteria before scoring; this is not a guarantee of no undiscovered defects. Resource caps are set by scenario or difficulty class and matched between arms on each task.
+
+Exact comparator configurations, defect and cosmetic criteria, numeric caps, adoption evidence requirements, and the adjudication process remain unresolved. Continued planning does not authorize implementation.
 
 ## Decision sought
 
@@ -131,7 +133,7 @@ Audit at release approval, per-run conformance checking, periodic usage reconcil
 
 ### Agree the experiment
 
-Use the selected benchmark suites to propose a non-sensitive evaluation population and freeze an acceptance rubric before running anything. Use the settled client-evidence purpose, priority order, comparison stages, and repair rules. Agree exact model/harness configurations, permitted feedback, safety boundaries, resource caps, costs, and thresholds through the remaining measurement questions. Do not reopen settled decisions or require useful-work discovery.
+Use the selected benchmark suites to propose a non-sensitive evaluation population and freeze an acceptance rubric before running anything. Use the settled client-evidence purpose, priority order, comparison stages, repair rules, feedback categories, acceptance rule, and cap structure. Agree exact model/harness configurations, visible test and review procedures, safety boundaries, numeric caps, costs, and adoption evidence requirements through the remaining measurement questions. Do not reopen settled decisions or require useful-work discovery.
 
 No task count or allocation is agreed. Choose the final count across the seven selected scenarios using task variability, the smallest worthwhile effect, available review capacity, resource limits, and the statistical evidence standard. Do not reuse an arbitrary coding-only task count for this broader selection or present a small feasibility sample as a powered comparison.
 
@@ -153,21 +155,31 @@ Stage one compares `arm-baseline` with `arm-method`; stage two compares `arm-met
 
 Do not use a deliberately weak reference. If a human-led or already multi-model operational baseline is later added, report that separately as a whole-system comparison. It must not replace or be mislabeled as either selected controlled stage.
 
-Predeclare resource limits. Report outcomes within a matched envelope and each arm's actual operational cost. Count ordinary human acceptance review, but do not permit that review to coach repairs during the scored attempt.
+Predeclare resource limits by scenario or difficulty class. Assign task classes and cap rules before observing scored outcomes; apply the same caps to competing arms on the same task. Class definitions and numeric time, token, cost, tool-call, concurrency, and retry limits remain open. Do not upgrade a difficult failed task's allowance after seeing its result.
+
+Report outcomes within that matched envelope and each arm's actual operational cost. Count ordinary human acceptance review, but do not permit that review to coach repairs during the scored attempt.
 
 ### Bounded repair and final evaluation
 
 Allow at most one repair cycle after the initial submission. A cycle consists of permitted verification feedback, revision, and resubmission. A task that does not need repair may proceed directly to final submission; the cap is not a requirement to alter a successful artifact.
 
-No human diagnoses, hints, clarification, or edits may rescue a scored attempt. Freeze the task brief before the attempt. Agents may use the predeclared tests and workflow feedback within the common envelope. A human may stop unsafe execution, but that intervention does not produce a successful task or permission to continue beyond the boundary.
+No human diagnoses, hints, clarification, or edits may rescue a scored attempt. Freeze the task brief before the attempt. Agents may use both predeclared executable checks and a separate agent's review against the frozen brief and visible evidence, within the common envelope. Use executable checks where they apply and record any predeclared lack of an executable check; do not fabricate automated coverage for a human-judged criterion. A human may stop unsafe execution, but that intervention does not produce a successful task or permission to continue beyond the boundary.
 
-Freeze the final artifact and trace before independent final evaluation. The final evaluator's hidden answers, holdout tests, and findings must not be fed back into repair. A final failure cannot reopen an unused repair opportunity. Which non-holdout test and agent-review feedback is permitted remains an explicit pre-execution decision, applied consistently within each comparison.
+Freeze the final artifact and trace before independent final evaluation. The final evaluator's hidden answers, holdout tests, and findings must not be fed back into either repair feedback channel. A final failure cannot reopen an unused repair opportunity. Exact visible tests, agent-review prompts, reviewer configurations, and feedback delivery remain to be pinned, without reopening the selected feedback categories.
 
 Measure defect quality on the final frozen artifact after the allowed repair, or on the initial artifact if submitted without repair. Do not add a separately scored first-handoff defect target. Retain attempt and repair traces for audit and account for all tool calls, retries, time, attention, and cost; the cycle limit does not allow unlimited work within a cycle.
 
 At the last permitted submission, freeze the artifact and evaluate it; using the one allowed repair is not itself a failure. If the final artifact fails acceptance, or the attempt is terminated for breaching a resource limit, record a failure. Grade any available artifact without inventing defect findings for missing output. Report failures, incompletion, safety stops, and severity-specific defects separately; no-output tasks remain in the assigned-task denominator.
 
 Later rescue requires separate authorization and a separate run identity. It is unscored, may not replace or relabel the original failure, and must not contaminate other scored attempts. Disclose its time, human effort, and cost separately alongside all-in observed totals.
+
+### Final task acceptance
+
+Any confirmed defect against the frozen task and policy criteria makes the final task fail, including cosmetic defects. Passing an official benchmark grader is necessary where applicable but cannot override this stricter local acceptance rule or mandatory safety failures. Report the official grade separately.
+
+Specify cosmetic requirements such as formatting, layout, naming, or presentation constraints before the scored run. Do not invent new aesthetic preferences after seeing an output. Distinguish confirmed deviations from unsubstantiated reviewer findings, and do not declare an unresolved finding a pass by default. The adjudication and unresolved-result handling procedure remains to be agreed.
+
+Severity labels explain defects and inform analysis; they do not exempt minor or cosmetic defects from failure. A zero-confirmed-defect result is scoped to the declared rubric, checks, and observation window. It does not prove universal correctness or eliminate the possibility of an escaped defect.
 
 ### Test portability, then coordination
 
@@ -187,14 +199,14 @@ All operational definitions below remain proposals. Apply the confirmed priority
 
 | Metric | Proposed operational definition | Trap to avoid |
 |---|---|---|
-| Accepted-task rate | Assigned tasks meeting all frozen functional, quality, and policy acceptance rules within the allowed budget, divided by all eligible assigned tasks. | Dropping failed, timed-out, or abandoned tasks. |
+| Accepted-task rate | Assigned tasks meeting all frozen criteria within budget, with no confirmed defect including cosmetic defects and no mandatory safety failure, divided by all eligible assigned tasks. | Dropping failed, timed-out, or abandoned tasks, or ignoring a cosmetic defect because the official grader passed. |
 | Final-defect outcomes | Independently adjudicated defects and severity on the final frozen artifact after the permitted repair, alongside all-assigned completion and failure outcomes. Exact severity rules remain open. | Adding an unselected first-handoff quality target or hiding no-output failures behind a low defect count. |
 | Human attention per task | Active briefing, supervision, ordinary final review, safety intervention, and other authorized operational attention, recorded for every task. Scored repairs receive no human coaching. | Ignoring review effort, silently treating human rescue as autonomous performance, or mixing post-score rescue into a successful scored attempt. |
 | Fully loaded cost per accepted task | Total inference, retry, reviewer, tool, infrastructure, and priced human effort across all assigned work, divided by accepted tasks. Report setup cost separately and amortize transparently if requested. | Excluding failed attempts or claiming zero subscription cost. With no successes, report undefined, not zero. |
 | Time to accepted change | Elapsed time from task release to independent acceptance; separately show queue, execution, review, and rework. | Reporting only successful latency while failures disappear. Show capped-run failures separately. |
 | False acceptance | Independently adjudicated unacceptable outputs initially marked acceptable, divided by outputs initially marked acceptable. | Using the implementer's tests or verdict as the only truth. |
-| Escaped material defects | Accepted tasks later found to contain agreed-severity defects within a predefined review/test window. | Claiming production defect reduction from a short offline pilot. |
-| Reviewer effectiveness | Recall on seeded or adjudicated material defects, precision of raised findings, and added human workload. Report synthetic and natural defects separately. | Counting long critiques or different model names as evidence of independence. |
+| Escaped defects | Accepted tasks later found to contain defects, including cosmetic defects, within a predefined review/test window; retain severity breakdowns and the original result history. | Restricting follow-up to material defects when acceptance rejects every confirmed defect, or claiming production defect reduction from a short offline pilot. |
+| Reviewer effectiveness | Recall on seeded or adjudicated defects, precision of raised findings, and added human workload, with severity and cosmetic breakdowns. Report synthetic and natural defects separately. | Excluding cosmetic defects despite the acceptance rule, or counting long critiques or different model names as evidence of independence. |
 | Fallback invocation and recovery | Tasks with fallback divided by started tasks; then accepted tasks with fallback divided by tasks with fallback. Also report event counts and reason categories. | Interpreting recovery as causal benefit without a paired or randomized fallback experiment. |
 | Policy enforcement | Approved-request outcomes, denied-request outcomes, attempted violations, actual violations, and missing evidence, each with a defined test denominator. | Treating blocked unsafe attempts as successful exfiltration or treating zero observed violations as proof of no risk. |
 | Stability and intervention | Terminal outcomes, crashes, hangs, retries, and safety interventions across all started attempts; later rescue is a separate disclosed activity. | Deleting infrastructure failures after seeing which arm lost or overwriting a failed attempt with its rescued successor. |
@@ -238,12 +250,15 @@ We will resolve this in rounds rather than ask dozens of abstract questions at o
 - Comparison design: method effect first, then routing effect, in separate controlled stages.
 - Defect measurement: after at most one repair cycle, with no human rescue.
 - At the limit: count and freeze failure; separately authorized later rescue is unscored.
+- Repair feedback: both executable checks and agent review, excluding hidden final-evaluator information.
+- Final task acceptance: any confirmed defect, including cosmetic defects, fails.
+- Resource envelope: predeclared by scenario or difficulty class, matched for competing arms on the same task.
 
 ### Next measurement round
 
-- For selected scenarios or benchmark tasks, which outcomes are defects and which severity levels are automatic failures?
+- For each selected scenario, what objective criteria define correctness and cosmetic defects before scoring? Every confirmed defect already causes failure.
 - Who adjudicates defects, false positives, and disagreements between tests and reviewers?
-- Which exact model, harness, prompts, tools, reasoning settings, and permitted feedback define the reference for each selected stage?
+- Which exact model, harness, prompts, tools, reasoning settings, visible checks, and agent-review procedures define each selected stage?
 - Which activities count toward your attention, and how will active time be recorded?
 - What evidence is sufficient to distinguish improvement, regression, and an inconclusive result without allowing a prohibited trade-off?
 

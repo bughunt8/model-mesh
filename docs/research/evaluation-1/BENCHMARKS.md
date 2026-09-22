@@ -12,6 +12,8 @@ Keep safety and recipient-policy compliance as mandatory gates, not productivity
 
 The comparison stages are settled: method effect first, then routing effect. Score final defect quality after at most one repair cycle with no human rescue, using the same cap on both sides. A failed scored attempt stays failed even if later separately authorized, unscored rescue succeeds. These local pilot rules must be reported alongside the official benchmark grade rather than presented as an unchanged official evaluation protocol.
 
+Both executable checks and agent review may inform repair, excluding hidden final-evaluator information. Any confirmed defect, including cosmetic defects against predeclared criteria, fails local task acceptance even if the official benchmark grade passes. Caps are predeclared by scenario or difficulty class, not chosen after observing results; numeric values remain open.
+
 This document separates two choices. Evaluation scenarios define capabilities and failure modes to test. Benchmarks provide reusable test material and evaluation procedures. A benchmark is not the baseline workflow: a comparative improvement claim will still require a declared comparator.
 
 The confirmed business purpose is to offer model-mesh to clients using measured success on your own projects as evidence. Usefulness is already established and is not being reassessed. For now, defer personally useful task discovery and project selection; focus on qualification scenarios, external benchmarks, and defensible claims.
@@ -118,12 +120,12 @@ Freeze dataset, environment, evaluator, adapter, model, prompt, and policy versi
 
 Your priority order is settled. These questions concern definitions and evidence, not a request to renegotiate it.
 
-- What is a defect in each selected task class, and which severity levels are automatic failures?
+- What frozen correctness and cosmetic criteria define defects in each selected task class? Every confirmed defect already makes the task fail.
 - Who independently decides whether a defect is real, especially when tests or an LLM judge disagree?
 - How much repeated evidence is required before calling a difference an improvement rather than run-to-run noise?
 - How should an uncertain comparison be treated? My recommendation is inconclusive, not an assumed pass.
 - What counts toward your attention: initial briefing, clarification, monitoring, review, correction, and recovery?
-- Which exact configurations and permitted feedback define the reference in each selected comparison stage? Benchmark choice alone does not specify them.
+- Which exact configurations, visible checks, and agent-review procedures define each selected comparison stage? The feedback categories are already settled.
 - Deferred until requested: project case-study selection and publication permissions. Do not use this as a reason to delay benchmark selection.
 
 After selections, I will propose a concrete defect taxonomy and acceptance examples for those task types. We will resolve those before sample size, thresholds, or implementation.

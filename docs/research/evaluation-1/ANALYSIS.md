@@ -44,13 +44,25 @@ The primary objective is fewer defects, not a higher completion score alone. Rep
 
 The scored defect outcome is the final frozen deliverable after at most one repair cycle, not first-handoff quality. Distinguish final defects, false acceptance, escaped defects within a declared observation window, incomplete tasks, and correct safe refusals. Retain repair traces for audit without creating a separate first-handoff defect target. Do not reward a system that avoids defects by refusing every feasible task; completion, required behavior, and safety must be interpreted together.
 
-No human rescue is permitted during scored work. Permitted repair feedback must be available under the same declared rules within a comparison, and final hidden evaluation remains separate. Otherwise, the experiment risks measuring privileged feedback or human coaching rather than the method.
+No human rescue is permitted during scored work. Repair feedback uses both executable checks and agent review, with the same declared access rules within a comparison and no hidden final-evaluator information. Exact checks, review prompts, and configurations remain to be pinned. Do not mistake a reviewer's unsupported finding for a confirmed defect.
+
+Hold the repair-reviewer configuration constant within the method-effect comparison so that adding a different reviewer is not an undeclared intervention. In the routing stage, explicitly identify any reviewer-role routing change as part of the treatment. Final-grading procedures must remain independent and matched; comparable permissions do not require feedback content to be identical on different outputs.
 
 After initial submission, one repair opportunity is a maximum, not an instruction to use the final evaluator repeatedly. Final submission freezes the scoreable artifact; hidden final-evaluator findings cannot reopen the attempt. At a repair or resource limit, retain the failure even if a later separately authorized rescue succeeds.
 
 Within each scenario, freeze what counts as an opportunity for failure and how duplicate findings are deduplicated. Do not compare defect counts across tasks of very different scope without their task-level denominators.
 
-Do not average a serious defect away with many trivial successes. Severity thresholds and the adjudication owner remain unresolved, and therefore cannot yet be used to make an adoption claim.
+Do not average a defect away with successes. The owner selected failure for any confirmed defect, including cosmetic defects. Severity classification remains useful for explanation, but no severity category is exempt from task failure. The task acceptance rule is settled; detailed correctness and cosmetic criteria and the adjudication owner remain open.
+
+This strict rule requires a frozen rubric. An objectively specified formatting deviation can fail a task; an evaluator's newly invented style preference cannot. Report unconfirmed or disputed findings explicitly until the agreed adjudication process resolves them. Never promote uncertainty to a pass or describe a scoped zero-confirmed-defect observation as proof that no defects exist.
+
+The official benchmark result and stricter local task acceptance are distinct outcomes. A benchmark pass may be a local failure due to a confirmed cosmetic defect or policy breach. Both results should remain visible.
+
+## Resource-cap classification
+
+Caps are predeclared by scenario or difficulty class, with identical values for competing arms on the same task. Define the class taxonomy and assignment procedure before scored execution. Do not reclassify failed or expensive tasks to obtain a larger allowance.
+
+The one-cycle limit applies within the total task envelope, not as a fresh allowance added after initial work. Numeric time, token, monetary, tool-call, concurrency, and retry caps remain undecided. Class-specific results must stay visible so that different class mixes cannot conceal an objective regression.
 
 ## Human attention and cost boundaries
 
