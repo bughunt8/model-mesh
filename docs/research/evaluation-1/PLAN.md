@@ -1,6 +1,6 @@
 # Model-mesh portable method and pilot plan
 
-Discussion draft v0.13 | 23 September 2026 | Planning only
+Discussion draft v0.14 | 23 September 2026 | Planning only
 
 ## Agreed priorities
 
@@ -139,7 +139,7 @@ Audit at release approval, per-run conformance checking, periodic usage reconcil
 
 Use the selected benchmark suites to propose a non-sensitive evaluation population and freeze an acceptance rubric before running anything. Use the settled client-evidence purpose, priority order, comparison stages, repair rules, feedback categories, acceptance rule, and cap structure. Agree exact model/harness configurations, visible test and review procedures, safety boundaries, numeric caps, costs, and adoption evidence requirements through the remaining measurement questions. Do not reopen settled decisions or require useful-work discovery.
 
-The agreed feasibility floor is two distinct cases per selected scenario, fourteen distinct cases across the seven scenarios. Final case selection, counts beyond that minimum, repeats, and stage allocation remain open. Use task variability, the smallest worthwhile effect, available review capacity, the 10-hour/USD 100 ceilings, and the statistical evidence standard to assess feasibility. Do not assume that all selected suites, both stages, supplemental cases, repeats, and two-judge grading fit those limits. Return for an owner scope decision if the floor is infeasible; do not silently reduce it or claim that this small feasibility floor establishes a powered comparison.
+The agreed feasibility floor is two distinct cases per selected scenario, fourteen distinct cases across the seven scenarios. The scenario-to-stage assignment is settled below. Final case selection, counts beyond the minimum, repeats, and resource allocations remain open. Use task variability, the smallest worthwhile effect, available review capacity, the 10-hour/USD 100 ceilings, and the statistical evidence standard to assess feasibility. Do not assume that all selected suites, both stages, supplemental cases, repeats, and two-judge grading fit those limits. Return for an owner scope decision if the floor is infeasible; do not silently reduce it or claim that this small feasibility floor establishes a powered comparison.
 
 The owner selected minimum breadth, then depth. First satisfy the two-distinct-case floor for each scenario in the feasibility proposal, using qualified selected benchmarks and necessary supplemental cases. Then allocate remaining capacity to repeated paired trials. Freeze the case manifest, repeats, stage allocation, and selection procedure before results. Assign each floor case one primary scenario so the fourteen-case minimum is not reduced by counting one case toward several scenario floors. A case reused in another arm or stage, a repair, or a repeated run is not a new distinct case. If the floor cannot fit safely within the aggregate limits, return to the owner for a scope decision before execution. No selection is silently dropped and no safety boundary is waived.
 
@@ -147,7 +147,14 @@ Count distinct underlying tasks, not distinct labels or prompts. Cases must diff
 
 The selected case mix is two routine tasks per scenario. Define routine eligibility and any relevant complexity criteria before case selection and results; do not label a task routine merely because an arm solved it or replace a difficult outcome after seeing results. This scope supports routine-work observations only, not challenging-case reliability or representativeness of all client work. Mandatory security qualification and adversarial control tests remain separate requirements, and every confirmed defect still fails local acceptance.
 
-Apply the fourteen-case floor across the whole pilot, not independently to both stages. Keep each scenario's two routine floor cases together in one stage rather than splitting them or reusing the floor across both stages. Partition the seven scenarios between method and routing comparisons, with at least one scenario in each stage. Which scenarios go where remains open and must be frozen before results. Within the assigned stage, run matched competing arms on each case; keeping two cases together does not mean assigning one case to each arm.
+Apply the fourteen-case floor across the whole pilot, not independently to both stages. Keep each scenario's two routine floor cases together in its assigned stage rather than splitting them or reusing the floor across both stages. The owner approved the following allocation. Within the assigned stage, run matched competing arms on each case; keeping two cases together does not mean assigning one case to each arm.
+
+| Stage | Assigned scenarios | Distinct routine floor cases | Competing arms on every case |
+|---|---|---|---|
+| Method first | A01 regression bug repair; A03 behavior-preserving refactor; A05 security audit and remediation; A09 requirements and architecture planning | 8, two per scenario | `arm-baseline` versus `arm-method` |
+| Routing second | A08 data reconciliation and analysis; A11 browser administration; A12 cross-application office work | 6, two per scenario | `arm-method` versus `arm-routing` |
+
+The floor therefore entails fourteen matched case comparisons and twenty-eight initial arm attempts before repeats, with any permitted repair contained within its attempt. This is design arithmetic, not a claim that setup, execution, evaluation, or required controls fit the limits. These counts do not authorize dispatch, and actual cases, repeats, and resource reservations remain unapproved.
 
 A scenario tested in the method stage does not establish a routing result, and the reverse also holds. Both stages remain required. Report the scenario-by-stage coverage matrix and limit each claim to its tested routine scope rather than pooling unlike stage populations to imply a broader effect. Any proposal for cases or cross-stage runs beyond the agreed floor requires an explicit allocation and feasibility review; no additional work is authorized by this design.
 
@@ -300,7 +307,7 @@ We will resolve this in rounds rather than ask dozens of abstract questions at o
 - Final adjudication: two independent AI judges; the project owner personally resolves disputes or uncertain findings on frozen outputs.
 - Dispute timing: eight elapsed minutes from escalation, or the global deadline if sooner; no ruling means frozen unresolved and not accepted.
 - Sampling: at least two distinct cases per selected scenario, fourteen across the whole pilot rather than per stage, then repeated paired trials; approve the case manifest and stage subsets, and return for a scope decision if infeasible.
-- Case mix and assignment: two routine cases per scenario, kept together in one stage; divide scenarios between the two required stages and freeze the assignment before results.
+- Case mix and assignment: two routine cases per scenario, kept together. Method stage: A01, A03, A05, A09, with eight floor cases. Routing stage: A08, A11, A12, with six floor cases.
 - Case identity: a different underlying task is required; paraphrases, cosmetic variants, revision changes, and seeds alone do not count. A different repository or application context is not also required.
 - Attention: all active owner pilot effort, including setup and independent evaluation, with category breakdowns and no double counting; passive waiting is elapsed time.
 - Attention recording: owner-operated timer plus tagged activity log, with reconciliation and preserved corrections. Missed start/stop intervals remain missing, never estimated or zero; no missing-data analysis exception is currently agreed.
@@ -314,7 +321,7 @@ We will resolve this in rounds rather than ask dozens of abstract questions at o
 - For each selected scenario, which versioned reference/template and correctness criteria define defects? Every confirmed defect already causes failure.
 - Which judge configurations, calibration checks, and recorded escalation and notification mechanics implement adjudication within the settled eight-minute window? How are missing-judge cases and timely but inconclusive owner responses recorded without treating them as passes?
 - Which exact model, harness, prompts, tools, reasoning settings, visible checks, and agent-review procedures define each selected stage?
-- Which scenarios belong to the method stage and which to the routing stage, keeping each routine two-case floor together? Which predeclared eligibility criteria define routine work in each scenario?
+- Which predeclared eligibility criteria and actual cases define routine work in each scenario under the settled stage assignment?
 - Which timer/log tool, fields, reconciliation cadence, and shared-effort allocation will implement the settled recording method without double counting? The inclusion of setup and independent evaluation is settled.
 - What evidence is sufficient to distinguish improvement, regression, and an inconclusive result without allowing a prohibited trade-off?
 
