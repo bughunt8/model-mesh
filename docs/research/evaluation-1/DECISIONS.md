@@ -37,6 +37,8 @@ This log records owner instructions and explicit selections from the planning di
 | D27 | Cap combined model, tool, and compute charges at USD 100 for the pilot. | Settled monetary ceiling and currency; no per-arm or per-suite reset. D29 subsequently fixes the all-new-charges boundary; allocations remain open. |
 | D28 | Start the continuous 10-hour clock at first scored-task dispatch; include subsequent execution, queues, grading, and waits for owner decisions, with no pauses. | Settled. Preparation is before the scored clock, without hiding scored solving or evaluation there. |
 | D29 | Count all new pilot-related model, tool, and compute charges toward USD 100, including setup, scored work, repairs, both judges, simulators, storage, and cleanup. | Settled. Being outside the scored clock does not exempt a new charge. Owner labor is separately measured. |
+| D30 | Allow eight elapsed minutes for the owner's dispute ruling, capped by the global deadline if sooner. Without a timely ruling, freeze the task as unresolved and not accepted. | Settled. Measure from recorded dispute escalation; no clock pause, late score rewrite, or automatic confirmation of a suspected defect. Notification mechanics remain open. |
+| D31 | Use minimum breadth, then depth when proposing sampling within the fixed limits. | Settled approach. Propose a minimum floor across the seven selected scenarios, then repeated paired trials. Numeric floor, cases, repeats, and stage allocations need approval. If the floor is infeasible, return for a scope decision. |
 
 ## Superseded or constrained proposals
 
@@ -60,6 +62,8 @@ This log records owner instructions and explicit selections from the planning di
 | Treat the overall cash amount or currency as undecided, or allocate USD 100 separately to each arm. | Superseded or prohibited by D27. |
 | Start the clock when environment setup begins, or pause it during grading or owner waits. | Not selected or prohibited by D28. |
 | Count only scored-run charges while excluding new setup or cleanup costs from the pilot ceiling. | Not selected. D29 includes all new pilot charges. |
+| Wait 15, 30, or 60 minutes, or until the global deadline without a shorter dispute window. | Not selected. D30 chooses eight minutes, capped by the global deadline. |
+| Prioritize breadth alone or silently reduce scope to maximize depth. | Not selected. D31 chooses minimum breadth, then depth, with an owner decision if the floor is infeasible. |
 
 ## Open questions
 
@@ -69,7 +73,7 @@ These remain genuinely unresolved. Their presence does not prevent a documentati
 |---|---|---|
 | O01 | Which exact model, harness, prompts, tools, reasoning settings, visible checks, and agent-review procedures define each selected controlled comparison? | Environment and protocol freeze; stages and feedback categories are settled. |
 | O02 | Which versioned references/templates, declared variable fields/exceptions, comparison representation, and correctness criteria define defects in each scenario? | Task and evaluator freeze; exact-template grading and every-confirmed-defect failure are settled. |
-| O03 | Which two AI-judge configurations, calibration/validation procedures, owner response window, and unresolved-result disposition implement D22 and D24/D25? | Evaluation approval; panel size and owner identity are settled. |
+| O03 | Which two AI-judge configurations, calibration/validation procedures, evidence access, and recorded escalation/notification mechanics implement final adjudication? | Evaluation approval; two judges, owner identity, eight-minute response window, and unanswered-dispute outcome are settled. |
 | O04 | How are active owner attention and operational review separated from experimental adjudication? | Measurement instrumentation. |
 | O05 | What evidence standard distinguishes improvement, regression, and inconclusive results without unauthorized regression margins? | Sample-size choice and preregistration. |
 | O06 | Which data classes, recipients, jurisdictions, retention rules, and tool permissions apply? | Any real-data or networked execution. |
@@ -77,10 +81,10 @@ These remain genuinely unresolved. Their presence does not prevent a documentati
 | O08 | Which exact benchmark releases, splits, task subsets, graders, and simulator configurations are available and appropriate? | Environment freeze. |
 | O09 | Can TheAgentCompany meet the complete security boundary without unsafe privileges on the user/shared host? | Its installation or execution. |
 | O10 | Which supplemental refactoring, security, and architecture cases are needed, and how will they be independently graded? | Coverage approval. |
-| O11 | What class taxonomy, assignment procedure, numeric task-level limits, broader safety stop rules, and sampling plan fit the settled one-repair, 10-hour, and USD 100 envelope? | Execution authorization. |
+| O11 | What class taxonomy, assignment procedure, numeric task-level limits, safety stop rules, minimum coverage floor, distinct cases, repeats, and stage allocation fit the settled envelope? | Execution authorization; minimum breadth, then depth is settled, but numeric allocation is not. |
 | O12 | What time horizon and allocation rules define total cost, including setup and qualification? | Any total-cost comparison. |
 | O13 | Which project case studies may later be used, and what may be published? | Case-study disclosure; deferred for now. |
-| O14 | How are pending, in-flight, unstarted, and disputed tasks classified at cutoff, and how do shutdown, evidence retention, and cleanup avoid extending scored execution? | Execution authorization; first-dispatch start, continuous waits, setup exclusion from the clock, and 10-hour ceiling are settled. |
+| O14 | How are other pending, in-flight, unstarted, and missing-judge tasks classified at cutoff, and how do shutdown, evidence retention, and cleanup avoid extending scored execution? | Execution authorization; clock boundaries and unanswered-dispute classification under D30 are settled. |
 | O15 | Which billing rates, allocation and reconciliation rules, and non-overlapping reservations cover in-flight calls, both judges, storage retention, and safe cleanup? | Execution authorization; all new pilot charges, including setup/cleanup, already count toward USD 100. |
 
 ## Change protocol

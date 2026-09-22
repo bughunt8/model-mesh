@@ -1,6 +1,6 @@
 # Model-mesh portable method and pilot plan
 
-Discussion draft v0.8 | 22 September 2026 | Planning only
+Discussion draft v0.9 | 22 September 2026 | Planning only
 
 ## Agreed priorities
 
@@ -141,6 +141,8 @@ Use the selected benchmark suites to propose a non-sensitive evaluation populati
 
 No task count or allocation is agreed. Choose the final count across the seven selected scenarios using task variability, the smallest worthwhile effect, available review capacity, the 10-hour/USD 100 ceilings, and the statistical evidence standard. Do not assume that all selected suites, both stages, supplemental cases, repeats, and two-judge grading fit those limits. Propose a predeclared balanced subset or deferral if necessary; do not silently drop difficult tasks or claim that a small feasibility sample establishes a powered comparison.
 
+The owner selected minimum breadth, then depth. First propose a minimum coverage floor across all seven selected scenarios, using qualified selected benchmarks and the necessary supplemental cases. Then allocate remaining capacity to repeated paired trials. Freeze the numeric floor, distinct cases, repeats, stage allocation, and selection procedure before results. A repeated run does not supply a missing scenario or count as a new distinct task. If the floor cannot fit safely within the aggregate limits, return to the owner for a scope decision before execution. No selection is silently dropped and no safety boundary is waived.
+
 ### Qualify controls before measuring productivity
 
 Perform install and rollback review, adapter conformance checks, synthetic recipient tests, cancellation, boundary violations, and evidence-tampering tests. Use synthetic canaries rather than real secrets. Stop on any mandatory-control failure and do not start real-code trials.
@@ -203,7 +205,9 @@ Make the required presentation template available equally to competing arms with
 
 Two independent AI judges apply the frozen rubric to the final artifact and evidence. The project owner resolves judge disagreements, conflicting checks, or uncertain defect findings after the artifact is frozen, without editing the output, providing repair feedback, or restarting the attempt. Either judge's disagreement or uncertainty triggers that dispute path; agreement still must satisfy the frozen checks and evidence. Record the finding, evidence, both judge decisions, owner disposition, artifact identity, and evaluation effort.
 
-Do not treat an unresolved finding as a pass or turn a suspected defect into a confirmed defect merely by assertion. The panel size and human dispute owner are settled; exact judge models, calibration, evidence access, response window, and unresolved-result disposition remain to be agreed. Do not silently accept a one-judge result if the other judge is unavailable. The selected workflow does not require the owner to rejudge every undisputed task.
+Allow eight continuous elapsed minutes from recorded dispute escalation for the owner's ruling, capped by the global scored deadline if sooner. Owner waiting does not pause the pilot clock. If no ruling is recorded by that cutoff, freeze the task as unresolved and not accepted. Preserve both judge findings and the evidence; a late ruling cannot retroactively change the scored outcome or reopen the attempt. Other eligible work may continue within the same resource limits.
+
+Do not treat an unresolved finding as a pass or turn a suspected defect into a confirmed defect merely by assertion. The panel size, human dispute owner, eight-minute window, and unanswered-dispute disposition are settled. Exact judge models, calibration, evidence access, and escalation/notification mechanics remain to be agreed. Record when escalation occurs; a notification delay must not silently reset the timer. Do not silently accept a one-judge result if the other judge is unavailable. The selected workflow does not require the owner to rejudge every undisputed task.
 
 Severity labels explain defects and inform analysis; they do not exempt minor or cosmetic defects from failure. A zero-confirmed-defect result is scoped to the declared rubric, checks, and observation window. It does not prove universal correctness or eliminate the possibility of an escaped defect.
 
@@ -280,6 +284,8 @@ We will resolve this in rounds rather than ask dozens of abstract questions at o
 - Final task acceptance: any confirmed defect, including cosmetic defects, fails.
 - Resource envelope: predeclared by scenario or difficulty class, matched for competing arms on the same task.
 - Final adjudication: two independent AI judges; the project owner personally resolves disputes or uncertain findings on frozen outputs.
+- Dispute timing: eight elapsed minutes from escalation, or the global deadline if sooner; no ruling means frozen unresolved and not accepted.
+- Sampling: minimum breadth across selected scenarios, then repeated paired trials; approve the numeric floor and return for a scope decision if infeasible.
 - Cosmetic grading: exact reference or template, with exceptions declared before execution.
 - Aggregate limits: 10 hours total elapsed pilot runtime and USD 100 combined model/tool/compute charges. These do not reset per task or stage.
 - Clock boundary: first scored-task dispatch through final evaluation, continuously including queues, grading, and owner waits; setup precedes the clock.
@@ -288,7 +294,7 @@ We will resolve this in rounds rather than ask dozens of abstract questions at o
 ### Next measurement round
 
 - For each selected scenario, which versioned reference/template and correctness criteria define defects? Every confirmed defect already causes failure.
-- Which judge configurations, calibration checks, owner response window, and unresolved-result procedure implement the selected adjudication model?
+- Which judge configurations, calibration checks, and recorded escalation and notification mechanics implement adjudication within the settled eight-minute window? How are missing-judge cases and timely but inconclusive owner responses recorded without treating them as passes?
 - Which exact model, harness, prompts, tools, reasoning settings, visible checks, and agent-review procedures define each selected stage?
 - Which activities count toward your attention, and how will active time be recorded?
 - What evidence is sufficient to distinguish improvement, regression, and an inconclusive result without allowing a prohibited trade-off?

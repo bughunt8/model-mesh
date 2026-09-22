@@ -26,6 +26,10 @@ Permitted repair feedback combines executable checks and agent review, without h
 
 Two independent AI judges assess final outputs, with the project owner personally resolving disagreements or uncertain findings after artifacts are frozen. Cosmetic grading uses an exact reference or template, with any variable fields or exceptions declared before execution. Neither adjudication nor a template permits post-score edits, human rescue, or disclosure of hidden benchmark answers.
 
+The owner has eight elapsed minutes from recorded dispute escalation to supply a ruling, or until the global deadline if sooner. An unanswered dispute freezes as unresolved and not accepted, not as a confirmed defect or a pass. Later rulings cannot rewrite that scored outcome.
+
+Sampling follows minimum breadth, then depth. Propose a minimum coverage floor across the seven selected scenarios, then use remaining capacity for repeated paired trials. The numeric floor and allocation need approval. If that floor is infeasible, return for a scope decision rather than silently dropping selections.
+
 The continuous 10-hour clock starts at the first scored-task dispatch and includes subsequent execution, queues, grading, and waits for the owner's decisions, with no pauses. Preparatory setup is before the clock. USD 100 covers all new pilot-related model, tool, and compute charges, including setup, scored work, repairs, both judges, simulators, storage, and cleanup. Neither ceiling resets per task, suite, stage, or retry, and owner labor is measured separately. No claim is made that the full selected scope fits.
 
 The working branch is `evaluation-1`. The existing [draft PR #3](https://github.com/bughunt8/model-mesh/pull/3) is retained at the owner's request; its branch, `docs/portable-method-pilot`, will be synchronized to the same reviewed commit. Do not merge either branch or treat a documentation merge as pilot authorization.

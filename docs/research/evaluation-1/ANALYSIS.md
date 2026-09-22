@@ -60,6 +60,8 @@ The presentation contract must be visible equally to competing arms without expo
 
 Report unconfirmed or disputed findings explicitly until the human adjudicator resolves them on the frozen output. Adjudication supplies no hints to workers, alters no deliverable, and does not reopen repair. Record its human minutes, waiting time, and cost under the declared accounting rules. Never promote uncertainty to a pass or describe a scoped zero-confirmed-defect observation as proof that no defects exist.
 
+The owner response window is eight elapsed minutes from recorded dispute escalation, truncated by the global deadline. An unanswered dispute freezes as unresolved and not accepted. Keep that reason distinct from a confirmed defect while retaining the task in assigned-outcome reporting; do not exclude unresolved tasks to inflate accepted-delivery rates. Later adjudication cannot replace the frozen scored result. Dispute frequency and response delays may affect delivery and attention measurements, so report them rather than attributing every unresolved case to model defects.
+
 Agreement between AI judges can still be wrong. Before execution, define calibration cases, independence controls, and any validation sampling. Those details remain proposals; this selection does not silently authorize human review of every task or an unapproved recurring validation workload.
 
 The official benchmark result and stricter local task acceptance are distinct outcomes. A benchmark pass may be a local failure due to a confirmed cosmetic defect or policy breach. Both results should remain visible.
@@ -72,11 +74,13 @@ The one-cycle limit applies within the total task envelope, not as a fresh allow
 
 The monetary and elapsed-time caps are feasibility constraints, not evidence that the full selected scope can be completed or that the sample will support a comparative claim. Count both judge calls and likely dispute workload in design estimates. If adequate coverage or evidence cannot fit, propose a bounded subset or deferral rather than quietly weakening controls, dropping one judge, or extending the pilot.
 
+Minimum breadth, then depth is the agreed sampling approach, not an agreed sample size. Propose a coverage floor across the seven selected scenarios before assigning remaining capacity to repeated paired trials. Distinct cases and repeats must remain separate in the analysis, and both comparison stages need explicit allocations. An infeasible floor requires an owner scope decision before execution. Sparse coverage may support feasibility observations while leaving comparative improvement inconclusive; breadth alone does not establish statistical adequacy.
+
 Ten hours is a continuous window starting with the first scored-task dispatch. Queues, grading, and waits for the owner's decisions consume it; they do not pause it. Setup precedes the clock, but solving scored tasks in advance cannot be relabeled as preparation. This is not an active-human-time allowance.
 
 USD 100 includes all new pilot model/tool/compute charges, including setup and cleanup even when outside the scored clock. Per-task and per-stage allocations draw from that aggregate balance. Pre-existing sunk expenditure and owner labor remain visible in economic cost accounting without being falsely counted as new pilot charges.
 
-Pending disputes at the deadline cannot be treated as accepted results, nor can further scored grading extend the clock. The exact incomplete/unresolved classification and shutdown procedure remain open. Reserve resources and money for safe stopping and cleanup before admitting more work; a late invoice or post-run storage charge still belongs to the cash ledger if incurred by this pilot.
+Pending disputes at the deadline cannot be treated as accepted results, nor can further scored grading extend the clock. Classification of other pending, in-flight, unstarted, and missing-judge tasks, plus shutdown mechanics, remains open; the unanswered-dispute outcome is settled. Reserve resources and money for safe stopping and cleanup before admitting more work; a late invoice or post-run storage charge still belongs to the cash ledger if incurred by this pilot.
 
 ## Human attention and cost boundaries
 

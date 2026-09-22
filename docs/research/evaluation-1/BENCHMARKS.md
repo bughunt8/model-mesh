@@ -18,6 +18,10 @@ Two independent AI judges evaluate final frozen outputs, with the project owner 
 
 The selected suites share a continuous 10-hour scored-phase clock starting with the first scored-task dispatch, including queues, grading, and owner waits. Setup is before the clock, but all new pilot model/tool/compute charges, including setup and cleanup, share the USD 100 ceiling. No per-suite reset is allowed, and these limits do not imply that full runs of every suite fit. Task subsets and resource allocations remain to be approved.
 
+Sampling follows minimum breadth, then depth: propose a minimum floor across the seven selected scenarios, then repeated paired trials with remaining capacity. Qualify B01, B06, and B10 and retain explicit supplemental coverage gaps. Neither one benchmark task nor one repeated case automatically covers every mapped scenario. If the proposed floor is infeasible or a selected suite cannot meet security requirements, return for a scope decision; do not substitute a benchmark or waive controls silently.
+
+The owner has eight elapsed minutes from recorded dispute escalation to rule, capped by the global deadline. An unanswered dispute freezes as unresolved and not accepted under the local protocol. Keep this local outcome separate from the official benchmark grade, without adding late scored grading.
+
 This document separates two choices. Evaluation scenarios define capabilities and failure modes to test. Benchmarks provide reusable test material and evaluation procedures. A benchmark is not the baseline workflow: a comparative improvement claim will still require a declared comparator.
 
 The confirmed business purpose is to offer model-mesh to clients using measured success on your own projects as evidence. Usefulness is already established and is not being reassessed. For now, defer personally useful task discovery and project selection; focus on qualification scenarios, external benchmarks, and defensible claims.
