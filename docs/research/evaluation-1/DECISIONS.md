@@ -28,9 +28,13 @@ This log records owner instructions and explicit selections from the planning di
 | D18 | Count failure at the repair/resource limit; rescue separately. | Settled. Freeze the failure. Later rescue requires separate authorization, remains unscored and disclosed, and cannot revise the original result. |
 | D19 | Permit both executable checks and agent review during the one repair cycle, excluding hidden final-evaluator information. | Settled. Exact visible checks, prompts, reviewer configuration, and delivery remain to be pinned. |
 | D20 | Any defect, including cosmetic defects, fails final task acceptance, in addition to mandatory safety failures. | Settled. Use confirmed deviations from predeclared criteria; severity does not excuse a defect. This is not a guarantee of no undiscovered defects. |
-| D21 | Structure time and resource caps by scenario or difficulty class. | Settled. Assign classes before scored outcomes, match caps across arms on the same task, and decide numeric values before execution. |
-| D22 | Use independent AI judges; a human resolves disagreements or uncertain defect findings on frozen final outputs. | Settled. Human adjudication is not rescue, may not edit outputs, and cannot reopen repair. Judge configuration, calibration, adjudicator identity, and timing remain open. |
+| D21 | Structure time and resource caps by scenario or difficulty class. | Settled. Assign classes before scored outcomes, match caps across arms on the same task, and decide numeric task-level values within D26/D27 before execution. |
+| D22 | Use independent AI judges; a human resolves disagreements or uncertain defect findings on frozen final outputs. | Settled. Human adjudication is not rescue, may not edit outputs, and cannot reopen repair. D24/D25 settle panel size and owner; judge configuration, calibration, and timing remain open. |
 | D23 | Grade cosmetic correctness against an exact reference or template, with exceptions declared in advance. | Settled. Freeze the comparison contract before execution; do not expose hidden answers through task-visible formatting templates. Specific artifacts and variable fields remain to be agreed. |
+| D24 | Use two independent AI judges per final deliverable. | Settled. Both must participate under the declared protocol; disagreement or uncertainty goes to the human dispute path. Exact models remain open. |
+| D25 | The project owner will personally resolve disputes. | Settled. No delegated colleague or external reviewer is selected for this role. Active effort and waiting are recorded separately. |
+| D26 | The 10-hour limit means total elapsed pilot runtime. | Settled after explicit clarification. It is not a 10-hour active-adjudication allowance and does not reset per task, suite, or stage. Clock anchors and setup/waiting treatment remain open. |
+| D27 | Cap combined model, tool, and compute charges at USD 100 for the pilot. | Settled monetary ceiling and currency. Detailed cost boundaries and allocations remain open; no per-arm or per-suite reset. |
 
 ## Superseded or constrained proposals
 
@@ -49,6 +53,9 @@ This log records owner instructions and explicit selections from the planning di
 | Use one uniform cap for every task or assign caps only by benchmark suite. | Not selected. D21 chooses scenario or difficulty classes. |
 | Require a human to judge every task, or use AI-only adjudication with no human dispute path. | Not selected. D22 uses AI judges with human dispute resolution. |
 | Grade cosmetic correctness using only broad constraints that permit varied presentations, or an unspecified hybrid chosen afterwards. | Not selected. D23 requires an exact reference/template with advance exceptions. |
+| Use three judges or delegate dispute resolution to a colleague or external reviewer. | Not selected. D24 and D25 choose two judges and the owner. |
+| Interpret the owner's initial "10 hours" as active adjudication time or both time measures. | Superseded by D26's clarification: total elapsed pilot runtime. |
+| Treat the overall cash amount or currency as undecided, or allocate USD 100 separately to each arm. | Superseded or prohibited by D27. |
 
 ## Open questions
 
@@ -58,7 +65,7 @@ These remain genuinely unresolved. Their presence does not prevent a documentati
 |---|---|---|
 | O01 | Which exact model, harness, prompts, tools, reasoning settings, visible checks, and agent-review procedures define each selected controlled comparison? | Environment and protocol freeze; stages and feedback categories are settled. |
 | O02 | Which versioned references/templates, declared variable fields/exceptions, comparison representation, and correctness criteria define defects in each scenario? | Task and evaluator freeze; exact-template grading and every-confirmed-defect failure are settled. |
-| O03 | Which independent AI-judge configurations, calibration/validation procedures, human adjudicator, response window, and unresolved-result disposition implement D22? | Evaluation approval; AI judges with human dispute resolution are settled. |
+| O03 | Which two AI-judge configurations, calibration/validation procedures, owner response window, and unresolved-result disposition implement D22 and D24/D25? | Evaluation approval; panel size and owner identity are settled. |
 | O04 | How are active owner attention and operational review separated from experimental adjudication? | Measurement instrumentation. |
 | O05 | What evidence standard distinguishes improvement, regression, and inconclusive results without unauthorized regression margins? | Sample-size choice and preregistration. |
 | O06 | Which data classes, recipients, jurisdictions, retention rules, and tool permissions apply? | Any real-data or networked execution. |
@@ -66,9 +73,11 @@ These remain genuinely unresolved. Their presence does not prevent a documentati
 | O08 | Which exact benchmark releases, splits, task subsets, graders, and simulator configurations are available and appropriate? | Environment freeze. |
 | O09 | Can TheAgentCompany meet the complete security boundary without unsafe privileges on the user/shared host? | Its installation or execution. |
 | O10 | Which supplemental refactoring, security, and architecture cases are needed, and how will they be independently graded? | Coverage approval. |
-| O11 | What class taxonomy, assignment procedure, numeric resource limits, broader safety stop rules, and sampling plan apply within the settled scenario/difficulty-class and one-repair envelope? | Execution authorization. |
+| O11 | What class taxonomy, assignment procedure, numeric task-level limits, broader safety stop rules, and sampling plan fit the settled one-repair, 10-hour, and USD 100 envelope? | Execution authorization. |
 | O12 | What time horizon and allocation rules define total cost, including setup and qualification? | Any total-cost comparison. |
 | O13 | Which project case studies may later be used, and what may be published? | Case-study disclosure; deferred for now. |
+| O14 | What starts and ends the 10-hour clock; how do setup, queues, pauses, grading, and owner waiting count; how is a global stop finalized without extending execution? | Execution authorization; total elapsed-time meaning and 10-hour ceiling are settled. |
+| O15 | How do setup/provisioning, existing subscriptions, billing fees, and separately authorized rescue count toward USD 100; what reservations cover in-flight calls and both judges? | Execution authorization; cash ceiling and currency are settled. No unapproved exemptions. |
 
 ## Change protocol
 

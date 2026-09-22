@@ -1,6 +1,6 @@
 # Model-mesh portable method and pilot plan
 
-Discussion draft v0.6 | 22 September 2026 | Planning only
+Discussion draft v0.7 | 22 September 2026 | Planning only
 
 ## Agreed priorities
 
@@ -18,9 +18,11 @@ Two comparison stages are agreed: isolate the method first, then routing's added
 
 Both executable checks and agent review are permitted repair feedback. Any confirmed defect, including cosmetic defects, fails final task acceptance. Define the criteria before scoring; this is not a guarantee of no undiscovered defects. Resource caps are set by scenario or difficulty class and matched between arms on each task.
 
-Independent AI judges assess frozen final deliverables, with a human resolving disagreements or uncertain findings. Cosmetic grading uses an exact reference or template; any exceptions must be declared in advance. This is final evaluation, not human rescue.
+Two independent AI judges assess frozen final deliverables, with the project owner personally resolving disagreements or uncertain findings. Cosmetic grading uses an exact reference or template; any exceptions must be declared in advance. This is final evaluation, not human rescue.
 
-Exact comparator configurations, defect criteria, versioned templates/references, judge configurations, human adjudicator identity and procedure, numeric caps, and adoption evidence requirements remain unresolved. Continued planning does not authorize implementation.
+The total elapsed pilot runtime is capped at 10 hours. The combined pilot-wide ceiling for model, tool, and compute charges is USD 100. These are aggregate limits, not per-task, per-benchmark, or per-stage allowances. No separate 10-hour active-human-time allowance was selected.
+
+Exact comparator configurations, defect criteria, versioned templates/references, judge configurations, dispute procedure, class-level limits, clock/cost boundaries, and adoption evidence requirements remain unresolved. Continued planning does not authorize implementation.
 
 ## Decision sought
 
@@ -28,7 +30,7 @@ Determine what defensible claims can be made about an already-useful engineering
 
 For each proposed client case study, require a named scope, initial state, comparator, task outcomes, independently checked defects, your active attention, accepted-delivery time, full cost, and limitations. Include unsuccessful eligible tasks in the evidence even if the public case study focuses on a successful project. Retrospective project success without a suitable comparator cannot establish that model-mesh caused the improvement.
 
-This document proposes architecture, controls, experiments, and measurement definitions. No implementation, installation, pilot execution, repository modification, AWS deployment, or new scheduled task is authorized by this plan. Sample sizes, thresholds, duration, expenditure, repositories, and provider permissions remain open until agreed.
+This document proposes architecture, controls, experiments, and measurement definitions. No implementation, installation, pilot execution, repository modification, AWS deployment, or new scheduled task is authorized by this plan. The 10-hour and USD 100 ceilings are settled; sample sizes, statistical evidence rules, allocations within those ceilings, exact timing and billing boundaries, repositories, and provider permissions remain open.
 
 ## Answer to the DeepSeek assessment
 
@@ -137,7 +139,7 @@ Audit at release approval, per-run conformance checking, periodic usage reconcil
 
 Use the selected benchmark suites to propose a non-sensitive evaluation population and freeze an acceptance rubric before running anything. Use the settled client-evidence purpose, priority order, comparison stages, repair rules, feedback categories, acceptance rule, and cap structure. Agree exact model/harness configurations, visible test and review procedures, safety boundaries, numeric caps, costs, and adoption evidence requirements through the remaining measurement questions. Do not reopen settled decisions or require useful-work discovery.
 
-No task count or allocation is agreed. Choose the final count across the seven selected scenarios using task variability, the smallest worthwhile effect, available review capacity, resource limits, and the statistical evidence standard. Do not reuse an arbitrary coding-only task count for this broader selection or present a small feasibility sample as a powered comparison.
+No task count or allocation is agreed. Choose the final count across the seven selected scenarios using task variability, the smallest worthwhile effect, available review capacity, the 10-hour/USD 100 ceilings, and the statistical evidence standard. Do not assume that all selected suites, both stages, supplemental cases, repeats, and two-judge grading fit those limits. Propose a predeclared balanced subset or deferral if necessary; do not silently drop difficult tasks or claim that a small feasibility sample establishes a powered comparison.
 
 ### Qualify controls before measuring productivity
 
@@ -157,9 +159,19 @@ Stage one compares `arm-baseline` with `arm-method`; stage two compares `arm-met
 
 Do not use a deliberately weak reference. If a human-led or already multi-model operational baseline is later added, report that separately as a whole-system comparison. It must not replace or be mislabeled as either selected controlled stage.
 
-Predeclare resource limits by scenario or difficulty class. Assign task classes and cap rules before observing scored outcomes; apply the same caps to competing arms on the same task. Class definitions and numeric time, token, cost, tool-call, concurrency, and retry limits remain open. Do not upgrade a difficult failed task's allowance after seeing its result.
+Predeclare task-level resource limits by scenario or difficulty class within the pilot-wide ceilings. Assign task classes and cap rules before observing scored outcomes; apply the same caps to competing arms on the same task. Class definitions and numeric task-level time, token, cost, tool-call, concurrency, and retry limits remain open. Do not upgrade a difficult failed task's allowance after seeing its result.
 
 Report outcomes within that matched envelope and each arm's actual operational cost. Count ordinary human acceptance review, but do not permit that review to coach repairs during the scored attempt.
+
+### Pilot-wide time and cash limits
+
+Treat 10 hours as total elapsed pilot runtime, not a sum of agent CPU hours or an active-human allowance. Define the start/end anchors and treatment of setup, queues, pauses, grading, and owner-adjudication waits before execution. Until those boundaries are approved, do not assume that any waiting period pauses the clock or that setup is automatically excluded.
+
+Treat USD 100 as the combined model, tool, and compute ceiling for the pilot. It is not USD 100 for each benchmark, model, worker, comparison, or judge. Include all proposed charged roles in the budget ledger, including repair review, both final judges, retries, simulators, and compute; agree detailed setup, existing-subscription, tax/fee, and later-rescue treatment before execution. Do not presume that an unclassified charge falls outside the ceiling.
+
+Before dispatch, account for spent, committed, and reserved charges, including in-flight work and final judging, rather than checking only the last invoice. Reserve capacity for safe termination and evidence retention. Specify enforceable usage bounds and cost assumptions first; if an activity's charge cannot be bounded within the remaining allowance, do not launch it.
+
+Reaching a global ceiling must not reset the budget, create an extra repair attempt, or promote unfinished/disputed work to a pass. Exact global-stop classification and finalization rules remain to be agreed. Later rescue requires separate authorization and an explicit remaining or additional resource envelope; its existence is not automatic permission to exceed USD 100 or 10 hours.
 
 ### Bounded repair and final evaluation
 
@@ -183,9 +195,9 @@ Freeze an exact reference or template for each cosmetically graded output before
 
 Make the required presentation template available equally to competing arms without revealing hidden correct answers, completed benchmark solutions, or final-evaluator findings. Separate task-visible formatting requirements from final-only correctness evidence. If those cannot be separated, the task design is not ready for execution.
 
-Independent AI judges apply the frozen rubric to the final artifact and evidence. A human resolves judge disagreements, conflicting checks, or uncertain defect findings after the artifact is frozen, without editing the output, providing repair feedback, or restarting the attempt. Record the finding, evidence, judge decisions, human disposition, artifact identity, and evaluation effort.
+Two independent AI judges apply the frozen rubric to the final artifact and evidence. The project owner resolves judge disagreements, conflicting checks, or uncertain defect findings after the artifact is frozen, without editing the output, providing repair feedback, or restarting the attempt. Either judge's disagreement or uncertainty triggers that dispute path; agreement still must satisfy the frozen checks and evidence. Record the finding, evidence, both judge decisions, owner disposition, artifact identity, and evaluation effort.
 
-Do not treat an unresolved finding as a pass or turn a suspected defect into a confirmed defect merely by assertion. Panel composition, calibration, consensus handling, human adjudicator identity, response window, and unresolved-result disposition remain to be agreed. The selected workflow does not require a human to rejudge every undisputed task.
+Do not treat an unresolved finding as a pass or turn a suspected defect into a confirmed defect merely by assertion. The panel size and human dispute owner are settled; exact judge models, calibration, evidence access, response window, and unresolved-result disposition remain to be agreed. Do not silently accept a one-judge result if the other judge is unavailable. The selected workflow does not require the owner to rejudge every undisputed task.
 
 Severity labels explain defects and inform analysis; they do not exempt minor or cosmetic defects from failure. A zero-confirmed-defect result is scoped to the declared rubric, checks, and observation window. It does not prove universal correctness or eliminate the possibility of an escaped defect.
 
@@ -261,13 +273,14 @@ We will resolve this in rounds rather than ask dozens of abstract questions at o
 - Repair feedback: both executable checks and agent review, excluding hidden final-evaluator information.
 - Final task acceptance: any confirmed defect, including cosmetic defects, fails.
 - Resource envelope: predeclared by scenario or difficulty class, matched for competing arms on the same task.
-- Final adjudication: independent AI judges; a human resolves disputes or uncertain findings on frozen outputs.
+- Final adjudication: two independent AI judges; the project owner personally resolves disputes or uncertain findings on frozen outputs.
 - Cosmetic grading: exact reference or template, with exceptions declared before execution.
+- Aggregate limits: 10 hours total elapsed pilot runtime and USD 100 combined model/tool/compute charges. These do not reset per task or stage.
 
 ### Next measurement round
 
 - For each selected scenario, which versioned reference/template and correctness criteria define defects? Every confirmed defect already causes failure.
-- Which judge configurations, calibration checks, and human dispute-resolution procedure implement the selected adjudication model?
+- Which judge configurations, calibration checks, owner response window, and unresolved-result procedure implement the selected adjudication model?
 - Which exact model, harness, prompts, tools, reasoning settings, visible checks, and agent-review procedures define each selected stage?
 - Which activities count toward your attention, and how will active time be recorded?
 - What evidence is sufficient to distinguish improvement, regression, and an inconclusive result without allowing a prohibited trade-off?
@@ -277,7 +290,7 @@ We will resolve this in rounds rather than ask dozens of abstract questions at o
 - Define acceptance, unresolved-work classification, defect severity, and acceptance ownership without reopening the settled repair and rescue rules.
 - Decide the data classes, jurisdictions, approved recipients, fallbacks, tools, and actions that must never be permitted.
 - Price human effort, subscriptions, infrastructure, setup, and failed attempts; separate economic cost from cash expenditure.
-- Agree the time horizon, task mix, resource envelope, meaningful effect, uncertainty tolerance, and stopping conditions.
+- Agree clock/cost boundaries, task mix and class-level allocation within the settled aggregate ceilings, meaningful effect, uncertainty standard, and stopping conditions.
 - Select the alternative harness and define what counts as portable, including adapter effort and unsupported capabilities.
 - Challenge the proposed decision with adverse examples: a cheap but wrong patch, a perfect patch sent to an unapproved provider, a safe refusal, a very slow success, a green CI run on the wrong commit, and an experiment too small to distinguish the alternatives.
 

@@ -52,7 +52,7 @@ After initial submission, one repair opportunity is a maximum, not an instructio
 
 Within each scenario, freeze what counts as an opportunity for failure and how duplicate findings are deduplicated. Do not compare defect counts across tasks of very different scope without their task-level denominators.
 
-Do not average a defect away with successes. The owner selected failure for any confirmed defect, including cosmetic defects. Severity classification remains useful for explanation, but no severity category is exempt from task failure. Independent AI judges assess final outputs and a human resolves disputes; exact judge configurations, the human adjudicator identity, and detailed reference/template artifacts remain open.
+Do not average a defect away with successes. The owner selected failure for any confirmed defect, including cosmetic defects. Severity classification remains useful for explanation, but no severity category is exempt from task failure. Two independent AI judges assess final outputs and the owner personally resolves disputes; exact judge configurations, response procedures, and detailed reference/template artifacts remain open.
 
 This strict rule uses an exact reference or template frozen before execution, not general constraints permitting varied presentations. Predeclare variable fields, exceptions, comparison representation, and any normalization; do not add them after observing failures. A reference violation can fail a task, while an evaluator's new style preference cannot.
 
@@ -68,7 +68,11 @@ The official benchmark result and stricter local task acceptance are distinct ou
 
 Caps are predeclared by scenario or difficulty class, with identical values for competing arms on the same task. Define the class taxonomy and assignment procedure before scored execution. Do not reclassify failed or expensive tasks to obtain a larger allowance.
 
-The one-cycle limit applies within the total task envelope, not as a fresh allowance added after initial work. Numeric time, token, monetary, tool-call, concurrency, and retry caps remain undecided. Class-specific results must stay visible so that different class mixes cannot conceal an objective regression.
+The one-cycle limit applies within the total task envelope, not as a fresh allowance added after initial work. Numeric task-level time, token, monetary, tool-call, concurrency, and retry caps remain undecided but must fit within the aggregate 10-hour and USD 100 ceilings. Class-specific results must stay visible so that different class mixes cannot conceal an objective regression.
+
+The monetary and elapsed-time caps are feasibility constraints, not evidence that the full selected scope can be completed or that the sample will support a comparative claim. Count both judge calls and likely dispute workload in design estimates. If adequate coverage or evidence cannot fit, propose a bounded subset or deferral rather than quietly weakening controls, dropping one judge, or extending the pilot.
+
+Ten hours refers to elapsed pilot runtime, not active owner minutes. The precise treatment of setup, queues, and adjudication waits still needs approval; do not infer a pause or exemption from the choice. USD 100 is combined model/tool/compute expenditure, not a cap per arm or benchmark. Cost-boundary details remain explicit open questions, not permission to omit inconvenient charges.
 
 ## Human attention and cost boundaries
 
@@ -83,7 +87,7 @@ Keep four ledgers distinct:
 
 If one action serves both delivery and evaluation, predeclare the allocation rule and report it once. Do not move inconvenient costs between ledgers after seeing results.
 
-The lower-total-cost objective must have a declared scope and horizon. A low steady-state token bill does not establish lower total adoption cost when setup, review, or later rescue effort is omitted. Show the bounded scored comparison and broader observed expenditure separately. No rate for owner time or amortization horizon has been agreed.
+The lower-total-cost objective must have a declared scope and horizon. A low steady-state token bill does not establish lower total adoption cost when setup, review, or later rescue effort is omitted. Show the bounded scored comparison and broader observed expenditure separately. The USD 100 charged-resource cap is not a valuation of owner time; no hourly rate or amortization horizon has been agreed.
 
 ## Enforce the no-trade-off instruction
 

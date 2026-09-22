@@ -6,74 +6,78 @@ Review date: 22 September 2026, Hong Kong time.
 
 Reviewer: Independent read-only adversarial review agent.
 
-No substantive blocker was found in the D22 and D23 update. The documents implement AI judges with human dispute resolution and exact-reference/template cosmetic grading, without authorizing human rescue, weakening the every-confirmed-defect failure rule, or treating review as execution approval. This verdict applies only to the five substantive document versions fingerprinted below. ([PLAN.md](PLAN.md), [ANALYSIS.md](ANALYSIS.md), [BENCHMARKS.md](BENCHMARKS.md), [DECISIONS.md](DECISIONS.md), [README.md](README.md))
+No substantive blocker was found in the D24 through D27 update. The five substantive documents consistently specify two independent AI judges, personal dispute resolution by the project owner, a pilot-wide limit of 10 hours of total elapsed runtime, and a combined pilot-wide USD 100 model/tool/compute ceiling. They do not turn those limits into an execution authorization or a claim that the selected scope fits. ([PLAN.md](PLAN.md), [ANALYSIS.md](ANALYSIS.md), [BENCHMARKS.md](BENCHMARKS.md), [DECISIONS.md](DECISIONS.md), [README.md](README.md))
 
 ## Scope and method
 
-I reviewed the uncommitted documentation changes on local branch `evaluation-1`, based on HEAD `d729f42e265da2a29261f2dd233a04a35630598d`. That commit identifies the baseline, not the new working-tree content.
+I reviewed the uncommitted documentation changes on local branch `evaluation-1`, based on HEAD `885e35b731b093cdb5f2754b8c7ad75e0f1aafeb`. That commit identifies the baseline, not the new working-tree content.
 
-I inspected the complete diff to all five substantive documents and checked related judge, human-review, template, normalization, confirmation, evidence, accounting, and authorization wording across the package. I verified that all five committed baseline documents match their fingerprints in my preceding acceptance-and-caps review.
+I inspected the complete diff to all five substantive documents and checked panel size, dispute ownership, elapsed time, spending, resource reservations, stop behavior, accounting, and authorization language across the package. I verified that every committed substantive baseline document matches its fingerprint in my preceding judges-and-templates review.
 
-I made no target-file or branch changes. This reviewer-authored report was created outside the repository for incorporation as `REVIEW.md`. It replaces the previous attestation while preserving the review history below.
+I made no target-file or branch changes. This report was authored outside the repository for incorporation as `REVIEW.md`. It replaces the prior attestation while preserving its history.
 
 ## Prior review history
 
-The original two-document review returned REVISE with R1 through R3. The corrected documents subsequently received SHIP for documentation only. An independent review of the expanded package, including analysis and decision log, also returned SHIP. Later independent reviews of D14 through D18 and D19 through D21 each returned SHIP within that same documentation-only boundary.
+The original two-document review returned REVISE with R1 through R3. The corrected two-document package received SHIP for documentation only. The expanded-package review and subsequent reviews covering D14 through D18, D19 through D21, and D22/D23 also returned SHIP within that documentation-only boundary. None authorized pilot execution or certified runtime effectiveness or safety.
 
 | Finding | Original severity | Current disposition |
 |---|---|---|
-| R1: Adoption wording permitted compensated regressions and weakened mandatory controls. | High | Resolved. All mandatory controls and evidence remain required; no objective regression can be compensated by another improvement. Uncertainty is inconclusive without an unauthorized regression allowance. ([Plan: Comparison and uncertainty](PLAN.md#comparison-and-uncertainty)) |
-| R2: Discovery questions reopened settled purpose, usefulness, and priorities. | Medium | Resolved. The client purpose and priorities remain fixed, useful-work discovery is deferred, and questions concern unresolved protocol details. ([Plan: Measurement interview](PLAN.md#measurement-interview), [DECISIONS.md](DECISIONS.md)) |
-| R3: Benchmark privilege review did not adequately cover the full execution stack. | High | Resolved. Whole-stack qualification remains mandatory, with deferral rather than an exception for unsafe upstream instructions. ([Plan: Before execution](PLAN.md#before-execution), [Benchmark evidence rules](BENCHMARKS.md#how-benchmark-evidence-will-count)) |
+| R1: Adoption wording permitted compensated regressions and weakened mandatory controls. | High | Resolved. Mandatory controls and evidence remain required, no objective regression can be compensated by another improvement, and uncertainty remains inconclusive without an unauthorized regression margin. ([Plan: Comparison and uncertainty](PLAN.md#comparison-and-uncertainty)) |
+| R2: Discovery questions reopened settled purpose, usefulness, and priorities. | Medium | Resolved. The client purpose and priorities remain fixed; useful-work discovery stays deferred. ([Plan: Measurement interview](PLAN.md#measurement-interview), [DECISIONS.md](DECISIONS.md)) |
+| R3: Benchmark privilege review did not adequately cover the full execution stack. | High | Resolved. Whole-stack qualification and deferral for unmet controls remain mandatory, without an upstream-instruction exception. ([Plan: Before execution](PLAN.md#before-execution), [Benchmark evidence rules](BENCHMARKS.md#how-benchmark-evidence-will-count)) |
 
-The expanded-package review confirmed consistent selections, explicit benchmark coverage gaps, cautious causal claims, separate accounting boundaries, and separation of reviewed specifications from measured results. Those protections remain present. ([BENCHMARKS.md](BENCHMARKS.md), [ANALYSIS.md](ANALYSIS.md))
+The expanded-package review confirmed consistent selections, explicit coverage gaps, cautious causal claims, separate accounting, and separation of reviewed documentation from measured outcomes. These protections remain present. ([BENCHMARKS.md](BENCHMARKS.md), [ANALYSIS.md](ANALYSIS.md))
 
-D14 through D18 remain intact: method effect first and routing effect second, final post-repair defect scoring only, at most one repair within the task envelope, no human rescue during scored work, frozen failures, and separately authorized unscored rescue that cannot rewrite results. ([Plan: Bounded repair and final evaluation](PLAN.md#bounded-repair-and-final-evaluation), [Decision log](DECISIONS.md))
+D14 through D18 remain intact: method effect first, routing effect second, final post-repair defect scoring only, at most one repair inside the task envelope, no human rescue during scored work, frozen failures, and separately authorized unscored rescue that cannot rewrite outcomes. ([Plan: Bounded repair and final evaluation](PLAN.md#bounded-repair-and-final-evaluation), [DECISIONS.md](DECISIONS.md))
 
-D19 through D21 remain intact: both visible executable checks and agent review may inform repair without hidden final-evaluator information; every confirmed defect, including cosmetic defects, fails acceptance; and resource caps are predeclared by scenario or difficulty class with matched caps across competing arms on the same task. Numeric values and execution approval remain open. ([PLAN.md](PLAN.md), [Analysis: Resource-cap classification](ANALYSIS.md#resource-cap-classification), [DECISIONS.md](DECISIONS.md))
+D19 through D21 remain intact: visible checks and agent review may inform repair without hidden final-evaluator information; every confirmed defect, including cosmetic defects, fails acceptance; and task caps are predeclared by scenario or difficulty class and matched between competing arms. ([PLAN.md](PLAN.md), [Analysis: Resource-cap classification](ANALYSIS.md#resource-cap-classification))
+
+D22 and D23 remain intact: AI judges assess frozen outputs with human dispute resolution, and cosmetic grading uses an exact versioned reference/template with advance exceptions rather than post-outcome preferences. Task-visible templates must not reveal hidden answers or completed solutions. The new decisions specify the panel and dispute owner without weakening those rules. ([Plan: Final task acceptance](PLAN.md#final-task-acceptance), [DECISIONS.md](DECISIONS.md))
 
 ## Current findings
 
 **No new substantive blockers.**
 
-### AI judges and human dispute resolution
+### Panel size and dispute authority
 
-D22 is faithfully represented. Independent AI judges assess frozen outputs against the frozen rubric and evidence. A human resolves judge disagreement, conflicting checks, or uncertain findings only after the artifact is frozen, without edits, repair feedback, or another attempt. The text does not require a human to rejudge every undisputed task. ([Plan: Final task acceptance](PLAN.md#final-task-acceptance), [Decision D22](DECISIONS.md#settled-decisions))
+D24 requires two independent AI judges per final deliverable, and D25 names the project owner personally as the dispute resolver. The plan prohibits silently accepting one judge's result if the second judge is unavailable. Either judge's disagreement or uncertainty uses the dispute path, and agreement must still satisfy frozen checks and evidence. Exact models, independence controls, calibration, response windows, and unresolved-result handling remain protocol details. ([Plan: Final task acceptance](PLAN.md#final-task-acceptance), [Decisions D24 and D25](DECISIONS.md#settled-decisions))
 
-The A09 coverage route and architecture-planning analysis now use this same AI-judge plus human-dispute procedure rather than a separate requirement for broad human adjudication. A model score alone is not treated as evidence of correctness. ([Benchmark coverage table](BENCHMARKS.md#selected-scenarios-and-coverage-gaps), [Analysis: Coverage across selected scenarios](ANALYSIS.md#coverage-across-selected-scenarios))
+Owner adjudication remains post-freeze evaluation, not permission to edit output, coach repair, restart an attempt, or require owner review of every undisputed task. Active effort and waiting remain separately recorded. ([Plan: Final task acceptance](PLAN.md#final-task-acceptance), [Analysis: Define defects before optimizing anything](ANALYSIS.md#define-defects-before-optimizing-anything))
 
-### Exactness and declared exceptions
+### Elapsed runtime is not human labor
 
-D23 remains an exact-reference or exact-template requirement, not broad stylistic constraints permitting varied presentations or an unspecified hybrid. Versioned artifacts, variable slots, exceptions, comparison representation, and normalization must be declared before execution; fuzzy visual similarity and post-outcome preferences cannot substitute for the selected contract. ([Plan: Final task acceptance](PLAN.md#final-task-acceptance), [Decision D23](DECISIONS.md#settled-decisions))
+D26 correctly preserves the explicit clarification: 10 hours means total elapsed pilot runtime, not active adjudication hours, cumulative agent CPU hours, or separate allowances per task, suite, or stage. The documents do not infer a distinct owner-hours cap. Clock anchors and setup, queue, pause, grading, and owner-wait treatment remain explicitly unresolved; no automatic pause or exclusion is presumed. ([Plan: Pilot-wide time and cash limits](PLAN.md#pilot-wide-time-and-cash-limits), [Decision D26 and O14](DECISIONS.md))
 
-The distinction from universal byte-for-byte comparison is not a substantive softening: exactness is defined against the predeclared representation and exceptions. The actual reference artifacts and normalization details are not yet approved, so this review does not certify a future exception set or an implementation that normalizes away required differences. ([Plan: Final task acceptance](PLAN.md#final-task-acceptance), [Decision log: Open questions](DECISIONS.md#open-questions))
+### Combined monetary ceiling
 
-### Reference leakage and final-evaluation isolation
+D27 specifies USD 100 for combined model, tool, and compute charges across the pilot, not per arm, benchmark, worker, judge, comparison, or retry. The proposed ledger includes repair review, both final judges, retries, simulators, and compute. Unclassified charges are not presumed exempt while setup, subscriptions, fees, and separately authorized rescue treatment await approval. ([Plan: Pilot-wide time and cash limits](PLAN.md#pilot-wide-time-and-cash-limits), [Decision D27 and O15](DECISIONS.md))
 
-Task-visible presentation templates must be available equally to competing arms while remaining separate from hidden expected answers, completed solutions, and final-evaluator findings. The plan explicitly treats inability to separate these as an execution-readiness failure. Template conformance remains distinct from substantive correctness. ([Plan: Final task acceptance](PLAN.md#final-task-acceptance), [Analysis: Define defects before optimizing anything](ANALYSIS.md#define-defects-before-optimizing-anything))
+The USD 100 charged-resource limit is explicitly separate from the economic value of owner labor and the broader total-cost objective. No owner hourly rate, amortization horizon, or conversion to platform credits is represented as agreed. ([Analysis: Human attention and cost boundaries](ANALYSIS.md#human-attention-and-cost-boundaries), [DECISIONS.md](DECISIONS.md))
 
-### Confirmed findings and uncertainty
+### Reservations and global stops
 
-The documents do not equate a suspected defect with a confirmed defect by assertion, do not promote unresolved findings to a pass, and do not claim that AI-judge agreement proves correctness. Panel composition, calibration, independence controls, consensus handling, response windows, and unresolved-result disposition remain open protocol requirements. Human dispute resolution changes the evaluation disposition of the frozen artifact, not the artifact itself or its repair allowance. ([Plan: Final task acceptance](PLAN.md#final-task-acceptance), [Analysis: Define defects before optimizing anything](ANALYSIS.md#define-defects-before-optimizing-anything))
+The plan requires dispatch decisions to account for spent, committed, reserved, and in-flight charges, including final judging, rather than checking only invoices already received. Capacity is reserved for safe termination and evidence retention; activities whose charges cannot be bounded within the remaining allowance must not launch. These are proposed enforcement requirements, not claims that a budget controller exists. ([Plan: Pilot-wide time and cash limits](PLAN.md#pilot-wide-time-and-cash-limits), [README.md](README.md))
 
-### Attention and authorization
+Reaching a global ceiling cannot reset the budget, add a repair, or promote unfinished or disputed work to a pass. Rescue requires separate authorization and an explicit remaining or additional resource envelope, not automatic permission to exceed the original limits. Global-stop classification and finalization remain explicit pre-execution decisions. ([Plan: Pilot-wide time and cash limits](PLAN.md#pilot-wide-time-and-cash-limits), [Decision log: Open questions](DECISIONS.md#open-questions))
 
-The analysis explicitly requires human adjudication minutes, waiting time, and cost to be recorded under declared accounting rules. It does not silently authorize every-task human review or a recurring validation workload. The package retains no compensated tradeoffs, no useful-work rediscovery, no execution authorization, and no claim of statistical proof or universal correctness. ([ANALYSIS.md](ANALYSIS.md), [README.md](README.md), [PLAN.md](PLAN.md))
+### Feasibility and preserved scope
 
-B01, B06, and B10 remain the selected benchmarks; A01, A03, A05, A08, A09, A11, and A12 remain the selected scenarios. Original PR #3 and the no-direct-main-change workflow remain the documented publication route. ([README.md](README.md), [DECISIONS.md](DECISIONS.md))
+The documents make no claim that all selected scenarios, suites, both comparison stages, repeats, supplemental cases, and two-judge evaluation fit the ceilings or provide adequate statistical evidence. They require a proposed predeclared subset or deferral if needed rather than quietly dropping difficult tasks, removing a judge, weakening controls, or extending the pilot. ([Plan: Agree the experiment](PLAN.md#agree-the-experiment), [Analysis: Resource-cap classification](ANALYSIS.md#resource-cap-classification))
+
+B01, B06, and B10 remain the selected benchmarks; A01, A03, A05, A08, A09, A11, and A12 remain the selected scenarios. No compensated tradeoffs, useful-work rediscovery, runtime approval, or direct main update is introduced. Original PR #3 remains the documented publication route. ([README.md](README.md), [DECISIONS.md](DECISIONS.md))
 
 ## Nonblocking decisions before execution
 
-These details must be completed without reopening D22 or D23:
+The documentation can ship while these execution-readiness decisions remain open:
 
-- Pin judge models, prompts, panel composition, evidence access, independence controls, calibration, and consensus rules. Define objective dispute triggers, including judge/check conflicts and uncertainty.
-- Name the human adjudicator, response window, evidence required for confirmation or dismissal, and unresolved-result disposition. Preserve frozen artifacts and the prohibition on repair feedback or extra attempts.
-- Freeze reference/template versions, variable fields, exceptions, comparison representation, and normalization. Validate both true conformance and meaningful deviations without relaxing exactness after outcomes.
-- Inspect task-visible templates for embedded answers, completed examples, metadata, or other hidden solution content before use. Do not execute a task whose presentation contract cannot be separated from protected correctness evidence.
-- Define allocation of judge usage, human adjudication attention, waiting time, and cost. Any validation sampling workload remains a proposed protocol detail requiring approval, not an automatic every-task human-review mandate.
-- Complete numeric resource caps, class assignment, sample design, evidence standards, benchmark subsets, independent grading, supplemental cases, and whole-stack security qualification; obtain separate execution authorization.
+- Fix the 10-hour start and end anchors and treatment of setup, queues, grading, owner waits, and any proposed pauses. Do not silently convert elapsed runtime into active-work time.
+- Define global admission and shutdown rules, including in-flight work, final grading, evidence retention, and owner disputes. Predeclare how unfinished, undisputed, disputed, and not-yet-started tasks are reported without hiding assigned failures or claiming success without required evidence.
+- Specify the USD 100 billing boundary and a non-overlapping reservation ledger, including estimation uncertainty, cancellation, reconciliation, setup, subscription allocation, fees, and any later authorized rescue.
+- Select and qualify both judges, their independence and calibration arrangements, and the owner's response procedure. An unavailable second judge cannot become an automatic one-judge pass.
+- Set numeric task/class caps and propose an adequately balanced allocation within both aggregate ceilings. Do not promise complete coverage or statistically supported improvements before feasibility and evidence requirements are assessed.
+- Complete exact reference/template artifacts, benchmark subsets, comparator configurations, supplemental cases, economic cost allocation, whole-stack security qualification, and separate execution authorization.
 
-These are necessary protocol details, not blockers to a documentation PR or permission to weaken settled acceptance and repair rules. ([Decision log: Open questions](DECISIONS.md#open-questions), [PLAN.md](PLAN.md), [ANALYSIS.md](ANALYSIS.md))
+These are implementation and protocol requirements, not permission to renegotiate panel size, dispute ownership, the elapsed-time meaning, the aggregate currency/ceiling, or the previously settled repair and acceptance rules. ([Decision log: Open questions](DECISIONS.md#open-questions), [PLAN.md](PLAN.md), [ANALYSIS.md](ANALYSIS.md))
 
 ## Reviewed document fingerprints
 
@@ -81,21 +85,21 @@ SHA-256 values are relative to `docs/research/evaluation-1/`:
 
 | Document | SHA-256 |
 |---|---|
-| `README.md` | `5a4ea13cfa62c55943624a6220e02704720fae55ba25b302c82f764635fd31e0` |
-| `PLAN.md` | `6e1cfe32fbf0fc44ca3af3ff1b9e3d36b9cd08b3f8d409699bec361ac5d7c220` |
-| `BENCHMARKS.md` | `32f73638a139ee0f52288657b8da243cf20d337da3d07c1d118c7914755a6143` |
-| `ANALYSIS.md` | `f1a88c96da9bd0836c77b62076aabb2e685d09384a51c2ee120e2a630ab1957a` |
-| `DECISIONS.md` | `ab8abfcc4570c689aad5bbd7762929c467d610f515c552e4413db748070ac1c7` |
+| `README.md` | `f1962cd1a2fb05df4a32218d1f5f5623244304bbdd3caf7844c16c3bed177479` |
+| `PLAN.md` | `23b4fa238a9391d7e42b314eae51293426f30beafa1ec2e8c44a3dbc757f5d8b` |
+| `BENCHMARKS.md` | `0f0d69731cedca0b8d7fa78a1b3a59930d59f7e08787390e70d494b4fbfcd76d` |
+| `ANALYSIS.md` | `d67fa6dcbab63e51f8b5565b5043cff01212114d022813a699e20f2b4cebd2ff` |
+| `DECISIONS.md` | `7eeddfb847da8ffc4b8188497e1fc81730287464ba82ec7424afb8ca28766e58` |
 
-`REVIEW.md` is excluded to avoid a self-referential hash. Material changes to the substantive documents require renewed review.
+`REVIEW.md` is excluded to avoid a self-referential hash. Material changes to substantive documents require renewed review.
 
 ## Limits
 
-- This is a read-only independent document review, not execution approval, runtime certification, a benchmark result, or a guarantee of improved outcomes.
-- I performed no installation, benchmark execution, model runtime test, penetration test, or implementation audit. None is required for this documentation-only revision.
+- This is an independent read-only document review, not an execution approval, runtime certification, benchmark result, spending authorization, or guarantee of improved outcomes.
+- I performed no installation, benchmark execution, model runtime test, penetration test, implementation audit, cost simulation, or feasibility trial. None is required for this documentation-only change.
 - I did not run or certify repository gates. They remain the integrating agent's separate responsibility.
-- No external research was performed for these owner-decision updates. Earlier source checks were selective, not exhaustive verification of every benchmark, license, dependency, or execution requirement.
+- No external research was performed for these owner-decision updates. Earlier source checks were selective rather than exhaustive verification of all benchmark descriptions, licenses, dependencies, or execution requirements.
 - Fidelity was assessed against the supplied owner decisions and review context, not an independently authenticated transcript of every historical discussion.
 - I did not change or independently verify the remote state of PR #3, either branch, or main.
 
-**Final disposition: SHIP the fingerprinted documentation through the existing PR workflow, subject to separately run repository gates. No pilot execution is authorized.**
+**Final disposition: SHIP the fingerprinted documentation through the existing PR workflow, subject to separately run repository gates. No pilot execution or expenditure is authorized.**

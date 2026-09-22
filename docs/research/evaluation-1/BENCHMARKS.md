@@ -12,9 +12,11 @@ Keep safety and recipient-policy compliance as mandatory gates, not productivity
 
 The comparison stages are settled: method effect first, then routing effect. Score final defect quality after at most one repair cycle with no human rescue, using the same cap on both sides. A failed scored attempt stays failed even if later separately authorized, unscored rescue succeeds. These local pilot rules must be reported alongside the official benchmark grade rather than presented as an unchanged official evaluation protocol.
 
-Both executable checks and agent review may inform repair, excluding hidden final-evaluator information. Any confirmed defect, including cosmetic defects against predeclared criteria, fails local task acceptance even if the official benchmark grade passes. Caps are predeclared by scenario or difficulty class, not chosen after observing results; numeric values remain open.
+Both executable checks and agent review may inform repair, excluding hidden final-evaluator information. Any confirmed defect, including cosmetic defects against predeclared criteria, fails local task acceptance even if the official benchmark grade passes. Task-level caps are predeclared by scenario or difficulty class, not chosen after observing results; class allocations within the settled pilot ceilings remain open.
 
-Independent AI judges evaluate final frozen outputs, with a human resolving disagreements or uncertain findings. Cosmetic grading uses an exact reference or template, with any exceptions declared before execution. Formatting templates may be task-visible; hidden answers and completed benchmark solutions must remain final-evaluator-only.
+Two independent AI judges evaluate final frozen outputs, with the project owner personally resolving disagreements or uncertain findings. Cosmetic grading uses an exact reference or template, with any exceptions declared before execution. Formatting templates may be task-visible; hidden answers and completed benchmark solutions must remain final-evaluator-only.
+
+The selected suites share an aggregate 10-hour elapsed pilot limit and USD 100 combined model/tool/compute ceiling across the complete pilot. This does not imply a full run of every suite fits. Exact time/cost boundaries and predeclared task subsets must be agreed before execution; no per-suite budget reset is allowed.
 
 This document separates two choices. Evaluation scenarios define capabilities and failure modes to test. Benchmarks provide reusable test material and evaluation procedures. A benchmark is not the baseline workflow: a comparative improvement claim will still require a declared comparator.
 
