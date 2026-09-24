@@ -1,6 +1,6 @@
 # Model-mesh pilot task and benchmark options
 
-Selection record and research | Updated 23 September 2026 | Research and planning only
+Selection record and research | Updated 25 September 2026 | Research and planning only
 
 See [the plan](PLAN.md), [analysis](ANALYSIS.md), and [decision log](DECISIONS.md). Options are preserved for traceability; the explicit owner selections govern the proposed scope.
 
@@ -11,6 +11,8 @@ Your priorities are fewer defects, less of your attention, faster accepted deliv
 Keep safety and recipient-policy compliance as mandatory gates, not productivity metrics that can be averaged away. No pilot implementation, benchmark execution, installation, live business action, or deployment is included in this selection step.
 
 The comparison stages are settled: method effect first, then routing effect. Score final defect quality after at most one repair cycle with no human rescue, using the same cap on both sides. A failed scored attempt stays failed even if later separately authorized, unscored rescue succeeds. These local pilot rules must be reported alongside the official benchmark grade rather than presented as an unchanged official evaluation protocol.
+
+An ordinary acceptance failure in either arm leaves that result frozen while remaining predeclared comparisons continue, subject to mandatory safety and resource stops. Do not substitute a different benchmark case, award extra attempts, alter configurations, or leak final-grader feedback to later scored work. Preserve the official grade and local outcome separately; continuing the sample does not convert failure into acceptance.
 
 Both executable checks and agent review may inform repair, excluding hidden final-evaluator information. Any confirmed defect, including cosmetic defects against predeclared criteria, fails local task acceptance even if the official benchmark grade passes. Task-level caps are predeclared by scenario or difficulty class, not chosen after observing results; class allocations within the settled pilot ceilings remain open.
 

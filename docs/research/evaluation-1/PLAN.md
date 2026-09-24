@@ -1,6 +1,6 @@
 # Model-mesh portable method and pilot plan
 
-Discussion draft v0.14 | 23 September 2026 | Planning only
+Discussion draft v0.15 | 25 September 2026 | Planning only
 
 ## Agreed priorities
 
@@ -208,6 +208,10 @@ Measure defect quality on the final frozen artifact after the allowed repair, or
 
 At the last permitted submission, freeze the artifact and evaluate it; using the one allowed repair is not itself a failure. If the final artifact fails acceptance, or the attempt is terminated for breaching a resource limit, record a failure. Grade any available artifact without inventing defect findings for missing output. Report failures, incompletion, safety stops, and severity-specific defects separately; no-output tasks remain in the assigned-task denominator.
 
+Continue the predeclared comparisons after an ordinary acceptance failure in either arm, including a confirmed cosmetic defect, provided mandatory controls and resource limits still permit work. Freeze and retain that failure and complete the planned matched counterpart when safe and within its limits; do not replace the failed task, add repair or rerun opportunities, modify configurations, or feed hidden final-evaluator findings into later scored work. The same continuation rule applies to all arms and both stages. Later cases cannot retroactively repair an earlier result.
+
+Mandatory safety stops and global time/cash ceilings override continuation. An ordinary task failure does not prove a control failed, but an actual or unresolved mandatory-control problem cannot be relabeled ordinary to keep running. Classify events against frozen criteria and retain the evidence. Continuation is not adoption approval and does not relax the no-compensated-regression or uncertainty rules. Once the predeclared sample is exhausted, this rule does not authorize more trials.
+
 Later rescue requires separate authorization and a separate run identity. It is unscored, may not replace or relabel the original failure, and must not contaminate other scored attempts. Disclose its time, human effort, and cost separately alongside all-in observed totals.
 
 ### Final task acceptance
@@ -301,6 +305,7 @@ We will resolve this in rounds rather than ask dozens of abstract questions at o
 - Comparison design: method effect first, then routing effect, in separate controlled stages.
 - Defect measurement: after at most one repair cycle, with no human rescue.
 - At the limit: count and freeze failure; separately authorized later rescue is unscored.
+- After ordinary acceptance failure: continue the predeclared comparisons across either arm, with no extra repair, replacement task, configuration change, or hidden-evaluator feedback. Safety and resource stops still override continuation.
 - Repair feedback: both executable checks and agent review, excluding hidden final-evaluator information.
 - Final task acceptance: any confirmed defect, including cosmetic defects, fails.
 - Resource envelope: predeclared by scenario or difficulty class, matched for competing arms on the same task.

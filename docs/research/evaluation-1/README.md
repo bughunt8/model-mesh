@@ -1,6 +1,6 @@
 # Evaluation 1
 
-Documentation proposal | No execution authorized | 23 September 2026
+Documentation proposal | No execution authorized | 25 September 2026
 
 This package plans an evidence-based qualification of model-mesh for a client offering. Usefulness is already established by the owner's experience. The open question is what claims about defects, required human attention, accepted-delivery time, cost, controls, and portability can be defended.
 
@@ -21,6 +21,8 @@ The priority order is fewer defects, less owner attention, faster accepted deliv
 Selected scenarios are A01 bug repair, A03 refactoring, A05 security audit and remediation, A08 data reconciliation and analysis, A09 requirements and architecture planning, A11 browser administration, and A12 cross-application office work. Selected benchmarks are B01 SWE-bench Verified, B06 GAIA, and B10 TheAgentCompany. The latter remains conditional on whole-stack security feasibility.
 
 Run two comparisons in separate stages: isolate the method first, then the added effect of routing. Measure defect quality on the final artifact after at most one repair cycle following initial submission, with the same cap on both sides and no human rescue. Freeze unsuccessful attempts as failures; separately authorized later rescue remains unscored and cannot replace the failure.
+
+An ordinary acceptance failure in either arm does not end the pilot. Retain the frozen failure and continue the predeclared comparisons without extra repair, task replacement, or configuration changes, subject to mandatory safety and resource stops. Continuation collects evidence; it does not approve the failed task, establish improvement, or authorize execution of this plan.
 
 Permitted repair feedback combines executable checks and agent review, without hidden final-evaluator information. Any confirmed defect against the frozen criteria, including cosmetic defects, fails task acceptance. Set resource caps by predeclared scenario or difficulty class, with identical caps for competing arms on the same task; numeric values remain open.
 

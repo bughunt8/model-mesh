@@ -1,6 +1,6 @@
 # Evaluation 1 analysis
 
-Design analysis, not experimental results | 23 September 2026
+Design analysis, not experimental results | 25 September 2026
 
 ## What the evaluation can establish
 
@@ -49,6 +49,10 @@ No human rescue is permitted during scored work. Repair feedback uses both execu
 Hold the repair-reviewer configuration constant within the method-effect comparison so that adding a different reviewer is not an undeclared intervention. In the routing stage, explicitly identify any reviewer-role routing change as part of the treatment. Final-grading procedures must remain independent and matched; comparable permissions do not require feedback content to be identical on different outputs.
 
 After initial submission, one repair opportunity is a maximum, not an instruction to use the final evaluator repeatedly. Final submission freezes the scoreable artifact; hidden final-evaluator findings cannot reopen the attempt. At a repair or resource limit, retain the failure even if a later separately authorized rescue succeeds.
+
+An ordinary acceptance failure in either arm does not trigger an outcome-based early stop of the pilot. Continue the predeclared matched comparisons when safety and resource limits permit, retaining all frozen failures and assigned outcomes. Do not repair configurations, replace failed cases, add trials, or disclose hidden final-grader findings to later workers in response to the failure. Apply the same policy whichever arm failed.
+
+This separates evidence collection from acceptance: continuing after a failure neither accepts the task nor demonstrates an improvement or permits compensated regressions. Mandatory safety or resource stops still apply and must be reported if they truncate coverage. Do not treat a task-quality failure as automatic proof of control failure, or dismiss an actual or unresolved control problem as an ordinary result to avoid a required stop.
 
 Within each scenario, freeze what counts as an opportunity for failure and how duplicate findings are deduplicated. Do not compare defect counts across tasks of very different scope without their task-level denominators.
 

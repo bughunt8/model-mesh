@@ -1,6 +1,6 @@
 # Evaluation 1 decision log
 
-Status as of 23 September 2026 | Planning only
+Status as of 25 September 2026 | Planning only
 
 This log records owner instructions and explicit selections from the planning discussion. It does not treat the drafter's recommendation as approval. Ordering preserves the sequence of decisions; dates use Hong Kong time.
 
@@ -48,6 +48,7 @@ This log records owner instructions and explicit selections from the planning di
 | D38 | Use two routine cases within each selected scenario for the fourteen-case feasibility floor. | Settled on 23 September 2026. Define routine eligibility before selection and outcomes. Claims remain routine-work only; challenging-case reliability is not established, and mandatory adversarial security qualification is not waived. |
 | D39 | Keep each scenario's two-case floor together in one comparison stage. | Settled on 23 September 2026. Both stages are represented and D40 fixes the scenario assignment. Each case receives matched competing-arm attempts within its assigned stage. No untested effect is inferred. |
 | D40 | Assign A01, A03, A05, and A09 to the method stage; assign A08, A11, and A12 to the routing stage. | Settled on 23 September 2026. Eight distinct routine floor cases for method, six for routing. Fourteen matched case comparisons require twenty-eight initial arm attempts before repeats, not twenty-eight independent tasks. Actual cases and resource feasibility remain unapproved. |
+| D41 | Continue the predeclared comparisons after ordinary acceptance failure in either arm, absent a mandatory safety stop and within resource limits. | Settled on 25 September 2026. Freeze and report the failed task; no extra repair, replacement case, configuration change, or hidden-evaluator feedback. Safety and resource stops override continuation. This is not task acceptance, adoption approval, or execution authority. |
 
 ## Superseded or constrained proposals
 
@@ -82,6 +83,7 @@ This log records owner instructions and explicit selections from the planning di
 | Use one routine plus one challenging case, or two challenging cases, for each scenario's floor. | Not selected. D38 chooses two routine cases without waiving security gates or permitting post-outcome exclusions. |
 | Split each scenario's two floor cases across stages, or reuse all fourteen floor cases in both stages. | Not selected. D39 keeps each scenario's pair in one stage; any additional cross-stage proposal needs explicit allocation and feasibility review. |
 | Move A09 to routing or reverse the proposed stage allocation. | Not selected. D40 approves method A01/A03/A05/A09 and routing A08/A11/A12. |
+| Stop the whole scored pilot at the first ordinary acceptance failure even when safety and resource limits permit continuation. | Not selected. D41 continues the predeclared comparisons without changing the failed result or granting extra attempts. |
 
 ## Open questions
 
@@ -99,7 +101,7 @@ These remain genuinely unresolved. Their presence does not prevent a documentati
 | O08 | Which exact benchmark releases, splits, task subsets, graders, and simulator configurations are available and appropriate? | Environment freeze. |
 | O09 | Can TheAgentCompany meet the complete security boundary without unsafe privileges on the user/shared host? | Its installation or execution. |
 | O10 | Which supplemental refactoring, security, and architecture cases are needed, and how will they be independently graded? | Coverage approval. |
-| O11 | What routine-eligibility criteria, class taxonomy, numeric task-level limits, safety stop rules, case manifest, repeats, and resource allocations fit the envelope? | Execution authorization; floor, routine-only mix, intact pairs, and D40 scenario-to-stage assignment are settled. Actual cases and resource feasibility remain open. |
+| O11 | What routine-eligibility criteria, class taxonomy, numeric task-level limits, operational safety-stop procedures, case manifest, repeats, and resource allocations fit the envelope? | Execution authorization; floor, case mix, D40 assignment, and D41 continuation after ordinary failure are settled. Actual cases, safety procedures, and resource feasibility remain open. |
 | O12 | What time horizon and allocation rules define total cost, including setup and qualification? | Any total-cost comparison. |
 | O13 | Which project case studies may later be used, and what may be published? | Case-study disclosure; deferred for now. |
 | O14 | How are other pending, in-flight, unstarted, and missing-judge tasks classified at cutoff, and how do shutdown, evidence retention, and cleanup avoid extending scored execution? | Execution authorization; clock boundaries and unanswered-dispute classification under D30 are settled. |
