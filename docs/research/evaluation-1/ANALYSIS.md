@@ -10,6 +10,10 @@ The existing model-mesh repository presents its routing rationale as heuristics 
 
 A future client statement must identify the evaluated scope, model and harness versions, task population, controls, comparator, sample size, failures, and uncertainty. Successful historical projects can demonstrate experience, but cannot by themselves identify which part of the method caused improvement.
 
+This initial pilot uses public and synthetic task material only. Private project material, client information, personal records, and real account credentials are excluded from task content, including material reaching repair reviewers, final judges, or tool-mediated retrieval. Successful results therefore concern the qualified public/synthetic cases, not demonstrated performance on confidential client work or authorization for a private-data deployment.
+
+This boundary does not eliminate control testing or provider-policy approval. Require permitted-use and exclusion screening, keep synthetic fixtures genuinely fabricated rather than copied from excluded records, and protect hidden evaluator evidence even when drawn from eligible material. Public task content is not permission to disclose owner attention logs, operational metadata, or service credentials. Unexpected prohibited content invokes incident handling, not ordinary-failure continuation or onward transmission for review.
+
 ## Distinguish the experiment's causes
 
 The owner selected two separate stages: isolate the disciplined loop first, then the additional effect of role-specific routing. Portability and optional parallel orchestration remain later proposed comparisons. Changing all four at once gives a system comparison, not an estimate of the method's individual contribution.

@@ -49,6 +49,7 @@ This log records owner instructions and explicit selections from the planning di
 | D39 | Keep each scenario's two-case floor together in one comparison stage. | Settled on 23 September 2026. Both stages are represented and D40 fixes the scenario assignment. Each case receives matched competing-arm attempts within its assigned stage. No untested effect is inferred. |
 | D40 | Assign A01, A03, A05, and A09 to the method stage; assign A08, A11, and A12 to the routing stage. | Settled on 23 September 2026. Eight distinct routine floor cases for method, six for routing. Fourteen matched case comparisons require twenty-eight initial arm attempts before repeats, not twenty-eight independent tasks. Actual cases and resource feasibility remain unapproved. |
 | D41 | Continue the predeclared comparisons after ordinary acceptance failure in either arm, absent a mandatory safety stop and within resource limits. | Settled on 25 September 2026. Freeze and report the failed task; no extra repair, replacement case, configuration change, or hidden-evaluator feedback. Safety and resource stops override continuation. This is not task acceptance, adoption approval, or execution authority. |
+| D42 | Restrict initial evaluation task material to public and synthetic inputs. | Settled on 25 September 2026. Eligible public benchmarks, public repositories, and fabricated business data only; no private project material, client information, personal records, or real account credentials in task content. Apply across task preparation, retrieval/tools, reviewers, judges, and derived evidence. Exact cases, permitted use, recipients, residency, retention, and execution approvals remain separate. |
 
 ## Superseded or constrained proposals
 
@@ -84,6 +85,7 @@ This log records owner instructions and explicit selections from the planning di
 | Split each scenario's two floor cases across stages, or reuse all fourteen floor cases in both stages. | Not selected. D39 keeps each scenario's pair in one stage; any additional cross-stage proposal needs explicit allocation and feasibility review. |
 | Move A09 to routing or reverse the proposed stage allocation. | Not selected. D40 approves method A01/A03/A05/A09 and routing A08/A11/A12. |
 | Stop the whole scored pilot at the first ordinary acceptance failure even when safety and resource limits permit continuation. | Not selected. D41 continues the predeclared comparisons without changing the failed result or granting extra attempts. |
+| Include specifically approved private project material in the initial evaluation. | Not selected. D42 limits task material to public and synthetic sources. Any later private-data evaluation requires a separate scope and approval. |
 
 ## Open questions
 
@@ -96,7 +98,7 @@ These remain genuinely unresolved. Their presence does not prevent a documentati
 | O03 | Which two AI-judge configurations, calibration/validation procedures, evidence access, and recorded escalation/notification mechanics implement final adjudication? | Evaluation approval; two judges, owner identity, eight-minute response window, and unanswered-dispute outcome are settled. |
 | O04 | Which timer/log tool, fields, reconciliation cadence, shared-effort allocation, and any pre-run-approved missing-data analysis threshold implement the settled measurement rules? | Measurement instrumentation and comparative analysis; missed timer intervals remain missing without imputation, and no analysis exception is currently agreed. |
 | O05 | What evidence standard distinguishes improvement, regression, and inconclusive results without unauthorized regression margins? | Sample-size choice and preregistration. |
-| O06 | Which data classes, recipients, jurisdictions, retention rules, and tool permissions apply? | Any real-data or networked execution. |
+| O06 | How will exact public/synthetic cases be screened for permitted use and excluded content, and which recipients, jurisdictions, retention rules, service-credential controls, and tool permissions apply? | Case qualification and any networked execution; D42 task-data classes are settled, not general permission to transmit or publish. |
 | O07 | Which second harness, pinned release, and adapter contract should test portability? | Adapter implementation authorization. |
 | O08 | Which exact benchmark releases, splits, task subsets, graders, and simulator configurations are available and appropriate? | Environment freeze. |
 | O09 | Can TheAgentCompany meet the complete security boundary without unsafe privileges on the user/shared host? | Its installation or execution. |

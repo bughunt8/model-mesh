@@ -1,6 +1,6 @@
 # Model-mesh portable method and pilot plan
 
-Discussion draft v0.15 | 25 September 2026 | Planning only
+Discussion draft v0.16 | 25 September 2026 | Planning only
 
 ## Agreed priorities
 
@@ -9,6 +9,8 @@ Your confirmed priority order is fewer defects, less of your attention, faster a
 Scenario and benchmark selections were made separately, including non-coding work. [The benchmark research and selection record](BENCHMARKS.md) supplies the original 12 scenarios and 10 benchmark options. [Analysis](ANALYSIS.md) records experiment-design implications, and [the decision log](DECISIONS.md) separates settled instructions from open questions.
 
 The selected benchmark shortlist is B01 SWE-bench Verified, B06 GAIA, and B10 TheAgentCompany. All remain subject to access, evaluator, adapter, and security qualification. Selected scenarios are A01 regression bug repair, A03 behavior-preserving refactor, A05 security audit and remediation, A08 data reconciliation and analysis, A09 requirements and architecture planning, A11 browser administration, and A12 cross-application office work. Selection does not authorize execution.
+
+The initial evaluation uses public and synthetic task material only. Eligible sources are public benchmark tasks, public repositories, and fabricated business data. Private project material, client information, personal records, and real account credentials are excluded from task content. This choice does not authorize access, uploads, provider calls, or actions on real accounts.
 
 The adoption purpose is now confirmed: offer model-mesh to clients, supported by measured success on your own projects. Prospective clients are the audience. Usefulness is established by your experience and is not the question this pilot needs to reopen.
 
@@ -123,7 +125,17 @@ The same security boundary covers the installer, coordinator, evaluator, simulat
 | Untrusted instructions | Treat repository prose, issue comments, retrieved pages, and tool output as data, not authority to change policy. | Plant prompt-injection instructions and verify they cannot change recipients or permissions. |
 | Evidence integrity | Bind checks, review, and approval to an exact artifact digest or commit; store evidence outside worker write access. | Substitute another revision's green test output, truncate logs, or mutate code after review. |
 
-Data residency needs an approved policy before a real-code pilot. Define where prompts, source, outputs, embeddings, traces, backups, and support-access records may be processed and stored. A model being available in Hong Kong, having open weights, or belonging to an approved vendor does not by itself satisfy that policy.
+### Public and synthetic task-data boundary
+
+Apply the settled task-material restriction throughout preparation and execution: prompts, repository snapshots, attachments, supplemental cases, retrieved pages, tool responses, simulated users, repair review, final judging, and derived task evidence. Do not load private project or client material as examples, context, retrieval results, or calibration fixtures. Do not manufacture synthetic fixtures by copying excluded records and merely changing names. Use fabricated business documents and disposable simulated accounts for office and browser tasks, not the owner's or a client's real account state.
+
+Record provenance, permitted use, and exclusion screening in the case manifest before runs. A public URL or repository label alone does not qualify a case; inspect relevant content for excluded records or real secrets. Retain hidden answers and holdout evidence outside worker access even when their underlying sources are eligible public or synthetic material. If a case requires prohibited material or cannot be qualified, defer it and return for a scope decision rather than waive the boundary. Any proposed transformed local case must be declared before execution and must not be reported as an unchanged official benchmark task.
+
+Public and synthetic content remains untrusted input. It cannot grant permissions or bypass recipient, network, secret, and execution controls. If excluded content appears unexpectedly, stop the affected access or transmission path under the control-incident procedure; do not send it onward to a reviewer or judge, repeat it in ordinary logs, or treat D41 continuation as authority to ignore the incident.
+
+Separately approved scoped service credentials may be needed for runtime authentication, but are not task material: keep them outside model context, task files, and ordinary telemetry under the secret-handling control. This does not authorize obtaining credentials, installing a runtime, or using real accounts. Operational metadata and owner attention records require their own access and retention controls; the public-task choice does not make every pilot record public.
+
+Residency and recipient policies still need approval before any networked pilot, including one using only public or synthetic task material. Define where prompts, source, outputs, embeddings, traces, backups, and support-access records may be processed and stored. A model being available in Hong Kong, having open weights, or belonging to an approved vendor does not by itself satisfy that policy.
 
 ### Audit record and operating ownership
 
@@ -302,6 +314,7 @@ We will resolve this in rounds rather than ask dozens of abstract questions at o
 - Priorities: fewer defects, less of your attention, faster accepted delivery, lower total cost. No compensating trade-offs.
 - Benchmark shortlist: B01 SWE-bench Verified, B06 GAIA, B10 TheAgentCompany, subject to qualification.
 - Scenario selection: A01, A03, A05, A08, A09, A11, and A12. Do not require actual project examples at this stage.
+- Task material: public and synthetic only; no private project material, client information, personal records, or real account credentials in task content. Recipient, residency, retention, and execution approvals remain separate.
 - Comparison design: method effect first, then routing effect, in separate controlled stages.
 - Defect measurement: after at most one repair cycle, with no human rescue.
 - At the limit: count and freeze failure; separately authorized later rescue is unscored.
@@ -333,7 +346,7 @@ We will resolve this in rounds rather than ask dozens of abstract questions at o
 ### Later rounds
 
 - Define acceptance, unresolved-work classification, defect severity, and acceptance ownership without reopening the settled repair and rescue rules.
-- Decide the data classes, jurisdictions, approved recipients, fallbacks, tools, and actions that must never be permitted.
+- Fix permitted-use and exclusion screening for public/synthetic cases, jurisdictions, approved recipients, fallbacks, retention, tools, and forbidden actions without reopening the settled task-data boundary.
 - Price human effort, subscriptions, infrastructure, setup, and failed attempts; separate economic cost from cash expenditure.
 - Agree task mix, class-level allocation, cost reservations, cutoff/cleanup mechanics, meaningful effect, and uncertainty standard within the settled clock and cash boundaries.
 - Select the alternative harness and define what counts as portable, including adapter effort and unsupported capabilities.
