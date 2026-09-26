@@ -14,7 +14,9 @@ Penpot is the suitable open-source design candidate. Figma's documented service 
 
 For the proposed verification stack, inspect the license and source availability of the engine, MCP server, required plugin, and backend separately. A free tier, public API, downloadable client, or open connector is not sufficient.
 
-Use local/self-managed open-source components, not cloud-only features, in the default proposal. This does not silently change existing GitHub PR hosting or select open-weight inference models. If the owner intends the open-source requirement to include the entire hosting and inference supply chain, that further scope must be made explicit before execution.
+The owner has fixed the boundary: harnesses and the verification stack must be open source; inference models and hosting infrastructure need not be. Open-source components may run locally or on approved commercial hosting, and proprietary inference services may be considered. This does not select a provider, host, or model, authorize a network call, or change existing GitHub PR hosting.
+
+Distinguish hosting from verification software. A commercial machine hosting an open-source test or monitoring service is not excluded by the license rule; a proprietary design, browser-automation, monitoring, or testing backend is still outside the approved stack even if accessed through an open MCP server. The local/self-managed OSS path remains the default proposal. Recipient, residency, retention, permissions, security qualification, and all new charges remain governed by the unchanged pilot policy and global budget.
 
 License findings below apply to the observed core projects. A pinned release still needs a dependency/license inventory and a review of relevant redistribution or network-service obligations. No legal clearance of a deployment is implied.
 

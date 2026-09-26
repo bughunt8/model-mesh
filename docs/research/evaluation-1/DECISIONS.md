@@ -53,6 +53,7 @@ This log records owner instructions and explicit selections from the planning di
 | D43 | Research feasibility for all five requested implementations: OpenCode, pi-agent, Qwen Code, Aider, and Goose. | Settled on 26 September 2026. This selects the research population, not a single winner, implemented adapters, five scored grids, or a new budget. Exact versions and scored enrollment remain open. |
 | D44 | Research both supplied New Stack articles in depth and assess implications for model-mesh's framework, skills, and templates. | Settled research scope on 26 September 2026 HKT. Proposals are documented in the framework report; no operational skill/template or CI changes are authorized by an assessment request. |
 | D45 | Assess verification, validation, and soak tooling, including browser/design MCP, logs, and monitoring; all proposed tools must be open source. | Settled on 26 September 2026 HKT. Qualify engine, MCP server, required plugin, and backend separately. No tool installation, runtime test, provider choice, or proprietary-backend exception is implied. |
+| D46 | Apply the open-source requirement to harnesses and the verification stack, not inference models or hosting infrastructure. | Settled on 26 September 2026 HKT. Proprietary inference services and commercial hosting may be considered, not automatically approved. Verification engines, MCP servers, required plugins, and backends still need open-source qualification. Existing data, recipient, residency, retention, permission, security, and global-budget controls remain unchanged. |
 
 ## Superseded or constrained proposals
 
@@ -91,6 +92,8 @@ This log records owner instructions and explicit selections from the planning di
 | Include specifically approved private project material in the initial evaluation. | Not selected. D42 limits task material to public and synthetic sources. Any later private-data evaluation requires a separate scope and approval. |
 | Research only one initial harness or only Pi and Qwen Code as alternatives. | Superseded for research by D43, which names all five targets. Runtime enrollment remains a separate decision. |
 | Treat a free SaaS tier or an open-source MCP connector as sufficient proof of an entirely open-source verification toolchain. | Rejected by D45's whole-tool qualification boundary. Backend and plugin licenses remain part of the assessment. |
+| Require all inference models and hosting infrastructure to be open source, or treat that scope as still undecided. | Not selected. D46 limits the open-source mandate to harnesses and the verification stack. This is not approval of any model or host. |
+| Reclassify a proprietary verification backend as hosting infrastructure to bypass its license requirement. | Not permitted by D46. Commercial hosting and verification-software eligibility are separate questions. |
 
 ## Open questions
 
@@ -114,7 +117,7 @@ These remain genuinely unresolved. Their presence does not prevent a documentati
 | O14 | How are other pending, in-flight, unstarted, and missing-judge tasks classified at cutoff, and how do shutdown, evidence retention, and cleanup avoid extending scored execution? | Execution authorization; clock boundaries and unanswered-dispute classification under D30 are settled. |
 | O15 | Which billing rates, allocation and reconciliation rules, and non-overlapping reservations cover in-flight calls, both judges, storage retention, and safe cleanup? | Execution authorization; all new pilot charges, including setup/cleanup, already count toward USD 100. |
 | O16 | Which proposed verification-contract, skill, template, and CI changes should become a separate implementation PR, with which negative fixtures and acceptance criteria? | Implementation authorization; the report is an assessment, not approval to change behavior. |
-| O17 | Which pinned open-source verification components are justified by the actual cases, and does the open-source requirement also extend to all hosting infrastructure and inference models? | Toolchain and provider approval; no proprietary verification-backend exception is presumed. |
+| O17 | Which pinned open-source harness and verification components are justified by the actual cases, and which inference providers and hosts meet the remaining policies? | Toolchain and provider approval; D46 license scope is settled, with no proprietary verification-backend exception or automatic model/host approval. |
 
 ## Change protocol
 

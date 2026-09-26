@@ -24,6 +24,8 @@ The owner selected two separate stages: isolate the disciplined loop first, then
 
 The [verification framework research](verification-framework-research.pplx.md) adds proposed diagnostics and implementation requirements, not measured gains or new adoption thresholds. The [open-source tool assessment](open-source-verification-stack.pplx.md) distinguishes executable test engines from MCP access and monitoring views. A tool's license, a readable dashboard, or a documentation SHIP verdict cannot substitute for runtime qualification or independent acceptance.
 
+The open-source requirement is now scoped to harnesses and the verification stack, excluding inference models and hosting infrastructure from that license requirement. This changes eligibility screening, not the controlled comparison: exact models, providers, hosts, settings, and charges remain to be approved and held constant where required. A commercial host for open-source software is different from a proprietary verification backend; the latter remains outside the approved tool-license boundary. No data, residency, security, or budget exception follows.
+
 Use the matched single-model reference for the staged comparisons in [PLAN.md](PLAN.md), with exact configurations still to be agreed. If a human-led or already multi-model operational reference is later added, report it separately and limit its attribution to whole-system differences. Do not substitute it for either selected controlled stage.
 
 Use `arm-baseline`, `arm-method`, and `arm-routing` in a future protocol to avoid confusion with A-prefixed scenario IDs. These are labels only; no experiment runner is being introduced.

@@ -165,6 +165,8 @@ Use the companion [open-source stack report](open-source-verification-stack.pplx
 
 Do not install the entire catalog to demonstrate seriousness. Tool selection follows the actual check, and every component consumes qualification effort, attack surface, retention obligations, and potentially money.
 
+The owner has clarified that the open-source rule covers harnesses and verification software, not inference models or hosting infrastructure. Commercial infrastructure hosting eligible open-source software and proprietary inference services may be considered, subject to separate approval and all existing controls. A proprietary verification backend is not a hosting exception, and this clarification authorizes neither a provider nor expenditure.
+
 ## Pilot effects and measurements
 
 The existing decisions remain in force. Method scenarios are A01/A03/A05/A09; routing scenarios are A08/A11/A12. Each has two routine public/synthetic cases, with matched arms on each case, at most one repair, no human rescue, two final judges, and ordinary-failure continuation subject to safety/resource stops.
@@ -205,6 +207,6 @@ Run a separately authorized frozen experiment, report all assigned outcomes and 
 
 ## Decisions still needed
 
-The largest remaining decisions concern the scored harness population, exact versions/models, actual task manifest, permitted providers and tool endpoints, numeric task/resource limits, statistical evidence standard, and the desired scope of the open-source requirement across hosting and inference. They should be resolved before more implementation detail is mistaken for approval.
+The largest remaining decisions concern the scored harness population, exact versions/models, actual task manifest, permitted providers and tool endpoints, approved hosting, numeric task/resource limits, and statistical evidence standard. The license scope is settled; pinned components still need verification. Resolve the remaining decisions before more implementation detail is mistaken for approval.
 
 No changes to operational skills, templates, profiles, installers, CI behavior, infrastructure, or runtime tools were made by this assessment. Only the evaluation documentation and research reports are proposed through the existing PR.

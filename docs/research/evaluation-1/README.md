@@ -23,6 +23,8 @@ The priority order is fewer defects, less owner attention, faster accepted deliv
 
 Feasibility research covers all five requested harnesses: OpenCode, pi-agent, Qwen Code, Aider, and Goose. The verification-tool proposal must be open source across its engines, MCP interfaces, required plugins, and backends. No single harness, adapter implementation, tool installation, or five-harness scored matrix has been authorized by those research choices.
 
+The open-source requirement covers the harnesses and verification stack, not inference models or hosting infrastructure. Proprietary inference services and commercial hosting are not excluded by this license rule, but no provider or host is thereby approved. Recipient, residency, retention, permissions, security, and the shared budget remain binding. Commercial hosting cannot be used to reclassify a proprietary verification backend as eligible infrastructure.
+
 The new reports recommend strengthening verification contracts and existing skills/templates, but this package does not modify operational skills, templates, CI, or runtime behavior. Their recommendations remain proposals for separate implementation approval, not additional settled experimental thresholds.
 
 Selected scenarios are A01 bug repair, A03 refactoring, A05 security audit and remediation, A08 data reconciliation and analysis, A09 requirements and architecture planning, A11 browser administration, and A12 cross-application office work. Selected benchmarks are B01 SWE-bench Verified, B06 GAIA, and B10 TheAgentCompany. The latter remains conditional on whole-stack security feasibility.

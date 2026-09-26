@@ -40,6 +40,8 @@ This document separates two choices. Evaluation scenarios define capabilities an
 
 The five-harness research expansion covers OpenCode, pi-agent, Qwen Code, Aider, and Goose; it does not change B01/B06/B10, the selected scenarios, or their stage assignment. See the [harness assessment](harness-feasibility.pplx.md), [framework research](verification-framework-research.pplx.md), and [open-source tool assessment](open-source-verification-stack.pplx.md). Browser, design, telemetry, and soak tools are candidate verification capabilities, not additional benchmark selections or completed evidence.
 
+Harnesses and verification software must be open source, including required MCP/plugin/backend components. Inference models and hosting infrastructure are outside that license requirement, but their recipients, data handling, permissions, resource costs, and qualification still need approval. This does not qualify a benchmark, change its license, or permit a proprietary verification backend through a hosting exception.
+
 The confirmed business purpose is to offer model-mesh to clients using measured success on your own projects as evidence. Usefulness is already established and is not being reassessed. For now, defer personally useful task discovery and project selection; focus on qualification scenarios, external benchmarks, and defensible claims.
 
 Proposed client evidence should show what was attempted, what succeeded or failed, what the comparator was, and which conditions limited the result. Do not credit model-mesh for an entire project's historical success without evidence of its actual contribution. Publication would need a separate review for confidentiality and claim accuracy.

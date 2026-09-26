@@ -22,7 +22,9 @@ The name pi-agent is interpreted here as the Pi coding-agent CLI, not an arbitra
 | Aider | Aider-AI/aider, Apache-2.0 ([repository](https://github.com/Aider-AI/aider)). | Assess the CLI first, not an assumed stable Python embedding API. |
 | Goose | The former `block/goose` URL currently identifies `aaif-goose/goose`, Apache-2.0 ([repository](https://github.com/block/goose)). | Pin the actual project and release; do not rely on an old organization name or unversioned recipe. |
 
-These are source-license observations, not clearance of every dependency, browser binary, plugin, provider, hosted service, or distribution obligation. Inspect a pinned dependency manifest and license inventory before qualification. The open-source tooling requirement does not itself settle model weights, inference providers, or whether all execution infrastructure must also be self-hosted.
+These are source-license observations, not clearance of every dependency, browser binary, plugin, provider, hosted service, or distribution obligation. Inspect a pinned dependency manifest and license inventory before qualification.
+
+The owner has clarified that harnesses and the verification stack must be open source, while inference models and hosting infrastructure need not be. Proprietary inference services and commercial hosting may therefore be considered, but none is selected or approved here. Model roles, recipient eligibility, residency, retention, permissions, isolation, and charges remain qualification requirements. A proprietary verification service cannot be relabeled hosting to bypass the software-license rule.
 
 ## Native interfaces and evidence gaps
 

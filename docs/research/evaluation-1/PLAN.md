@@ -1,6 +1,6 @@
 # Model-mesh portable method and pilot plan
 
-Discussion draft v0.17 | 26 September 2026 | Planning only
+Discussion draft v0.18 | 26 September 2026 | Planning only
 
 ## Agreed priorities
 
@@ -104,7 +104,11 @@ The owner requested in-depth analysis of the two New Stack articles and potentia
 
 The verification-tool proposal must be open source across engines, MCP servers, required plugins, and backends. The [tool report](open-source-verification-stack.pplx.md) assesses Playwright, local Browser Use, Penpot, OpenTelemetry, Prometheus, Grafana/Loki/Tempo, load tools, and fault/security tools. It excludes Figma as an all-OSS design backend and does not treat an open connector as evidence that a hosted backend is open.
 
-These reports do not install the stack, modify operational skills/templates, add pilot cases, relax repair or judging rules, select numeric soak thresholds, or authorize execution. Tool-specific capabilities and licenses need confirmation at pinned versions. Open-source scope for existing hosting infrastructure and model inference remains an explicit unresolved boundary rather than an assumed policy change.
+These reports do not install the stack, modify operational skills/templates, add pilot cases, relax repair or judging rules, select numeric soak thresholds, or authorize execution. Tool-specific capabilities and licenses need confirmation at pinned versions.
+
+The owner has fixed the license scope: harnesses and the verification stack must be open source; inference models and hosting infrastructure need not be. This permits consideration of proprietary inference services or commercial hosts, not their automatic selection or use. All worker, reviewer, judge, and auxiliary-model calls still require approved recipients, policy-compliant data handling, bounded charges, and the existing role/configuration controls. Hosting must still meet security, residency, retention, permission, and cost requirements.
+
+The hosting exception concerns where the stack runs, not what supplies verification. An open-source harness or verification service may run on approved commercial infrastructure, but a proprietary design, monitoring, browser-automation, or test backend is not exempt merely because it is hosted. Preserve the all-open-source engine/MCP/plugin/backend qualification rule and the one shared budget.
 
 ## Auditing and enforceable guardrails
 
@@ -324,7 +328,7 @@ We will resolve this in rounds rather than ask dozens of abstract questions at o
 - Scenario selection: A01, A03, A05, A08, A09, A11, and A12. Do not require actual project examples at this stage.
 - Task material: public and synthetic only; no private project material, client information, personal records, or real account credentials in task content. Recipient, residency, retention, and execution approvals remain separate.
 - Research implementations: OpenCode, pi-agent, Qwen Code, Aider, and Goose, all five assessed without automatic runtime enrollment.
-- Verification-tool requirement: open-source engines, MCP interfaces, required plugins, and backends; recommendations do not authorize installation or implementation.
+- License scope: harnesses and verification engines, MCP interfaces, required plugins, and backends must be open source; inference models and hosting infrastructure need not be. Providers and hosts still require independent policy and budget approval.
 - Comparison design: method effect first, then routing effect, in separate controlled stages.
 - Defect measurement: after at most one repair cycle, with no human rescue.
 - At the limit: count and freeze failure; separately authorized later rescue is unscored.
