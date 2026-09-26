@@ -1,6 +1,6 @@
 # Model-mesh pilot task and benchmark options
 
-Selection record and research | Updated 25 September 2026 | Research and planning only
+Selection record and research | Updated 26 September 2026 | Research and planning only
 
 See [the plan](PLAN.md), [analysis](ANALYSIS.md), and [decision log](DECISIONS.md). Options are preserved for traceability; the explicit owner selections govern the proposed scope.
 
@@ -37,6 +37,8 @@ Record that attention using an owner-operated timer plus tagged activity log, wi
 The owner has eight elapsed minutes from recorded dispute escalation to rule, capped by the global deadline. An unanswered dispute freezes as unresolved and not accepted under the local protocol. Keep this local outcome separate from the official benchmark grade, without adding late scored grading.
 
 This document separates two choices. Evaluation scenarios define capabilities and failure modes to test. Benchmarks provide reusable test material and evaluation procedures. A benchmark is not the baseline workflow: a comparative improvement claim will still require a declared comparator.
+
+The five-harness research expansion covers OpenCode, pi-agent, Qwen Code, Aider, and Goose; it does not change B01/B06/B10, the selected scenarios, or their stage assignment. See the [harness assessment](harness-feasibility.pplx.md), [framework research](verification-framework-research.pplx.md), and [open-source tool assessment](open-source-verification-stack.pplx.md). Browser, design, telemetry, and soak tools are candidate verification capabilities, not additional benchmark selections or completed evidence.
 
 The confirmed business purpose is to offer model-mesh to clients using measured success on your own projects as evidence. Usefulness is already established and is not being reassessed. For now, defer personally useful task discovery and project selection; focus on qualification scenarios, external benchmarks, and defensible claims.
 

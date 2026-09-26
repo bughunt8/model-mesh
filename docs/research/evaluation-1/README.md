@@ -1,6 +1,6 @@
 # Evaluation 1
 
-Documentation proposal | No execution authorized | 25 September 2026
+Documentation proposal | No execution authorized | 26 September 2026
 
 This package plans an evidence-based qualification of model-mesh for a client offering. Usefulness is already established by the owner's experience. The open question is what claims about defects, required human attention, accepted-delivery time, cost, controls, and portability can be defended.
 
@@ -12,11 +12,18 @@ This package plans an evidence-based qualification of model-mesh for a client of
 | [BENCHMARKS.md](BENCHMARKS.md) | Source-cited research on 10 benchmarks, the 12-scenario menu, selected scope, and coverage limitations. |
 | [ANALYSIS.md](ANALYSIS.md) | Experimental interpretation, measurement boundaries, controls, and gaps that must be resolved before execution. |
 | [DECISIONS.md](DECISIONS.md) | Ordered owner decisions, superseded proposals, open questions, and change rules. |
+| [Five-harness feasibility](harness-feasibility.pplx.md) | Current documentation assessment of OpenCode, pi-agent, Qwen Code, Aider, and Goose; adapter gaps and conditional workload implications. |
+| [Verification framework research](verification-framework-research.pplx.md) | Analysis of the two supplied articles, primary evidence, repository gaps, and proposed framework/skill/template changes. |
+| [Open-source verification stack](open-source-verification-stack.pplx.md) | License-aware assessment of browser/design validation, MCP access, telemetry, monitoring, load/soak, and fault tools. |
 | [REVIEW.md](REVIEW.md) | Independent adversarial findings, disposition, reviewed scope, and review limitations. |
 
 ## Settled scope
 
 The priority order is fewer defects, less owner attention, faster accepted delivery, then lower total cost. No regression may be compensated for by an improvement elsewhere. Safety controls remain mandatory gates.
+
+Feasibility research covers all five requested harnesses: OpenCode, pi-agent, Qwen Code, Aider, and Goose. The verification-tool proposal must be open source across its engines, MCP interfaces, required plugins, and backends. No single harness, adapter implementation, tool installation, or five-harness scored matrix has been authorized by those research choices.
+
+The new reports recommend strengthening verification contracts and existing skills/templates, but this package does not modify operational skills, templates, CI, or runtime behavior. Their recommendations remain proposals for separate implementation approval, not additional settled experimental thresholds.
 
 Selected scenarios are A01 bug repair, A03 refactoring, A05 security audit and remediation, A08 data reconciliation and analysis, A09 requirements and architecture planning, A11 browser administration, and A12 cross-application office work. Selected benchmarks are B01 SWE-bench Verified, B06 GAIA, and B10 TheAgentCompany. The latter remains conditional on whole-stack security feasibility.
 

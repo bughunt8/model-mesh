@@ -1,6 +1,6 @@
 # Model-mesh portable method and pilot plan
 
-Discussion draft v0.16 | 25 September 2026 | Planning only
+Discussion draft v0.17 | 26 September 2026 | Planning only
 
 ## Agreed priorities
 
@@ -84,19 +84,27 @@ Proposed support labels are documented, mapped, conformance-tested, pilot-qualif
 
 ## Implementation choices
 
-These components occupy different layers. They can be combined, so a flat contest between Orca, Qwen, Pi, and worktrees would be poorly defined.
+The owner selected all five harnesses for feasibility research: OpenCode, pi-agent, Qwen Code, Aider, and Goose. The [source-backed harness assessment](harness-feasibility.pplx.md) records documented interfaces, licensing, native-loop risks, and qualification gaps. No candidate is runtime-qualified or silently removed from the research scope.
 
-| Candidate | Verified role | Proposed pilot role and uncertainty |
+| Candidate | Documented entry point | Proposed pilot role and uncertainty |
 |---|---|---|
-| OpenCode with oh-my-openagent | Model-mesh publishes role-routing configurations for this implementation. [Model-mesh](https://github.com/bughunt8/model-mesh) | Existing reference path, not a dependency of the method. Verify the exact version and effective runtime behavior. |
-| Orca | Its documentation describes coordinating CLI agents, separate worktrees, and GitHub task/PR integration, including Pi and Qwen Code among supported CLIs. [Orca](https://github.com/stablyai/orca) | Optional coordination console. Qualify dispatch, cancellation, approvals, and evidence binding before treating it as a policy enforcement point. Product documentation is not proof of these controls. |
-| Qwen Code | Its documentation describes a coding agent with headless operation, SDKs, and multiple provider protocols. [Qwen Code](https://github.com/QwenLM/qwen-code) | Candidate independent harness. Here "Qwen" means Qwen Code, pending your confirmation, rather than selecting a Qwen model by default. Audit the actual pinned release. |
-| Pi | Its repository separates a multi-provider model API, an agent runtime, and a coding CLI. [Pi](https://github.com/badlogic/pi-mono) | Candidate for an explicit adapter with a small, inspectable integration. Do not assume built-in security enforcement; its documentation describes running with the launching process's permissions and external sandbox options. [Pi](https://github.com/badlogic/pi-mono) |
-| Git worktrees with GitHub review | Git worktrees provide multiple checkouts with separate HEAD/index state while sharing repository data and normally configuration. They are not documented as process, credential, or network isolation. [Git worktree documentation](https://git-scm.com/docs/git-worktree) | Minimal coordination pattern: one assignment, one isolated execution environment and checkout, one branch, one independently verified change. GitHub would provide proposed issue, PR, and CI evidence handoffs, not the agent runtime. |
+| OpenCode | Noninteractive CLI, JSON events, session export, and SDK control ([CLI](https://opencode.ai/docs/cli/), [SDK](https://opencode.ai/docs/sdk/)). | Declare whether oh-my-openagent is present and keep harness/plugin changes distinct from the method treatment. |
+| pi-agent | Pi coding-agent RPC and terminal events ([RPC](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/rpc.md)). | Interpret as the Pi coding CLI; confirm installed identity/version and qualify external isolation, extensions, and settled completion. |
+| Qwen Code | Headless JSON/stream-JSON and explicit configuration ([headless](https://qwenlm.github.io/qwen-code-docs/en/users/features/headless/)). | Selecting this harness does not select a Qwen model. Qualify cumulative budgets, auxiliary models, retries, and evidence truncation. |
+| Aider | Single-message CLI scripting ([scripting](https://aider.chat/docs/scripting.html)). | Qualify native lint/test repair, model roles, evidence extraction, and any browser/office integration. |
+| Goose | Headless JSON/stream-JSON and recipes ([CLI](https://goose-docs.ai/docs/guides/goose-cli-commands/)). | Qualify unattended permissions, extensions, recipe identity, cancellation, and complete accounting. |
 
-My provisional preference is to qualify one direct alternative harness first, with Pi and Qwen Code as candidates, using separate checkouts and controlled GitHub handoffs. Add Orca later if coordinating multiple concurrent workers solves a demonstrated problem. Do not build four adapters to prove a portability claim that two implementations can test.
+Orca and Git worktrees remain optional coordination/checkout components, not additional harness contestants in this five-item assessment. Their documented roles differ from an agent execution harness ([Orca](https://github.com/stablyai/orca), [Git worktrees](https://git-scm.com/docs/git-worktree)). They do not supply an assumed security boundary.
 
-This recommendation is about experimental clarity, not a claim that either harness is already safer or faster. The final choice depends on your installed environment, required controls, and tolerance for integration work.
+The earlier preference to focus on only one alternative first is superseded for research. Runtime enrollment, qualification order, exact versions/models, and common adapter/tool contracts remain open. Full execution of the fourteen-case grid on all five would imply 140 initial arm attempts before repeats on fourteen shared task identities; that is conditional arithmetic, not an approved expansion or a claim that the global limits suffice.
+
+### Verification research and open-source tools
+
+The owner requested in-depth analysis of the two New Stack articles and potential changes to model-mesh's framework, skills, and templates. The [framework report](verification-framework-research.pplx.md) distinguishes useful mechanisms from sponsored productivity claims, maps gaps to the inspected repository, and proposes original verification-plan, environment, feature-map, evidence, tool, and soak-test contracts.
+
+The verification-tool proposal must be open source across engines, MCP servers, required plugins, and backends. The [tool report](open-source-verification-stack.pplx.md) assesses Playwright, local Browser Use, Penpot, OpenTelemetry, Prometheus, Grafana/Loki/Tempo, load tools, and fault/security tools. It excludes Figma as an all-OSS design backend and does not treat an open connector as evidence that a hosted backend is open.
+
+These reports do not install the stack, modify operational skills/templates, add pilot cases, relax repair or judging rules, select numeric soak thresholds, or authorize execution. Tool-specific capabilities and licenses need confirmation at pinned versions. Open-source scope for existing hosting infrastructure and model inference remains an explicit unresolved boundary rather than an assumed policy change.
 
 ## Auditing and enforceable guardrails
 
@@ -244,7 +252,7 @@ Severity labels explain defects and inform analysis; they do not exempt minor or
 
 ### Test portability, then coordination
 
-Replicate the selected condition on one alternative harness while holding models, tasks, policy, and evaluation as constant as feasible. Document differences in hidden prompts, reasoning controls, tools, context limits, and usage reporting. If identical model access is impossible, call this a system comparison, not a clean harness-effect estimate.
+For any later approved cross-harness comparison, replicate the selected condition while holding models, tasks, policy, and evaluation as constant as feasible. All five remain feasibility research targets; the actual scored harness population is not yet fixed. Document differences in hidden prompts, reasoning controls, tools, context limits, and usage reporting. If identical model access is impossible, call this a system comparison, not a clean harness-effect estimate.
 
 Only afterwards evaluate Orca or concurrent workers against the corresponding sequential workflow. Measure coordination overhead, lost work, conflict resolution, cancellation, and integration failures. Do not count worktree separation as security qualification.
 
@@ -315,6 +323,8 @@ We will resolve this in rounds rather than ask dozens of abstract questions at o
 - Benchmark shortlist: B01 SWE-bench Verified, B06 GAIA, B10 TheAgentCompany, subject to qualification.
 - Scenario selection: A01, A03, A05, A08, A09, A11, and A12. Do not require actual project examples at this stage.
 - Task material: public and synthetic only; no private project material, client information, personal records, or real account credentials in task content. Recipient, residency, retention, and execution approvals remain separate.
+- Research implementations: OpenCode, pi-agent, Qwen Code, Aider, and Goose, all five assessed without automatic runtime enrollment.
+- Verification-tool requirement: open-source engines, MCP interfaces, required plugins, and backends; recommendations do not authorize installation or implementation.
 - Comparison design: method effect first, then routing effect, in separate controlled stages.
 - Defect measurement: after at most one repair cycle, with no human rescue.
 - At the limit: count and freeze failure; separately authorized later rescue is unscored.
@@ -349,7 +359,7 @@ We will resolve this in rounds rather than ask dozens of abstract questions at o
 - Fix permitted-use and exclusion screening for public/synthetic cases, jurisdictions, approved recipients, fallbacks, retention, tools, and forbidden actions without reopening the settled task-data boundary.
 - Price human effort, subscriptions, infrastructure, setup, and failed attempts; separate economic cost from cash expenditure.
 - Agree task mix, class-level allocation, cost reservations, cutoff/cleanup mechanics, meaningful effect, and uncertainty standard within the settled clock and cash boundaries.
-- Select the alternative harness and define what counts as portable, including adapter effort and unsupported capabilities.
+- Decide the scored harness population and qualification order among the five research targets, and define portability evidence, adapter effort, and unsupported capabilities without changing harnesses within a paired comparison.
 - Challenge the proposed decision with adverse examples: a cheap but wrong patch, a perfect patch sent to an unapproved provider, a safe refusal, a very slow success, a green CI run on the wrong commit, and an experiment too small to distinguish the alternatives.
 
 The interview is complete only when we can both apply the same rules to these examples and reach the same acceptance and adoption decision. Until then, this remains a discussion draft.

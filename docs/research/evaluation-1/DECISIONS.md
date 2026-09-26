@@ -1,6 +1,6 @@
 # Evaluation 1 decision log
 
-Status as of 25 September 2026 | Planning only
+Status as of 26 September 2026 | Planning only
 
 This log records owner instructions and explicit selections from the planning discussion. It does not treat the drafter's recommendation as approval. Ordering preserves the sequence of decisions; dates use Hong Kong time.
 
@@ -50,6 +50,9 @@ This log records owner instructions and explicit selections from the planning di
 | D40 | Assign A01, A03, A05, and A09 to the method stage; assign A08, A11, and A12 to the routing stage. | Settled on 23 September 2026. Eight distinct routine floor cases for method, six for routing. Fourteen matched case comparisons require twenty-eight initial arm attempts before repeats, not twenty-eight independent tasks. Actual cases and resource feasibility remain unapproved. |
 | D41 | Continue the predeclared comparisons after ordinary acceptance failure in either arm, absent a mandatory safety stop and within resource limits. | Settled on 25 September 2026. Freeze and report the failed task; no extra repair, replacement case, configuration change, or hidden-evaluator feedback. Safety and resource stops override continuation. This is not task acceptance, adoption approval, or execution authority. |
 | D42 | Restrict initial evaluation task material to public and synthetic inputs. | Settled on 25 September 2026. Eligible public benchmarks, public repositories, and fabricated business data only; no private project material, client information, personal records, or real account credentials in task content. Apply across task preparation, retrieval/tools, reviewers, judges, and derived evidence. Exact cases, permitted use, recipients, residency, retention, and execution approvals remain separate. |
+| D43 | Research feasibility for all five requested implementations: OpenCode, pi-agent, Qwen Code, Aider, and Goose. | Settled on 26 September 2026. This selects the research population, not a single winner, implemented adapters, five scored grids, or a new budget. Exact versions and scored enrollment remain open. |
+| D44 | Research both supplied New Stack articles in depth and assess implications for model-mesh's framework, skills, and templates. | Settled research scope on 26 September 2026 HKT. Proposals are documented in the framework report; no operational skill/template or CI changes are authorized by an assessment request. |
+| D45 | Assess verification, validation, and soak tooling, including browser/design MCP, logs, and monitoring; all proposed tools must be open source. | Settled on 26 September 2026 HKT. Qualify engine, MCP server, required plugin, and backend separately. No tool installation, runtime test, provider choice, or proprietary-backend exception is implied. |
 
 ## Superseded or constrained proposals
 
@@ -86,6 +89,8 @@ This log records owner instructions and explicit selections from the planning di
 | Move A09 to routing or reverse the proposed stage allocation. | Not selected. D40 approves method A01/A03/A05/A09 and routing A08/A11/A12. |
 | Stop the whole scored pilot at the first ordinary acceptance failure even when safety and resource limits permit continuation. | Not selected. D41 continues the predeclared comparisons without changing the failed result or granting extra attempts. |
 | Include specifically approved private project material in the initial evaluation. | Not selected. D42 limits task material to public and synthetic sources. Any later private-data evaluation requires a separate scope and approval. |
+| Research only one initial harness or only Pi and Qwen Code as alternatives. | Superseded for research by D43, which names all five targets. Runtime enrollment remains a separate decision. |
+| Treat a free SaaS tier or an open-source MCP connector as sufficient proof of an entirely open-source verification toolchain. | Rejected by D45's whole-tool qualification boundary. Backend and plugin licenses remain part of the assessment. |
 
 ## Open questions
 
@@ -99,7 +104,7 @@ These remain genuinely unresolved. Their presence does not prevent a documentati
 | O04 | Which timer/log tool, fields, reconciliation cadence, shared-effort allocation, and any pre-run-approved missing-data analysis threshold implement the settled measurement rules? | Measurement instrumentation and comparative analysis; missed timer intervals remain missing without imputation, and no analysis exception is currently agreed. |
 | O05 | What evidence standard distinguishes improvement, regression, and inconclusive results without unauthorized regression margins? | Sample-size choice and preregistration. |
 | O06 | How will exact public/synthetic cases be screened for permitted use and excluded content, and which recipients, jurisdictions, retention rules, service-credential controls, and tool permissions apply? | Case qualification and any networked execution; D42 task-data classes are settled, not general permission to transmit or publish. |
-| O07 | Which second harness, pinned release, and adapter contract should test portability? | Adapter implementation authorization. |
+| O07 | Which pinned versions and adapter contracts among the five research targets pass qualification, and which enter the scored matrix in what order? | Adapter implementation and execution authorization; D43 research population is settled, not runtime enrollment. |
 | O08 | Which exact benchmark releases, splits, task subsets, graders, and simulator configurations are available and appropriate? | Environment freeze. |
 | O09 | Can TheAgentCompany meet the complete security boundary without unsafe privileges on the user/shared host? | Its installation or execution. |
 | O10 | Which supplemental refactoring, security, and architecture cases are needed, and how will they be independently graded? | Coverage approval. |
@@ -108,6 +113,8 @@ These remain genuinely unresolved. Their presence does not prevent a documentati
 | O13 | Which project case studies may later be used, and what may be published? | Case-study disclosure; deferred for now. |
 | O14 | How are other pending, in-flight, unstarted, and missing-judge tasks classified at cutoff, and how do shutdown, evidence retention, and cleanup avoid extending scored execution? | Execution authorization; clock boundaries and unanswered-dispute classification under D30 are settled. |
 | O15 | Which billing rates, allocation and reconciliation rules, and non-overlapping reservations cover in-flight calls, both judges, storage retention, and safe cleanup? | Execution authorization; all new pilot charges, including setup/cleanup, already count toward USD 100. |
+| O16 | Which proposed verification-contract, skill, template, and CI changes should become a separate implementation PR, with which negative fixtures and acceptance criteria? | Implementation authorization; the report is an assessment, not approval to change behavior. |
+| O17 | Which pinned open-source verification components are justified by the actual cases, and does the open-source requirement also extend to all hosting infrastructure and inference models? | Toolchain and provider approval; no proprietary verification-backend exception is presumed. |
 
 ## Change protocol
 

@@ -1,6 +1,6 @@
 # Evaluation 1 analysis
 
-Design analysis, not experimental results | 25 September 2026
+Design analysis, not experimental results | 26 September 2026
 
 ## What the evaluation can establish
 
@@ -16,7 +16,13 @@ This boundary does not eliminate control testing or provider-policy approval. Re
 
 ## Distinguish the experiment's causes
 
+The owner now requires feasibility analysis of all five harnesses, not selection of one to research. [Harness feasibility](harness-feasibility.pplx.md) covers OpenCode, pi-agent, Qwen Code, Aider, and Goose. This does not establish five runtime-qualified adapters or authorize five scored grids; the harness population and resource allocation still need an explicit execution-design decision.
+
+If all five later run the complete shared fourteen-case design, 140 initial arm attempts would result before repeats. Those are repeated conditions on fourteen task identities, not 140 independent tasks. Keep harness effects, method effects, routing effects, tool differences, and shared setup effort separate, and do not reset the USD 100 or ten-hour limits per harness.
+
 The owner selected two separate stages: isolate the disciplined loop first, then the additional effect of role-specific routing. Portability and optional parallel orchestration remain later proposed comparisons. Changing all four at once gives a system comparison, not an estimate of the method's individual contribution.
+
+The [verification framework research](verification-framework-research.pplx.md) adds proposed diagnostics and implementation requirements, not measured gains or new adoption thresholds. The [open-source tool assessment](open-source-verification-stack.pplx.md) distinguishes executable test engines from MCP access and monitoring views. A tool's license, a readable dashboard, or a documentation SHIP verdict cannot substitute for runtime qualification or independent acceptance.
 
 Use the matched single-model reference for the staged comparisons in [PLAN.md](PLAN.md), with exact configurations still to be agreed. If a human-led or already multi-model operational reference is later added, report it separately and limit its attribution to whole-system differences. Do not substitute it for either selected controlled stage.
 
