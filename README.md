@@ -1,90 +1,81 @@
+<div align="center">
+
 # model-mesh
 
-**A disciplined agent loop + multi-model routing, for any model, any stack.**
+### The right model in the right seat, following a loop that works like a careful senior engineer.
 
-Two ideas, fused:
+**An open-source, harness-agnostic agent loop + family-based multi-model routing. Model-agnostic. Deployable. Self-governing.**
 
-1. **The loop** — a self-contained problem-solving method (think / act / prove / grow) that guides a model to work like a careful senior engineer: classify the ask, define done, gather evidence, decide, act surgically, verify by observation, report outcome-first. Adapted from [fable-method](https://github.com/Sahir619/fable-method) (MIT) — see [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
-2. **The routing** — a config system for the [oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent) / opencode framework that assigns each agent role to a model *family* instead of using one model everywhere. Three profiles: **ultimate**, **hybrid** (default), **b4b**.
+_Works on any coding-agent harness. The shipped examples target two: [oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent) (OpenCode) and the DeepSeek Harness (DSH)._
 
-> **Design heuristic (not a proven benchmark):** the right model in the right role, following a disciplined loop, tends to beat one model free-styling. These are design opinions, not measured guarantees — see [Claims & limits](#claims--limits).
+[Quickstart](#quickstart-60-seconds) · [How it works](#how-it-works) · [Profiles](#the-routing-one-role-one-family) · [Self-governing](#self-governing-the-landscape-engine) · [Validation](#validation-two-gates) · [Claims & limits](#claims--limits)
 
-> **What's new in v1.1.5:** the metered-profile budget ceiling is now documented as an explicit **policy budget cap** (a repo-chosen $4.65/1M output-price knob) rather than being conflated with any vendor's price; a cheap **native-vision** fallback (`vision-lite`) sits directly behind the vision primary in the metered profiles; the cheap communicator (`comm-lite`) moved to the vendor's current cheap release (retiring an off-rate-card model); and several no-op fallback rungs (distinct placeholders that resolved to the same model in one chain) were removed at the mapping level, with the CI dup-check hardened to catch them in example files too. See [`CHANGELOG.md`](CHANGELOG.md).
->
-> **What's new in v1.1.2:** added a token-efficient open-weight coder (`open-coder`, mapped to MiMo) as a coding/open fallback rung across **all three** profiles — in the `deep` category everywhere, on `atlas`/`sisyphus-junior` open backups, and in `b4b`'s `unspecified-low`. Also fixed pre-existing duplicate fallback rungs and added a CI guard so duplicate rungs and invalid model IDs now fail the build. See [`CHANGELOG.md`](CHANGELOG.md).
->
-> **What's new in v1.1.1 (Aug 2026 model refresh):** the open-weight reasoning lifeline (`open-reason-xl`) moved to its new GA build (API ID unchanged); the communicator (`comm-xl`) upgraded to its newest release across all profiles; a now-GA frontier open flagship (`flagship-open`) and an independent 5th-vendor diversification fallback (`div-flagship`, `ProviderG`) were added to **ultimate only** (both exceed the cost cap); the previous utility-vendor family was retired and replaced role-aware by `gen-pro` / `gen-flash`. Concrete IDs, prices, and citations are in [`docs/EXAMPLE-MAPPING.md`](docs/EXAMPLE-MAPPING.md); full detail in [`CHANGELOG.md`](CHANGELOG.md).
+`v1.1.5` · MIT · CI-gated on `main` and every PR
 
-## What's genericized vs kept
-
-This repo is **model-agnostic**. To be explicit about what that means:
-
-- **Genericized (placeholders):** every provider and model name → `ProviderA…ProviderG` and role-named models like `flagship-xl`, `coder-mid`. You map these to your real models. See [`docs/PROVIDERS.md`](docs/PROVIDERS.md).
-- **Kept (real framework names, on purpose):** `oh-my-openagent`, `opencode`, the `[opencode]` config key, and the schema URL. These are the actual framework identifiers the config **must** contain to load. They are not vendor model names; keeping them is what makes the config deployable.
-
-CI enforces a denylist of real model/provider names (`.github/checks.py`); `oh-my-openagent` and `opencode` are the only allowed framework names.
+</div>
 
 ---
 
-## What's in here
+## Why this exists
 
-```
-profiles/
-  ultimate.json        # max capability, uncapped        (FRAGMENT: agents+categories)
-  hybrid.json          # DEFAULT                          (FRAGMENT)
-  b4b.json             # cost-preferenced                 (FRAGMENT)
-setup-config.sh        # materializes a profile into a full deployable ~/.omo/omo.jsonc
-scripts/materialize.py # wraps a fragment in the [opencode] structure
-skills/                # the loop as installable skills
-  mm-method/  mm-loop/  mm-verify/  mm-domain/
-docs/
-  ROUTING.md           # routing methodology (4 axes, families, roles)
-  PROVIDERS.md         # placeholder -> real model mapping guide + framework compat
-AGENTS.md              # portable method + routing runbook for any agent
-THIRD_PARTY_NOTICES.md # upstream attribution
-```
+Most multi-model setups do one of two things: pin everything to a single "best" model, or route by a benchmark leaderboard that's stale the week it ships. Both ignore the thing that actually moves quality. Put each agent role on a model whose *behavioral family* fits the job, and make the model work a disciplined loop instead of free-styling.
 
-Each profile also ships a `*.example.json` (e.g. `profiles/hybrid.example.json`) showing the same fragment populated with **real provider/model IDs** as a concrete reference mapping. The plain `*.json` files stay genericized; the `*.example.json` files are illustrative and are exempt from the vendor-name CI check by design.
+model-mesh is that idea, made concrete and deployable:
 
-The three `profiles/*.json` are **fragments** (agents + categories only). `setup-config.sh` wraps a chosen fragment in the required `[opencode]` structure to produce a complete, deployable config.
+- **A loop** that makes a capable model work like a methodical senior engineer. Classify the ask, define "done," gather evidence, decide, act surgically, verify by observation, report outcome-first.
+- **A routing layer** that assigns each agent role (implementer, architect, reviewer, coders, orchestrator, explorers) to a model *family*, not a raw benchmark rank, across three ready profiles.
+- **A self-governing update engine**: a committed weekly **runbook** an agent cron executes on your side, scoring new releases against the repo's own rules, having an **independent model review the recommendation**, and opening a PR only when a change is actually warranted. (The scripts and gates ship here; the schedule and the reviewer credential are yours to wire up.)
+
+> **Honesty up front:** the routing rationale is a set of design heuristics, not measured benchmarks. Because you map placeholders to your own models, no fixed cost or quality number holds across all mappings. See [Claims & limits](#claims--limits). This is a design opinion you can deploy and measure, not a guarantee.
 
 ---
 
-## Quickstart — Human
+## How it works
 
-1. **Clone**
-   ```bash
-   git clone https://github.com/bughunt8/model-mesh
-   cd model-mesh
-   ```
-2. **Materialize a profile** (default is hybrid):
-   ```bash
-   ./setup-config.sh hybrid      # or: ultimate | b4b
-   ```
-   This backs up any existing `~/.omo/omo.jsonc`, then writes the selected profile as a complete config. It does **not** invent model IDs.
-3. **Map placeholders to your models.** Open the written `~/.omo/omo.jsonc` and [`docs/PROVIDERS.md`](docs/PROVIDERS.md); replace each `ProviderX/role-name` with a real provider/model you have confirmed exists. Put your mapping in `provider-map.local` (git-ignored) — never commit it.
-4. **Validate.**
-   ```bash
-   bunx oh-my-openagent doctor    # must report no issues
-   ```
-5. **Install the loop skills** (optional):
-   ```bash
-   bash install.sh                # or install.ps1 on Windows (backs up existing skills)
-   ```
-6. **Use it:** `/mm-method <task>` runs the full loop; `/mm-loop <task>` orchestrates plan→execute→verify→audit; `/mm-verify` adversarially reviews finished work.
+```
+        ┌────────────────────────── THE LOOP ──────────────────────────┐
+        │  think  →  act  →  prove  →  grow                             │
+        │  classify · define done · evidence · decide · act · verify    │
+        └───────────────────────────────┬───────────────────────────────┘
+                                         │  runs on
+                                         ▼
+        ┌───────────────────────── THE ROUTING ────────────────────────┐
+        │  each role → a model FAMILY (not a leaderboard rank)          │
+        │  hephaestus  oracle  momus  atlas  prometheus  sisyphus  …    │
+        │  profiles:   ultimate   ·   hybrid (default)   ·   b4b        │
+        └───────────────────────────────┬───────────────────────────────┘
+                                         │  kept current by
+                                         ▼
+        ┌────────────────────── THE LANDSCAPE ENGINE ──────────────────┐
+        │  weekly scan → provenance-checked scoring → independent       │
+        │  AI review gate → PR only when a change is justified          │
+        └───────────────────────────────────────────────────────────────┘
+```
 
-Rollback anytime: `cp ~/.omo/omo.jsonc.bak-<stamp> ~/.omo/omo.jsonc`.
+Three layers, one principle at each: **method over improvisation, family-fit over rank, evidence over assertion.**
 
-## Quickstart — LLM / Agent
+---
 
-Follow [`AGENTS.md`](AGENTS.md) (Part A is the routing runbook, Part B is the loop). In short:
+## Quickstart
 
-1. Read [`docs/ROUTING.md`](docs/ROUTING.md) and [`docs/PROVIDERS.md`](docs/PROVIDERS.md) fully first.
-2. Use `hybrid` unless the user specified otherwise.
-3. Produce a placeholder→real-model mapping table and get user approval **before** writing real IDs. Never invent model IDs from memory — confirm each resolves.
-4. Run `./setup-config.sh <profile>`, then apply the mapping to `~/.omo/omo.jsonc`.
-5. Enforce the schema: agents use `model` + `fallback_models` (not `models`); `ultrawork` uses singular `model`; categories use `models[]`; use `reasoning` not `variant`. Run `oh-my-openagent doctor` until clean.
-6. Report outcome-first (AGENTS.md Step 6); list any placeholder you could not confidently map.
+**Human:**
+
+```bash
+git clone https://github.com/bughunt8/model-mesh && cd model-mesh
+./setup-config.sh hybrid          # ultimate | hybrid (default) | b4b
+# → backs up any existing ~/.omo/omo.jsonc, writes the chosen profile
+```
+
+Then map the placeholders to *your* models (open `~/.omo/omo.jsonc` + [`docs/PROVIDERS.md`](docs/PROVIDERS.md); put real IDs in the git-ignored `provider-map.local`), and verify:
+
+```bash
+bunx oh-my-openagent doctor       # must report no issues
+bash install.sh                   # optional: install the loop skills
+```
+
+Use it: `/mm-method <task>` runs the full loop · `/mm-loop <task>` orchestrates plan→execute→verify→audit · `/mm-verify` adversarially reviews finished work. Rollback anytime from the timestamped `.bak`.
+
+**LLM / agent:** follow [`AGENTS.md`](AGENTS.md). Read [`docs/ROUTING.md`](docs/ROUTING.md) + [`docs/PROVIDERS.md`](docs/PROVIDERS.md) first, default to `hybrid`, produce a placeholder→real-model mapping table and get approval **before** writing real IDs (never invent a model ID), then `./setup-config.sh` and validate to green.
 
 ---
 
@@ -92,71 +83,123 @@ Follow [`AGENTS.md`](AGENTS.md) (Part A is the routing runbook, Part B is the lo
 
 | Phase | Skill | What it does |
 |---|---|---|
-| **think** | `mm-method` | classify → define done → evidence → decide → act → verify → report |
-| **act** | `mm-loop` | orchestrated plan/execute/verify/audit across subagents |
-| **prove** | `mm-verify` | adversarial verification of finished work |
+| **think** | `mm-method` | classify → define done → gather evidence → decide → act → verify → report |
+| **act** | `mm-loop` | orchestrated plan / execute / verify / audit across subagents |
+| **prove** | `mm-verify` | adversarial verification of finished work, tries to *break* the result |
 | **grow** | `mm-domain` | generates domain adapters (marketing, research, data, devops, …) |
 
-Hard bounds: 3 failed verify cycles → stop and hand back; 2 fruitless lookups → stop searching; can't name a verification → ask one pointed question. Full detail in [`AGENTS.md`](AGENTS.md) and `skills/`.
-
-## The routing (profiles)
-
-See [`docs/ROUTING.md`](docs/ROUTING.md). Each agent role maps to a behavioral **family** (flagship-native, communicator-class, dual-prompt, multimodal, open-weight, utility); family fit is the routing rule, not raw benchmark rank.
-
-### Profile at a glance (primary model per role, from the actual JSON)
-
-| Role | ultimate | hybrid (default) | b4b |
-|---|---|---|---|
-| implementer (`hephaestus`) | `flagship-xl` | `flagship-mid` | `flagship-mid` |
-| architect (`oracle`) | `flagship-xl` | **`flagship-xl`** | `flagship-mid` |
-| reviewer (`momus`) | `flagship-xl` | `flagship-mid` | `flagship-mid` |
-| coding agents (`atlas`, `prometheus`) | `coder-xl` | `coder-xl` | `coder-mid` |
-| `deep` category | `coder-xl` | `coder-mid` | `coder-mid` |
-| orchestration (`sisyphus`) | `comm-xl` | `comm-xl` | `comm-xl` |
-
-Hybrid's distinguishing choice: it keeps the flagship only for the **architect** (`oracle`), the highest-leverage advisory role, while dropping the implementer/reviewer to the mid tier.
-
-Ultimate-only (v1.1.1): the coding agents (`atlas`, `prometheus`) carry two extra over-cap fallback rungs — `flagship-open` (GA frontier open flagship) and `div-flagship` (independent 5th-vendor diversification, `ProviderG`) — for resilience when the primaries rate-limit. `hephaestus` deliberately keeps a flagship-native-only fallback chain. See [`docs/PROVIDERS.md`](docs/PROVIDERS.md) and [`docs/EXAMPLE-MAPPING.md`](docs/EXAMPLE-MAPPING.md).
-
-Open-coder fallback (v1.1.2): `open-coder` (a token-efficient open-weight coder, mapped to MiMo) is wired as a coding/open fallback rung in the `deep` category of **all three** profiles, on the `atlas` and `sisyphus-junior` open backups, and — most heavily — in the cost-preferenced `b4b` profile's `unspecified-low`. It is chosen for token efficiency, which is what a resilience rung should optimize for, rather than as a primary. Duplicate fallback rungs are now rejected by CI in the genericized profiles.
+**Hard bounds keep it honest:** 3 failed verify cycles → stop and hand back · can't name a verification → ask one pointed question · trivial asks skip the ceremony. Adapted from [fable-method](https://github.com/Sahir619/fable-method) (MIT), with engineering gates from [mattpocock/skills](https://github.com/mattpocock/skills) and verification fold-ins from the `debug-pipeline2` protocol. Full detail in [`AGENTS.md`](AGENTS.md) and `skills/`.
 
 ---
 
-## Validation
+## The routing (one role, one family)
 
-Two checks guard this repo; both run in CI on every push and PR, and both exit non-zero on any violation so you can run them locally before committing.
+Every agent role maps to a behavioral **family**: flagship-native, communicator-class, dual-prompt, multimodal, open-weight, utility. A model that *behaves* like the role's prompt expects beats a higher-ranked model that doesn't. Full methodology in [`docs/ROUTING.md`](docs/ROUTING.md).
 
-```bash
-python .github/checks.py                     # repo-wide gate
-python scripts/validate-full-config.py       # full deployable config example
-python scripts/validate-full-config.py path/to/your-omo.jsonc   # validate your own config
+**Primary model per role, straight from the JSON:**
+
+| Role | ultimate | hybrid (default) | b4b |
+|---|---|---|---|
+| implementer (`hephaestus`) | `open-reason-xl` | `flagship-mid` | `flagship-mid` |
+| architect (`oracle`) | `open-reason-xl` | **`flagship-xl`** | `flagship-mid` |
+| reviewer (`momus`) | `open-reason-xl` | `flagship-mid` | `flagship-mid` |
+| coding agents (`atlas`, `prometheus`) | `coder-xl` | `coder-xl` | `coder-mid` |
+| orchestration (`sisyphus`) | `comm-xl` | `comm-xl` | `comm-xl` |
+
+The `ultimate` column shows `open-reason-xl` for the three flagship-native seats because that profile is Hong Kong-native. HK cannot reach the US proprietary flagships those seats use elsewhere, so the profile explicitly remaps them to the strongest region-reachable open-weight reasoner. See the regional note below.
+
+**Why hybrid is the default:** it spends the flagship budget only where it has the highest leverage, the read-only **architect** and the **flagship coding tier**, while holding the implementer and reviewer at the mid tier. `hephaestus` keeps a **flagship-native primary tier**, one documented open-weight **lifeline** rung (a different-provider model, so a flagship-proxy outage still reaches something that works), and, where set, a single cross-family `ultrawork` escape hatch. (`flagship-native-only` is the stricter rule the validator enforces on the deployable *example* config.)
+
+**Pick your profile:** `ultimate` = max capability, cost secondary · `hybrid` = best value + best-in-class coding/architecture · `b4b` = strict performance-per-dollar.
+
+> **`ultimate` is Hong Kong-native.** Its example mapping deliberately omits every model whose **developer API is not natively available in Hong Kong**, the US frontier vendors' proprietary flagships (US vendors self-restrict HK developer-API access; one such vendor shipped a consumer app in HK but its native developer API and studio still refuse HK, and an enterprise `asia-east2` region is that vendor's only compliant dev route). `ultimate` uses no geo-unlock proxy and routes only to the strongest HK-reachable models (open-weight reasoning, coding-specialist, communicator-class, generalist, and multimodal families). `hybrid` and `b4b` remain **global** and unchanged. The concrete excluded vendors, the placeholder→real-model table, and the availability citations are in [`docs/EXAMPLE-MAPPING.md`](docs/EXAMPLE-MAPPING.md) (denylist-exempt).
+
+### The policy budget cap (metered profiles)
+
+`hybrid` and `b4b` hold their generalist / utility / orchestration rungs at or under an **explicit, editable policy budget cap**, a repo-chosen output-price ceiling, deliberately **decoupled from any single vendor's price**. In `hybrid`, three slots are named exemptions that may exceed it: the flagship **coding** tier, the **architect**, and each agent's **ultrawork** escape hatch. `b4b` applies the same cap more aggressively. The architect drops under cap and the flagship coder survives only as a `deep`-category fallback. The cap is a preference for the cheap tiers, not a hard per-slot ceiling. The *placement* rule is **enforced in CI**. An over-cap placeholder that isn't on the exemption list fails the build if it lands in a metered profile ([`.github/checks.py`](.github/checks.py)); the prices themselves are audited by hand against [`docs/EXAMPLE-MAPPING.md`](docs/EXAMPLE-MAPPING.md), which carries the exact exemption table.
+
+---
+
+## Self-governing: the landscape engine
+
+New models drop constantly. Instead of a human eyeballing leaderboards, model-mesh keeps *itself* current, safely, with the same evidence discipline as the loop. Lives in [`scripts/landscape/`](scripts/landscape/).
+
+- **Provenance-enforced scoring.** A deterministic scorer reads a weekly "scan dataset" (models × benchmarks × scores × **provenance**) and ranks **only on cells whose provenance is marked independent**, the three sources listed as authoritative-independent in `sources.json` (Artificial Analysis, DeepSWE, Vals). It refuses to score vendor-reported cells; because a board like the DeepSWE leaderboard hosts both, rows are judged per-row, not by board. Mixed feeds (e.g. Vellum) are usable only per-row and only for positioning.
+- **Fail-closed hard gates.** Cap checks use the **durable** (post-promo) price; a retired vendor needs a *verified* reversal; a proprietary model can't fill an open-weight role; `hephaestus` stays flagship-native; and a region-locked profile (the Hong Kong-native `ultimate`) rejects any model whose owner is not on that region's allowlist, resolved from a trusted identity table rather than the scan's self-reported vendor. Missing, mislabeled, or ambiguous data fails **closed**, never open.
+- **An independent AI reviews the recommendation.** Before anything ships, a separate model (via `review_gate.py`) audits the framework's own output; the verdict must arrive as a **structured JSON field**. Prose verdicts, verdict tokens injected via the scan data, and malformed output all **fail closed to *revise***.
+- **Autonomous, but gated by a PR.** A committed weekly **runbook** ([`scripts/landscape/CRON_TASK.md`](scripts/landscape/CRON_TASK.md)) an agent cron executes on your side builds the dataset, runs the framework, passes it through the review gate, and opens a **Pull Request** only when a change is warranted, never a silent push. The scripts and gates ship here; the schedule and the reviewer credential are yours to wire up. A self-test (41 assertions) and a golden-file check run in CI.
+
+> **First run in the wild (Sept 2026):** faced with two brand-new flagships, the engine's recommendation was **hold both**. One was prior-generation parity at ~2.5× the price. The other's clear wins were speed and a stronger vision tier, but no current role is bottlenecked on either. It was also proprietary, and adopting it would have reversed a deliberate earlier decision. Review caught one correction along the way: a leaderboard row that, on check, did not exist for that model. The full write-up lives under [`docs/research/`](docs/research/).
+
+---
+
+## What's in here
+
+```
+profiles/
+  ultimate.json · hybrid.json · b4b.json     genericized FRAGMENTS (agents + categories)
+  *.example.json                             same fragment with REAL provider/model IDs
+setup-config.sh · scripts/materialize.py     wrap a fragment into a deployable ~/.omo/omo.jsonc
+examples/
+  omo.full.example.json                      complete deployable [opencode] config (real IDs)
+  dsh-settings.example.yaml                   the harness plugin settings reference
+  README.md                                  how the examples fit together
+skills/  mm-method · mm-loop · mm-verify · mm-domain     the loop, installable
+scripts/landscape/                           the self-governing landscape engine + review gate
+install.sh · install.ps1                      copy the loop skills into place
+provider-map.local.example                   template for your git-ignored real-ID mapping
+docs/  ROUTING.md · PROVIDERS.md · EXAMPLE-MAPPING.md · research/
+AGENTS.md · CHANGELOG.md · CONTRIBUTING.md · DOC.md · THIRD_PARTY_NOTICES.md
 ```
 
-- **`.github/checks.py`** — the release gate: a vendor-name denylist (genericized files must use placeholders; `*.example.json` and `docs/EXAMPLE-MAPPING.md` are exempt by design), plus manifest, skill-presence, profile-schema-shape, and local-link checks.
-- **`scripts/validate-full-config.py`** — validates [`examples/omo.full.example.json`](examples/omo.full.example.json) (or any config path you pass) against the hardened deployment invariants: valid JSON, `reasoning` within enum, every agent has a non-empty `fallback_models`, no duplicate or degenerate fallback rungs (a fallback must differ from the primary), `hephaestus` stays flagship-native-only (its `ultrawork` may be cross-family by design), `runtime_fallback.retry_on_errors` excludes `400` (a rejected request is not a transient outage), no unused `providerConcurrency` entries, `momus` uses the schema key `disable` (not `enabled`), no retired-vendor names, a pinned `$schema` tag, every model ID resolves to a known catalog entry (`opencode/*` must be a published Zen model; Zen-exclusive codenames are rejected under a relay/native prefix), no known cross-vendor mis-route (a first-party model under the wrong native vendor prefix; relay/aggregator prefixes are exempt because a relay may legitimately mirror many vendors), and only schema-allowed keys on every agent/category/model-ref object (mirroring the v4.19.4 `omo.schema.json` `additionalProperties:false`, so invented keys like an agent `models` key or `enabled` instead of `disable` are caught the way `oh-my-openagent doctor` catches them). The `reasoning` enum follows v4.19.4: `off/minimal/low/medium/high/xhigh/max/auto` (`ultra` is not valid).
+The three `profiles/*.json` are **fragments** (agents + categories only); `setup-config.sh` wraps a chosen one in the required `[opencode]` structure. Each ships a `*.example.json` with real IDs as a concrete mapping reference (exempt from the vendor-name CI check by design). Newest at a glance is always in [`CHANGELOG.md`](CHANGELOG.md). `v1.1.5` reframed the cost cap as an enforced policy knob, added a native-vision fallback, and removed no-op fallback rungs at the mapping level.
 
-Point the second command at your own materialized `~/.omo/omo.jsonc` to catch the same classes of mistakes before you deploy.
+---
+
+## Model-agnostic: what that means, exactly
+
+- **Genericized (placeholders):** every provider and model name → `ProviderA…ProviderG` and role-named models like `flagship-xl`, `coder-mid`. You map these to your real models ([`docs/PROVIDERS.md`](docs/PROVIDERS.md)).
+- **Kept on purpose (framework identifiers):** where an example targets a specific harness, the identifiers that harness *requires to load* are kept verbatim. For the OpenCode example that is `oh-my-openagent`, `opencode`, the `[opencode]` key and the schema URL; the DeepSeek Harness example keeps its own `settings.yaml` keys. These are harness identifiers, not vendor model names.
+
+The messaging is **open-source and harness-agnostic**. The loop and routing method don't depend on any one harness. Only the concrete *examples* are harness-specific (OpenCode and DSH). CI enforces a real-model-name denylist (`.github/checks.py`); the harness identifiers above are the allowed framework names, and a small documented allowlist covers reference-mapping files and each target harness's own name.
+
+---
+
+## Validation (two gates)
+
+Both run in CI on `main` and every PR, and both exit non-zero on any violation. Run them locally before committing:
+
+```bash
+python .github/checks.py                                      # repo-wide release gate
+python scripts/validate-full-config.py                        # the deployable example
+python scripts/landscape/landscape_scan.py --self-test        # the landscape engine
+```
+
+- **`.github/checks.py`**: vendor-name denylist, manifest / skill-presence / profile-schema-shape / local-link checks, duplicate-rung detection (incl. `*.example.*` and `ultrawork`), and the budget-cap placement rule.
+- **`scripts/validate-full-config.py`**: 14 hardened deployment invariants (R1–R14); highlights: valid JSON, required `[opencode]` structure present, `reasoning` within the v4.19.4 enum (`off/minimal/low/medium/high/xhigh/max/auto`), per-agent fallback presence, no duplicate/degenerate rungs, `hephaestus` flagship-native-only, `400` excluded from retries, no unused `providerConcurrency`, `momus.disable` not `enabled`, no retired-vendor names, pinned `$schema`, every model ID resolves to a known catalog entry, no cross-vendor mis-routes, and only schema-allowed keys. Several are the same classes `oh-my-openagent doctor` catches. It runs on the comment-free `examples/omo.full.example.json`; to point it at a materialized `omo.jsonc`, strip the `//` header comments first (it parses strict JSON).
 
 ---
 
 ## Privacy & fallbacks (read before deploying)
 
-Routing forwards work to a **fallback model on a different provider** when the primary fails. That means prompts, source code, and retrieved context can cross provider (and possibly data-residency) boundaries. Before deploying:
+Routing forwards work to a **fallback model on a different provider** when the primary fails, so prompts, source, and retrieved context can cross provider (and data-residency) boundaries.
 
-- Treat each fallback provider as a data recipient; only include providers you are contractually comfortable sending your context to.
-- If you need a same-boundary setup, restrict fallbacks to providers under the same agreement.
-- The default `runtime_fallback` retries only transient errors (`429/503/529`). It deliberately does **not** retry `400` (a rejected/malformed request is not an outage).
-- Never put API keys or secrets in the config or in your mapping file. The config holds model IDs only; credentials are configured in the framework, not here.
+- Treat each fallback provider as a data recipient; only include providers you're contractually comfortable sending context to. For a same-boundary setup, restrict fallbacks to providers under one agreement.
+- The default `runtime_fallback` retries only transient errors (`429/503/529`), never `400` (a rejected request isn't an outage).
+- **Never** put API keys or secrets in the config or your mapping file. The config holds model IDs only; credentials live in the framework.
+
+---
 
 ## Claims & limits
 
-The routing rationale in this repo is a set of **design heuristics**, not measured results. Because you map placeholders to arbitrary real models, no fixed cost or quality number can hold across all mappings. This repo ships **no benchmark data** and makes no quantitative quality/cost guarantee. Where the docs say a profile is "cost-preferenced," that means the routing *prefers* cheaper tiers for most roles — it is not an enforced spend cap. Measure blended cost-per-solved-task on your own mapping.
+The routing rationale is a set of **design heuristics**, not measured results. You map placeholders to arbitrary real models, so no fixed cost or quality number holds across all mappings. This repo ships **no benchmark data** and makes no quantitative quality/cost guarantee. "Cost-preferenced" means the routing *prefers* cheaper tiers for most roles; it is not an enforced spend cap. **Measure blended cost-per-solved-task on your own mapping.** The landscape engine's job is to keep the *recommendations* honest and current; it is not a promise about your results.
+
+---
 
 ## Credits & license
 
 - Loop skills adapted from **[fable-method](https://github.com/Sahir619/fable-method)** by Sahir619 (MIT).
-- The four engineering gates (grill, prototype, test-first, code-review) adapt concepts from **[matt-pocock/skills](https://github.com/mattpocock/skills)** by Matt Pocock.
-- The verification fold-ins (machine-checkable evidence, negative tests, false-green defence, reviewer isolation) adapt concepts from the **debug-pipeline2** protocol by ronald-ng (MIT).
+- Engineering gates (grill · prototype · test-first · code-review) adapt concepts from **[mattpocock/skills](https://github.com/mattpocock/skills)** by Matt Pocock.
+- Verification fold-ins (machine-checkable evidence, negative tests, false-green defence, reviewer isolation) adapt the **debug-pipeline2** protocol by ronald-ng (MIT).
 - Routing layer targets **[oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent)** by code-yeongyu.
-- Full attribution in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
-- MIT licensed. Upstream copyright retained in [`LICENSE`](LICENSE); new contributions © bughunt8. See [`CONTRIBUTING.md`](CONTRIBUTING.md).
+- Full attribution in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md). MIT licensed; upstream copyright retained in [`LICENSE`](LICENSE), new contributions © bughunt8. See [`CONTRIBUTING.md`](CONTRIBUTING.md).

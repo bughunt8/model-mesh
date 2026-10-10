@@ -1,75 +1,60 @@
-// EXAMPLE with real provider/model IDs — reference mapping, not the genericized template.
+// EXAMPLE with real provider/model IDs. Reference mapping, not the genericized template.
 // The canonical genericized profile is the same-named file without ".example".
+//
+// HONG KONG-NATIVE PROFILE. This ultimate mapping deliberately omits every model
+// that Hong Kong cannot natively use. OpenAI GPT, Anthropic Claude, Google Gemini,
+// and xAI Grok are all officially unavailable in HK (US vendors self-restrict), and
+// this profile does NOT route through a geo-unlock proxy (no apiyi). Every model
+// here is reachable from Hong Kong directly. It still uses the best/most capable of
+// the HK-available models. hybrid.json / b4b.json remain global and are unchanged.
 {
   "agents": {
     "hephaestus": {
       "prompt_append": "You are the primary implementation agent. Own the codebase but delegate and review. Explore, decide, execute. Use LSP and AST-grep aggressively.",
-      "model": "apiyi/gpt-5.6-sol",
-      "reasoning": "medium",
+      "model": "deepseek/deepseek-v4-pro",
+      "reasoning": "max",
       "fallback_models": [
         {
-          "model": "apiyi/gpt-5.6-terra",
+          "model": "moonshotai/kimi-k3",
           "reasoning": "high"
         },
         {
-          "model": "deepseek/deepseek-v4-pro",
-          "reasoning": "max"
-        },
-        {
-          "model": "apiyi/gpt-5.5",
-          "reasoning": "medium"
+          "model": "opencode/qwen3.8-max"
         }
       ],
       "ultrawork": {
-        "model": "apiyi/gpt-5.6-sol",
+        "model": "moonshotai/kimi-k3",
         "reasoning": "max"
       }
     },
     "oracle": {
-      "model": "apiyi/gpt-5.6-sol",
+      "model": "deepseek/deepseek-v4-pro",
       "reasoning": "max",
       "fallback_models": [
         {
-          "model": "apiyi/gpt-5.6-terra",
+          "model": "moonshotai/kimi-k3",
           "reasoning": "high"
-        },
-        {
-          "model": "apiyi/gpt-5.5",
-          "reasoning": "high"
-        },
-        {
-          "model": "apiyi/claude-opus-5",
-          "reasoning": "high"
-        },
-        {
-          "model": "deepseek/deepseek-v4-pro",
-          "reasoning": "max"
         },
         {
           "model": "zai-coding-plan/glm-5.3",
           "reasoning": "high"
+        },
+        {
+          "model": "opencode/qwen3.8-max"
         }
       ]
     },
     "momus": {
-      "model": "apiyi/gpt-5.6-sol",
+      "model": "deepseek/deepseek-v4-pro",
       "reasoning": "max",
       "fallback_models": [
         {
-          "model": "apiyi/gpt-5.6-terra",
-          "reasoning": "high"
-        },
-        {
-          "model": "apiyi/gpt-5.5",
+          "model": "moonshotai/kimi-k3",
           "reasoning": "high"
         },
         {
           "model": "zai-coding-plan/glm-5.3",
           "reasoning": "high"
-        },
-        {
-          "model": "deepseek/deepseek-v4-pro",
-          "reasoning": "max"
         }
       ]
     },
@@ -103,11 +88,7 @@
       "temperature": 0.7,
       "fallback_models": [
         {
-          "model": "apiyi/claude-opus-5",
-          "reasoning": "high"
-        },
-        {
-          "model": "apiyi/gpt-5.6-sol",
+          "model": "deepseek/deepseek-v4-pro",
           "reasoning": "high"
         },
         {
@@ -115,9 +96,6 @@
         },
         {
           "model": "opencode/qwen3.8-max"
-        },
-        {
-          "model": "xai/grok-4.6"
         }
       ]
     },
@@ -126,11 +104,7 @@
       "temperature": 0.8,
       "fallback_models": [
         {
-          "model": "apiyi/claude-opus-5",
-          "reasoning": "high"
-        },
-        {
-          "model": "apiyi/gpt-5.6-sol",
+          "model": "deepseek/deepseek-v4-pro",
           "reasoning": "high"
         },
         {
@@ -138,9 +112,6 @@
         },
         {
           "model": "opencode/qwen3.8-max"
-        },
-        {
-          "model": "xai/grok-4.6"
         }
       ]
     },
@@ -180,10 +151,6 @@
       "model": "minimax/MiniMax-M3",
       "fallback_models": [
         {
-          "model": "apiyi/gpt-5.6-sol",
-          "reasoning": "medium"
-        },
-        {
           "model": "opencode/qwen3.7-plus",
           "reasoning": "high"
         },
@@ -211,7 +178,7 @@
     "ultrabrain": {
       "models": [
         {
-          "model": "apiyi/gpt-5.6-sol",
+          "model": "deepseek/deepseek-v4-pro",
           "reasoning": "max"
         },
         {
@@ -219,8 +186,7 @@
           "reasoning": "max"
         },
         {
-          "model": "apiyi/claude-opus-5",
-          "reasoning": "high"
+          "model": "opencode/qwen3.8-max"
         },
         {
           "model": "opencode/qwen3.7-plus",
@@ -234,12 +200,8 @@
           "model": "moonshotai/kimi-k3"
         },
         {
-          "model": "apiyi/gpt-5.6-sol",
+          "model": "deepseek/deepseek-v4-pro",
           "reasoning": "max"
-        },
-        {
-          "model": "apiyi/claude-opus-5",
-          "reasoning": "high"
         },
         {
           "model": "zai-coding-plan/glm-5.3"
@@ -259,7 +221,7 @@
           "reasoning": "high"
         },
         {
-          "model": "opencode/muse-spark-1.2"
+          "model": "zai-coding-plan/glm-5.3"
         },
         {
           "model": "opencode/kimi-k2.6"
@@ -295,11 +257,10 @@
     "unspecified-high": {
       "models": [
         {
-          "model": "apiyi/gpt-5.6-terra",
-          "reasoning": "high"
+          "model": "deepseek/deepseek-v4-pro"
         },
         {
-          "model": "deepseek/deepseek-v4-pro"
+          "model": "opencode/qwen3.8-max"
         },
         {
           "model": "opencode/qwen3.7-plus",

@@ -240,6 +240,27 @@ Gemini does **not** beat GLM-5.3 on intelligence (59 vs 60) and is dearer than t
 
 ---
 
+## Addendum (2026-09): Hong Kong availability constraint on the ultimate profile
+
+*Added 2026-09-06. This addendum does not alter the GPT-6 Astra / Gemini 3.8 Flash HOLD analysis above; it records a separate, region-driven change to the `ultimate` profile.*
+
+Since this report was compiled, the `ultimate` profile was made **Hong Kong-native**. The driver is availability, not benchmark rank: the developer APIs of the US frontier vendors are **not natively available in Hong Kong**, so a coding harness running from Hong Kong cannot consume them.
+
+**Excluded because their developer API is not natively available in Hong Kong:**
+- **OpenAI (GPT).** Hong Kong is not on OpenAI's supported-countries list, and OpenAI curbed API access from Hong Kong ([OpenAI supported countries](https://developers.openai.com/api/docs/supported-countries); [SCMP: OpenAI curbs Hong Kong API access](https://www.scmp.com/tech/big-tech/article/3268233/microsoft-maintains-ai-services-hong-kong-openai-curbs-api-access-china)).
+- **Anthropic (Claude).** Hong Kong is absent from Anthropic's supported regions ([Anthropic supported regions](https://platform.claude.com/docs/en/api/supported-regions)).
+- **Google (Gemini).** The native Gemini API and Google AI Studio still refuse Hong Kong ([Gemini API available regions](https://ai.google.dev/gemini-api/docs/available-regions)). A **consumer Gemini web app launched in Hong Kong in Mar 2026**, but the **developer API remains blocked** ([Gemini in Hong Kong: app live, API blocked](https://10beasts.net/gemini-hong-kong-api-blocked-vpn/)); the only compliant Google developer route is enterprise **Vertex AI in the `asia-east2` (Hong Kong) region** ([Vertex AI locations](https://docs.cloud.google.com/gemini-enterprise-agent-platform/resources/locations)). Since a coding harness consumes a raw model API, Gemini is treated as **not natively available** here.
+- **xAI (Grok).** Excluded on the same US-vendor availability basis ([Hong Kong AI wall overview](https://hongkongaipodcast.com/blog/hk-ai-wall)).
+
+**Consequences for `ultimate`:**
+- It uses **no geo-unlock proxy** (no `apiyi`); every routed model is directly reachable from Hong Kong.
+- The flagship-native roles (`hephaestus`, `oracle`, `momus`) can no longer map to a GPT/Claude family model. They map instead to the strongest Hong Kong-reachable open-weight reasoner, **DeepSeek V4-Pro** (`deepseek/deepseek-v4-pro`, reasoning `max`), an availability-forced family remap, documented, not a silent capability drop.
+- **Hong Kong model set used by `ultimate`:** DeepSeek V4-Pro / V4-Flash; Kimi K3 / K2.7-code / K2.6 (Moonshot); GLM-5.3 / GLM-5.3-Flash (Z.ai); Qwen3.8-max / 3.7 / 3.6 / 3.5-plus; MiniMax-M3; MiMo; muse-spark.
+
+`hybrid` and `b4b` are **unchanged and remain global** (they still use the `apiyi` proxy mapping with the US-flagship models). The full placeholder→model table for the Hong Kong-native `ultimate` is in [`docs/EXAMPLE-MAPPING.md`](../EXAMPLE-MAPPING.md); the concrete chains are in [`profiles/ultimate.example.json`](../../profiles/ultimate.example.json). This addendum only records the availability constraint; the GPT-6 Astra and Gemini 3.8 Flash routing verdicts above are unaffected (both remain **held, not adopted**).
+
+---
+
 ## References
 [cite:1]: https://developers.openai.com/api/docs/pricing
 [cite:2]: https://www.aipricing.guru/openai-pricing/

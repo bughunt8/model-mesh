@@ -12,6 +12,7 @@
       "trusted_attributes": {
         "open_weights": false,
         "flagship_native_family": true,
+        "owner": "openai",
         "known": true
       },
       "candidate_for_roles": [
@@ -41,10 +42,18 @@
           "passed": true,
           "status": "PASS",
           "detail": "PASS: family-fit requirement satisfied or not applicable"
+        },
+        {
+          "id": "region_availability",
+          "passed": false,
+          "status": "FAIL",
+          "detail": "FAIL: owner 'openai' developer API is not region-available for profile 'ultimate'"
         }
       ],
-      "blocked_by": [],
-      "policy_status": "ALLOWED",
+      "blocked_by": [
+        "region_availability"
+      ],
+      "policy_status": "BLOCKED",
       "score": {
         "skipped": [
           [
@@ -80,14 +89,13 @@
       "ranking_status": "RANKED",
       "role_recommendations": {
         "hephaestus": {
-          "verdict": "HOLD",
+          "verdict": "BLOCKED",
           "why": [
-            "does not beat best under-cap incumbent glm-5.3 (comm-xl): improvement 1 must be > absolute noise 2",
-            "no independently proven structured differentiator",
-            "outside cap scope, but high durable cost is not justified by the measured capability"
+            "hard gate(s): region_availability"
           ]
         }
       },
+      "verdict_basis": "blocked",
       "decision": "HOLD"
     },
     {
@@ -97,6 +105,7 @@
       "trusted_attributes": {
         "open_weights": false,
         "flagship_native_family": false,
+        "owner": "google",
         "known": true
       },
       "candidate_for_roles": [
@@ -128,6 +137,12 @@
           "passed": true,
           "status": "PASS",
           "detail": "PASS: family-fit requirement satisfied or not applicable"
+        },
+        {
+          "id": "region_availability",
+          "passed": true,
+          "status": "PASS",
+          "detail": "PASS: profile 'hybrid' is not region-locked"
         }
       ],
       "blocked_by": [
@@ -192,6 +207,7 @@
           ]
         }
       },
+      "verdict_basis": "blocked",
       "decision": "HOLD"
     }
   ]

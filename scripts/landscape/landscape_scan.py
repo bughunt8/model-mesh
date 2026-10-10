@@ -24,7 +24,7 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 DEFAULT_CONFIG = os.path.join(HERE, "sources.yaml")
 PROVENANCE_LEVELS = {"independent", "vendor", "vendor_partner"}
 BOOL_FIELDS = ("open_weights", "flagship_native_family", "reversal")
-GATE_IDS = ("cap", "retired_vendor", "open_weight", "family_fit")
+GATE_IDS = ("cap", "retired_vendor", "open_weight", "family_fit", "region_availability")
 SCHEMA_TEXT = r'''Scan dataset schema (weekly input is UNTRUSTED):
 {
   "scan_date": "YYYY-MM-DD",
@@ -162,11 +162,13 @@ def resolve_attributes(name, cfg):
         except re.error:
             continue
     if len(matches) != 1:
-        return {"open_weights": False, "flagship_native_family": False, "known": False}
+        return {"open_weights": False, "flagship_native_family": False, "owner": None, "known": False}
     row = matches[0]
+    owner = row.get("owner")
     return {
         "open_weights": row.get("open_weights") is True,
         "flagship_native_family": row.get("flagship_native_family") is True,
+        "owner": str(owner).casefold() if isinstance(owner, str) and owner else None,
         "known": True,
     }
 
@@ -349,6 +351,36 @@ def apply_hard_gates(model, cfg):
         gates.append(("family_fit", False, "FAIL: curated attributes are non-flagship or unknown"))
     else:
         gates.append(("family_fit", True, "PASS: family-fit requirement satisfied or not applicable"))
+
+    # region_availability: FAIL-CLOSED, identity-bound region policy. For a
+    # region-locked profile (e.g. the HK-native `ultimate`), a candidate is
+    # region-available ONLY if its curated owner (resolved from the trusted
+    # model_attributes table by name, never from the scan's self-reported vendor)
+    # is on that profile's allowlist. Everything else fails: an unresolved or
+    # unknown identity, an owner not on the allowlist, or a scan vendor that
+    # disagrees with the curated owner. This is what stops a mislabeled or
+    # adversarial weekly scan from routing a geo-locked flagship into HK.
+    region_owners = pol.get("region_available_owners", {}) or {}
+    profile = str(model.get("profile", "")).casefold()
+    if profile not in {str(p).casefold() for p in region_owners}:
+        # Profile is not region-locked (hybrid/b4b stay global): no-op PASS.
+        gates.append(("region_availability", True,
+                      f"PASS: profile '{profile}' is not region-locked"))
+    else:
+        allowed = {str(o).casefold() for o in region_owners.get(profile, [])}
+        owner = attrs.get("owner")
+        if not attrs.get("known") or not owner:
+            gates.append(("region_availability", False,
+                          f"FAIL: identity for '{name}' is unresolved/unowned; region-locked profile '{profile}' fails closed"))
+        elif vendor and vendor != owner:
+            gates.append(("region_availability", False,
+                          f"FAIL: scan vendor '{vendor}' disagrees with curated owner '{owner}' for '{name}'"))
+        elif owner not in allowed:
+            gates.append(("region_availability", False,
+                          f"FAIL: owner '{owner}' developer API is not region-available for profile '{profile}'"))
+        else:
+            gates.append(("region_availability", True,
+                          f"PASS: owner '{owner}' is region-available for profile '{profile}'"))
     assert [g[0] for g in gates] == list(GATE_IDS)
     return gates, attrs
 
@@ -454,6 +486,74 @@ def _valid_differentiator(model, incumbent, cfg):
     return win, f"independent differentiator: {detail}"
 
 
+def _independent_observations(model, driving_source_dim, cfg):
+    """List additional INDEPENDENT, NUMERIC metric cells (other than the driving
+    dimension and price) present in the scan, so an actionable verdict surfaces
+    the rest of its independent evidence base rather than silently dropping it
+    (e.g. a Vals index that supports but did not itself trigger the swap).
+
+    Deliberately named 'observations', not 'corroboration': these are additional
+    independent data points shown alongside the verdict, NOT a claim that each one
+    was benchmarked against the incumbent and found supportive. Non-numeric,
+    price, and non-independent cells are excluded so no adverse or unrelated value
+    is dressed up as support."""
+    metrics = model.get("metrics") if isinstance(model.get("metrics"), dict) else {}
+    dims = cfg["rubric"]["dimensions"]
+    out = []
+    driving_source = dims.get(driving_source_dim, {}).get("source") if driving_source_dim else None
+    source_to_dim = {spec.get("source"): dim for dim, spec in dims.items() if spec.get("source")}
+    for src, cell in metrics.items():
+        if src in (driving_source, "output_price"):
+            continue
+        if not (isinstance(cell, dict) and cell.get("provenance") == "independent"):
+            continue
+        val = cell.get("value")
+        # numeric only (bool is a numeric subtype in Python but is a categorical
+        # signal, not a comparable observation, so exclude it explicitly)
+        if isinstance(val, bool) or not isinstance(val, (int, float)):
+            continue
+        out.append({"dimension": source_to_dim.get(src, src), "source": src,
+                    "value": val, "reference": cell.get("source"),
+                    "scored_dimension": src in source_to_dim})
+    return out
+
+
+REQUIRED_EVIDENCE_FIELDS = ("basis", "dimension", "candidate_value", "candidate_provenance")
+VALID_EVIDENCE_BASES = ("independent-margin-vs-incumbent", "independent-differentiator")
+
+
+def _evidence_is_well_formed(evidence):
+    """An actionable verdict's evidence must be a dict with the required fields, a
+    known basis, and an INDEPENDENT candidate provenance. Anything else is not a
+    valid basis for a swap/niche recommendation."""
+    if not isinstance(evidence, dict):
+        return False
+    if any(evidence.get(f) in (None, "") for f in REQUIRED_EVIDENCE_FIELDS):
+        return False
+    if evidence.get("basis") not in VALID_EVIDENCE_BASES:
+        return False
+    if evidence.get("candidate_provenance") != "independent":
+        return False
+    return True
+
+
+def _enforce_actionable_evidence(recs):
+    """Fail-closed guard over FINISHED recommendation objects: any CONSIDER* verdict
+    whose evidence block is missing or malformed is downgraded to HOLD. Runs
+    independently of how the verdict was produced, so a future path that forgets
+    or corrupts evidence cannot ship an unsupported swap. Returns the count of
+    downgrades (0 in normal operation)."""
+    downgraded = 0
+    for rec in recs.values():
+        if rec["verdict"].startswith("CONSIDER") and not _evidence_is_well_formed(rec.get("evidence")):
+            rec["verdict"] = "HOLD"
+            rec.pop("evidence", None)
+            rec.setdefault("why", []).append(
+                "coherence guard: missing or malformed independent evidence; failed closed to HOLD")
+            downgraded += 1
+    return downgraded
+
+
 def recommend(scan, cfg):
     findings = validate_scan(scan, cfg)
     errors = [f for f in findings if f.level == "ERROR"]
@@ -478,6 +578,7 @@ def recommend(scan, cfg):
         recs = {}
         for role in scored_model["candidate_for_roles"]:
             reasons = []
+            evidence = None
             if scored_model["blocked_by"]:
                 verdict = "BLOCKED"
                 reasons.append("hard gate(s): " + ", ".join(scored_model["blocked_by"]))
@@ -505,19 +606,62 @@ def recommend(scan, cfg):
                             if win:
                                 verdict = "CONSIDER-SWAP"
                                 reasons.append(f"beats best under-cap incumbent {best['model']} ({best_role}): {detail}")
+                                evidence = {"basis": "independent-margin-vs-incumbent",
+                                            "dimension": dim, "candidate_value": candidate,
+                                            "candidate_provenance": "independent",
+                                            "incumbent": best["model"], "incumbent_value": best["value"],
+                                            "detail": detail,
+                                            "observations": _independent_observations(scored_model["_raw"], dim, cfg)}
                             else:
                                 reasons.append(f"does not beat best under-cap incumbent {best['model']} ({best_role}): {detail}")
                     if verdict == "HOLD":
                         diff_ok, diff_detail = _valid_differentiator(scored_model["_raw"], inc, cfg)
                         if diff_ok:
                             verdict = "CONSIDER-NICHE"
+                            diff = scored_model["_raw"].get("differentiator", {})
+                            diff_dim = diff.get("metric")
+                            # the incumbent value on the SAME differentiator dimension it must lack/lose
+                            inc_dim_cell = inc.get("metrics", {}).get(diff_dim) if isinstance(inc.get("metrics"), dict) else None
+                            inc_dim_val = inc_dim_cell.get("value") if isinstance(inc_dim_cell, dict) else None
+                            evidence = {"basis": "independent-differentiator",
+                                        "dimension": diff_dim, "candidate_value": diff.get("value"),
+                                        "candidate_provenance": "independent",
+                                        "incumbent": inc.get("model"), "incumbent_value": inc_dim_val,
+                                        "detail": diff_detail,
+                                        "observations": _independent_observations(scored_model["_raw"], diff_dim, cfg)}
                         reasons.append(diff_detail)
                     price = _durable_price(scored_model["_raw"]["metrics"].get("output_price"))
                     cap = float(cfg["policy"]["budget_cap_output_usd_per_1m"])
                     if verdict == "HOLD" and not _cap_scope(scored_model["_raw"], cfg) and price is not None and price > cap:
                         reasons.append("outside cap scope, but high durable cost is not justified by the measured capability")
-            recs[role] = {"verdict": verdict, "why": reasons}
+            # Coherence guard (fail-closed): an actionable CONSIDER verdict must
+            # carry a well-formed independent evidence block. This is enforced by
+            # _assert_actionable_evidence over the FINISHED recommendation objects
+            # below, so a future code path that forgets evidence cannot silently
+            # ship a swap with no basis (the 2026-09-14 defect: CONSIDER-SWAP next
+            # to total_score=null / weight_covered=0.0).
+            rec = {"verdict": verdict, "why": reasons}
+            if evidence:
+                rec["evidence"] = evidence
+            recs[role] = rec
+        # Fail-closed validation: downgrade any actionable verdict that lacks a
+        # complete evidence block to HOLD, rather than emit an unsupported swap.
+        _enforce_actionable_evidence(recs)
         scored_model["role_recommendations"] = recs
+        # verdict_basis is derived from the ACTUAL role evidence, so it never
+        # mislabels the reason a verdict stands. It surfaces why an actionable
+        # verdict holds even when the candidate-vs-candidate scoring layer is
+        # LOW-COVERAGE (e.g. a single candidate): the win is an independent margin
+        # or differentiator vs the incumbent, not peer ranking.
+        role_bases = [rec["evidence"]["basis"] for rec in recs.values()
+                      if rec["verdict"].startswith("CONSIDER") and rec.get("evidence")]
+        if scored_model["blocked_by"]:
+            scored_model["verdict_basis"] = "blocked"
+        elif role_bases:
+            # one actionable basis -> report it; mixed -> generic actionable label
+            scored_model["verdict_basis"] = role_bases[0] if len(set(role_bases)) == 1 else "independent-vs-incumbent"
+        else:
+            scored_model["verdict_basis"] = "no-comparative-win"
         any_consider = any(r["verdict"].startswith("CONSIDER") for r in recs.values())
         scored_model["decision"] = "CONSIDER" if any_consider and not scored_model["blocked_by"] else "HOLD"
         scored_model.pop("_raw")
@@ -544,19 +688,29 @@ def render_markdown(result, cfg):
         lines.append("> **DATASET REJECTED — not usable.**")
         lines.extend(f"> - {f}" for f in result["findings"] if f.startswith("[ERROR]"))
         return "\n".join(lines) + "\n"
-    lines += ["| Model | Decision | Policy | Score | Coverage | Role verdicts |",
-              "|---|---|---|---:|---:|---|"]
+    lines += ["| Model | Decision | Policy | Score | Coverage | Basis | Role verdicts |",
+              "|---|---|---|---:|---:|---|---|"]
     for model in result["models"]:
         score = "—" if model["total_score"] is None else f"{model['total_score']:.4f}"
         recs = "; ".join(f"{r}: **{v['verdict']}**" for r, v in model["role_recommendations"].items())
-        lines.append(f"| {model['name']} | {model['decision']} | {model['policy_status']} | {score} | {model['weight_covered']:.2f} | {recs} |")
+        lines.append(f"| {model['name']} | {model['decision']} | {model['policy_status']} | {score} | {model['weight_covered']:.2f} | {model.get('verdict_basis','—')} | {recs} |")
+    lines.append("")
+    lines.append("When a candidate's peer-ranked score is `—` (a single candidate cannot be ranked against peers), an actionable verdict rests on its `verdict_basis`: an independent margin over the role incumbent (`independent-margin-vs-incumbent`) or an independent differentiator the incumbent lacks (`independent-differentiator`). The driving evidence and any additional independent observations are listed per model below.")
     lines.append("")
     for model in result["models"]:
         lines.append(f"### {model['name']}")
+        lines.append(f"- verdict basis: **{model.get('verdict_basis','—')}** (peer-ranked score {'—' if model['total_score'] is None else f"{model['total_score']:.4f}"}, coverage {model['weight_covered']:.2f})")
         for gate in model["gates"]:
             lines.append(f"- gate `{gate['id']}`: **{gate['status']}** — {gate['detail']}")
         for role, rec in model["role_recommendations"].items():
             lines.append(f"- `{role}`: **{rec['verdict']}** — {'; '.join(rec['why'])}")
+            ev = rec.get("evidence")
+            if ev:
+                inc = f" vs incumbent {ev.get('incumbent')} = {ev.get('incumbent_value')}" if ev.get('incumbent') is not None else ""
+                lines.append(f"  - evidence ({ev['basis']}): {ev['dimension']} = {ev['candidate_value']} (independent){inc}")
+                for c in ev.get("observations", []):
+                    tag = "scored" if c.get("scored_dimension") else "independent (unscored)"
+                    lines.append(f"  - additional independent observation [{tag}]: {c['dimension']} = {c['value']}")
         lines.append("")
     return "\n".join(lines) + "\n"
 
@@ -564,11 +718,14 @@ def render_markdown(result, cfg):
 def render_csv(result):
     buf = io.StringIO()
     writer = csv.writer(buf)
-    writer.writerow(["model", "vendor", "profile", "decision", "policy_status", "total_score", "weight_covered", "blocked_by", "verdicts"])
+    writer.writerow(["model", "vendor", "profile", "decision", "policy_status", "total_score",
+                     "weight_covered", "verdict_basis", "blocked_by", "verdicts", "evidence_json"])
     for model in result.get("models", []):
+        evidence = {r: v["evidence"] for r, v in model["role_recommendations"].items() if v.get("evidence")}
         writer.writerow([model["name"], model["vendor"], model["profile"], model["decision"], model["policy_status"],
-                         model["total_score"], model["weight_covered"], "|".join(model["blocked_by"]),
-                         "|".join(f"{r}:{v['verdict']}" for r, v in model["role_recommendations"].items())])
+                         model["total_score"], model["weight_covered"], model.get("verdict_basis", ""), "|".join(model["blocked_by"]),
+                         "|".join(f"{r}:{v['verdict']}" for r, v in model["role_recommendations"].items()),
+                         json.dumps(evidence, ensure_ascii=False) if evidence else ""])
     return buf.getvalue()
 
 
@@ -632,6 +789,148 @@ def self_test(cfg):
     check(not next(g for g in fm["gates"] if g["id"] == "family_fit")["passed"], "family_fit gate must explicitly FAIL")
     check(next(g for g in fm["gates"] if g["id"] == "cap")["passed"], "ultimate profile must be outside cap")
 
+    # region_availability: FAIL-CLOSED, identity-bound. A region-locked owner
+    # cannot enter the HK-native ultimate profile even when it passes family-fit.
+    # This is the GPT-6-Astra-for-hephaestus case the 2026-09-07 scan raised, plus
+    # the adversarial-relabel bypasses a skeptical review reproduced.
+    def _region_case(name, vendor, profile, price=50, roles=("hephaestus",)):
+        return recommend({"incumbents": {r: _inc(49) for r in roles}, "models": [_model(
+            name=name, vendor=vendor, profile=profile, roles=list(roles),
+            flagship_native_family=True, metrics={"intelligence_index": _cell(55),
+            "output_price": {**_cell(price, "vendor"), "durable_value": price}})]}, cfg)["models"][0]
+
+    # Honest region-locked owner in ultimate: HOLD, region_availability.
+    region_blocked = _region_case("gpt-6-astra", "openai", "ultimate")
+    check("region_availability" in region_blocked["blocked_by"],
+          "region-locked owner (openai) must fail region_availability for ultimate")
+    check(region_blocked["decision"] == "HOLD",
+          "region-blocked candidate must HOLD despite a clear intelligence win")
+    check(region_blocked["policy_status"] == "BLOCKED", "blocked candidate must report BLOCKED policy_status")
+    check(region_blocked["role_recommendations"]["hephaestus"]["verdict"] == "BLOCKED",
+          "blocked candidate role verdict must be BLOCKED not CONSIDER-SWAP")
+    # Mixed case must behave identically (identity resolved case-insensitively).
+    check("region_availability" in _region_case("GPT-6-Astra", "OpenAI", "Ultimate")["blocked_by"],
+          "mixed-case region-locked owner must still FAIL region_availability")
+
+    # CRITICAL bypass 1: scan relabels vendor to a region-available one but the
+    # curated owner (resolved from name) still says openai. Identity mismatch FAILS.
+    relabel_vendor = _region_case("gpt-6-astra", "providerx", "ultimate")
+    check("region_availability" in relabel_vendor["blocked_by"],
+          "scan vendor disagreeing with curated owner must FAIL region_availability")
+    # Bypass 2: scan claims a global profile for a region-locked owner. It must not
+    # become an actionable CONSIDER for the region-locked seat (cap catches the
+    # over-cap flagship here; region policy stays global for genuine hybrid use).
+    relabel_profile = _region_case("gpt-6-astra", "openai", "hybrid")
+    check(relabel_profile["decision"] != "CONSIDER",
+          "region-locked owner relabeled to a global profile must not be actionable")
+
+    # Unknown identity (no curated owner) fails closed in a region-locked profile.
+    unknown_region = _region_case("candidate-unmapped", "providerx", "ultimate")
+    check("region_availability" in unknown_region["blocked_by"],
+          "unresolved identity must FAIL region_availability closed for a locked profile")
+    # Owner not on the allowlist (default-allow guard) fails: meta has no HK dev API.
+    meta_gates = apply_hard_gates(_model(name="candidate-A", vendor="meta", profile="ultimate",
+        roles=["gen-pro"], metrics={"intelligence_index": _cell(55)}), cfg)[0]
+    check(not next(g for g in meta_gates if g[0] == "region_availability")[1],
+          "an owner absent from the ultimate allowlist must FAIL (fail-closed, not default-allow)")
+
+    # Legit HK-native flagship in ultimate passes and can CONSIDER.
+    region_ok = _region_case("candidate-flagship", "providerx", "ultimate", price=3)
+    check(next(g for g in region_ok["gates"] if g["id"] == "region_availability")["passed"],
+          "region-available owner must pass region_availability for ultimate")
+    check(region_ok["decision"] == "CONSIDER", "region-available flagship win must remain actionable")
+    # No-op for genuinely global profiles: both hybrid and b4b.
+    for prof in ("hybrid", "b4b"):
+        g = apply_hard_gates(_model(name="candidate-A", vendor="providerx", profile=prof,
+            roles=["gen-pro"], metrics={"intelligence_index": _cell(55)}), cfg)[0]
+        check(next(x for x in g if x[0] == "region_availability")[1],
+              f"region gate must be a no-op for non-region-locked profile ({prof})")
+
+    # verdict coherence (the 2026-09-14 defect): a single-candidate scan cannot be
+    # peer-ranked (total_score null, coverage 0), but a swap driven by an
+    # independent margin over the incumbent must still be coherent: it carries an
+    # evidence block and verdict_basis explains why it stands.
+    single = recommend({"incumbents": {"gen-pro": {"model": "inc", "role_dimension": "intelligence",
+        "value": 36, "provenance": "independent", "source": "fixture", "under_cap": True}},
+        "models": [_model(metrics={"intelligence_index": _cell(40),
+            "output_price": {**_cell(1, "vendor"), "durable_value": 1},
+            "vals_index": _cell(57.86)})]}, cfg)["models"][0]
+    check(single["total_score"] is None and single["weight_covered"] == 0.0,
+          "single candidate cannot be peer-ranked (null score, zero coverage)")
+    srec = single["role_recommendations"]["gen-pro"]
+    check(srec["verdict"] == "CONSIDER-SWAP", "independent margin over incumbent must still swap on a lone candidate")
+    check("evidence" in srec and srec["evidence"]["basis"] == "independent-margin-vs-incumbent",
+          "an actionable swap must carry an explicit independent evidence block")
+    check(single["verdict_basis"] == "independent-margin-vs-incumbent",
+          "verdict_basis must explain an actionable-but-unranked swap")
+    check(any(c["source"] == "vals_index" and not c["scored_dimension"] for c in srec["evidence"]["observations"]),
+          "independent unscored evidence (vals_index) must appear as an observation, not be dropped")
+    # Coherence invariant: no CONSIDER verdict anywhere may lack an evidence block.
+    check(all("evidence" in rec for m in [single, region_ok]
+              for rec in m["role_recommendations"].values() if rec["verdict"].startswith("CONSIDER")),
+          "every CONSIDER verdict must carry an evidence basis (coherence guard)")
+
+    # CONSIDER-NICHE: an independent differentiator the incumbent lacks. Evidence
+    # must name the incumbent and the differentiator dimension, and verdict_basis
+    # must reflect the differentiator basis (not the margin basis).
+    niche = recommend({"incumbents": {"gen-pro": {"model": "inc", "role_dimension": "intelligence",
+        "value": 40, "provenance": "independent", "source": "fixture", "under_cap": True,
+        "metrics": {"speed": _cell(100)}}},
+        "models": [_model(metrics={"intelligence_index": _cell(40), "output_speed": _cell(140),
+            "output_price": {**_cell(1, "vendor"), "durable_value": 1}},
+            differentiator={"metric": "speed", "value": 140, "provenance": "independent", "source": "fixture"})]}, cfg)["models"][0]
+    nrec = niche["role_recommendations"]["gen-pro"]
+    check(nrec["verdict"] == "CONSIDER-NICHE", "independent differentiator must grant niche")
+    check(nrec["evidence"]["basis"] == "independent-differentiator", "niche evidence basis must be the differentiator basis")
+    check(nrec["evidence"].get("incumbent") == "inc" and nrec["evidence"].get("incumbent_value") == 100,
+          "niche evidence must name the incumbent and its value on the differentiator dimension")
+    check(niche["verdict_basis"] == "independent-differentiator",
+          "verdict_basis must reflect the actual niche basis, not hard-coded margin")
+
+    # _independent_observations must exclude non-numeric, boolean, price, and
+    # non-independent cells so no adverse/unrelated value is dressed up as support.
+    obs = _independent_observations({"metrics": {
+        "intelligence_index": _cell(40), "output_speed": _cell(200),
+        "vals_index": _cell(58), "native_vision": _cell(True),
+        "bogus_text": {"value": "great", "provenance": "independent", "source": "x"},
+        "vendor_metric": {"value": 999, "provenance": "vendor", "source": "x"},
+        "output_price": {**_cell(1, "vendor"), "durable_value": 1}}}, "intelligence", cfg)
+    obs_sources = {o["source"] for o in obs}
+    check("output_speed" in obs_sources and "vals_index" in obs_sources, "numeric independent metrics must appear as observations")
+    check("intelligence_index" not in obs_sources, "the driving dimension must not be echoed as its own observation")
+    check("bogus_text" not in obs_sources, "non-numeric independent values must be excluded from observations")
+    check("native_vision" not in obs_sources, "boolean (categorical) values must be excluded from observations")
+    check("vendor_metric" not in obs_sources, "vendor-provenance values must be excluded from observations")
+    check("output_price" not in obs_sources, "price must be excluded from observations (handled by the cap gate)")
+
+    # The fail-closed guard is a REAL validator: feed it a malformed CONSIDER and
+    # confirm it downgrades to HOLD (not dead code).
+    check(_evidence_is_well_formed({"basis": "independent-margin-vs-incumbent", "dimension": "intelligence",
+          "candidate_value": 40, "candidate_provenance": "independent"}), "a complete evidence block is well-formed")
+    check(not _evidence_is_well_formed({"basis": "made-up", "dimension": "x", "candidate_value": 1,
+          "candidate_provenance": "independent"}), "an unknown basis must be rejected")
+    check(not _evidence_is_well_formed({"basis": "independent-margin-vs-incumbent", "dimension": "x",
+          "candidate_value": 1, "candidate_provenance": "vendor"}), "vendor-provenance evidence must be rejected")
+    check(not _evidence_is_well_formed(None), "missing evidence must be rejected")
+    bad_recs = {"gen-pro": {"verdict": "CONSIDER-SWAP", "why": [], "evidence": None},
+                "oracle": {"verdict": "CONSIDER-NICHE", "why": []},
+                "deep": {"verdict": "HOLD", "why": []}}
+    downgraded = _enforce_actionable_evidence(bad_recs)
+    check(downgraded == 2, "the guard must downgrade every malformed CONSIDER (both here)")
+    check(bad_recs["gen-pro"]["verdict"] == "HOLD" and bad_recs["oracle"]["verdict"] == "HOLD",
+          "malformed CONSIDER verdicts must be downgraded to HOLD")
+    check(bad_recs["deep"]["verdict"] == "HOLD", "an existing HOLD is untouched by the guard")
+
+    # A HOLD (no independent win) must NOT fabricate an evidence block or basis.
+    hold_case = recommend({"incumbents": {"gen-pro": {"model": "inc", "role_dimension": "intelligence",
+        "value": 40, "provenance": "independent", "source": "fixture", "under_cap": True}},
+        "models": [_model(metrics={"intelligence_index": _cell(40),
+            "output_price": {**_cell(1, "vendor"), "durable_value": 1}})]}, cfg)["models"][0]
+    check(hold_case["role_recommendations"]["gen-pro"]["verdict"] == "HOLD", "a tie within noise must HOLD")
+    check("evidence" not in hold_case["role_recommendations"]["gen-pro"], "a HOLD must not carry an evidence block")
+    check(hold_case["verdict_basis"] == "no-comparative-win",
+          "a non-actionable lone candidate reports no-comparative-win")
+
     # Cap must fail closed even when validation is bypassed/direct gate call.
     missing_price = _model(metrics={"intelligence_index": _cell(70)})
     gates, _ = apply_hard_gates(missing_price, cfg)
@@ -685,7 +984,7 @@ def self_test(cfg):
           "no differentiator must remain HOLD")
 
     # Every model always emits each gate exactly once; unknown attrs fail closed.
-    check([g["id"] for g in vm["gates"]] == list(GATE_IDS), "all four explicit gate records required")
+    check([g["id"] for g in vm["gates"]] == list(GATE_IDS), "all five explicit gate records required")
     unknown_open = recommend({"incumbents": {"open-coder": _inc(50)}, "models": [_model(name="candidate-unknown",
         roles=["open-coder"], metrics={"intelligence_index": _cell(70),
         "output_price": {**_cell(1, "vendor"), "durable_value": 1}}, open_weights=True)]}, cfg)["models"][0]
