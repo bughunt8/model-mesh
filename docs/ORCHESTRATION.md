@@ -13,7 +13,7 @@ Status: a design proposal dated 2026-10-11. The matrix is checked for structure 
 | `b4b` | Same cap, applied harder | Z.ai GLM family, cheap rung first | |
 | `global` | New. The unrestricted twin of `ultimate`. No region limit and no budget cap | An Anthropic-family mid-tier model, with the top Anthropic tier kept as an escalation | The retired Google family stays retired. Evidence in [GLOBAL-PROFILE.md](research/orchestration/GLOBAL-PROFILE.md) |
 
-Real model IDs live only in example files and research notes. Generic files use role placeholders, as before.
+Real model IDs live only in example files and research notes. Hybrid and b4b cells use only rungs under the cap, with the flagship coder allowed in the exact slots the cap policy already exempts. Prices are in [PRICE-REFERENCE.md](research/orchestration/PRICE-REFERENCE.md). Generic files use role placeholders, as before.
 
 ## Twelve situations
 
@@ -53,8 +53,8 @@ Do not review generated work with the harness and model that produced it. A cell
 1. The reviewer harness differs from every author harness and from the orchestrator harness.
 2. The reviewer model families share nothing with every rung of every author seat and every category route. Helper roles, editor models and multimodal lookers count as authors.
 3. The orchestrator family shares nothing with authors or reviewers.
-4. omo `momus` and `oracle` run inside the worker harness, so they are internal gates only and never the independent review.
-5. An exception is possible only when no alternative exists. It needs a written reason, appears as a reported note, and none is granted in this package.
+4. omo `momus` and `oracle` run inside the worker harness, so they are internal gates only and never the independent review. The `momus` label in a reviewer seat means an original task contract run in the reviewer's own harness, not a call to the omo plugin.
+5. The validator derives each family from the model ID, not from labels in the data, and rejects any `absolute_exception` key. The owner can grant an exception in a later change. None exists now.
 
 When authorship is unknown, as in A06, the cell requires an author provenance manifest. A judge cannot certify independence from a patch with no known author.
 
@@ -70,7 +70,7 @@ Orca is the default when a cell has parallel worktrees. Emdash and Nimbalyst are
 
 ## Openness and the omo exception
 
-Harnesses and the verification stack must be open source, as before. Inference models and hosting are outside that rule. omo itself is under the Sustainable Use License 1.0, which allows internal business or non-commercial use and restricts distribution. The owner accepted omo as an explicit exception. Every cell therefore carries an alternate on an open-source harness. Client or commercial use of omo needs its own licence check before it starts.
+Harnesses and the verification stack must be open source, as before. Inference models and hosting are outside that rule. omo itself is under the Sustainable Use License 1.0, which allows internal business or non-commercial use and restricts distribution. The owner accepted omo as an explicit exception. Every non-primary option therefore replaces omo orchestration with an open-source harness, and the validator rejects an alternate whose orchestrator is omo. Client or commercial use of omo needs its own licence check before it starts.
 
 ## Reading and using the matrix
 

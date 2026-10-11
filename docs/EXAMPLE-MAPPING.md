@@ -146,4 +146,3 @@ All other global placeholders reuse the `ultimate` mapping above. Evidence and o
 - DeepSeek V4-Pro stays on the API after 2026-09-14 per the API changelog, but the V4.1-Flash release page says V4-Pro requests route to V4.1-Flash until V4.1-Pro launches. The two statements conflict.
 - `opencode/mimo-v2.5-free` (the `ProviderB/open-coder` mapping) stops working on 2026-10-21. MiMo V2.6 Pro and Flash exist. The orchestration matrix does not use the retiring route.
 - The model-ID catalog in `scripts/validate-full-config.py` still lacks the newer DeepSeek and MiMo IDs. Extend it only with verified IDs.
-

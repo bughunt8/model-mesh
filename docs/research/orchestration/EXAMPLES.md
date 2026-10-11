@@ -9,9 +9,9 @@ Scenario. A public sample project has a failing date-parsing test after a depend
 | Profile | Orchestrator | Author seat | Independent reviewer |
 |---|---|---|---|
 | ultimate | opencode-omo sisyphus: glm-5.3 > glm-5.3-flash | opencode-omo atlas: deepseek-v4-pro > kimi-k3 | goose: qwen3.8-max > qwen3.7-plus |
-| hybrid | opencode-omo sisyphus: glm-5.3 > glm-5.3-flash | opencode-omo hephaestus: gpt-5.6-terra > kimi-k3 | goose: deepseek-v4-pro > deepseek-v4-flash |
-| b4b | opencode-omo sisyphus: glm-5.3-flash > glm-5.3 | opencode-omo atlas: kimi-k2.7-code > gpt-5.6-luna | goose: deepseek-v4-flash > deepseek-v4-pro |
-| global | opencode-omo sisyphus: claude-sonnet-5-5 > glm-5.3 | opencode-omo hephaestus: gpt-6.1-sol > gpt-6-astra > kimi-k3 | goose: grok-4.7 > deepseek-v4-pro |
+| hybrid | opencode-omo sisyphus: glm-5.3 > glm-5.3-flash | opencode-omo atlas: kimi-k3 > qwen3.7-plus | goose: deepseek-v4-pro > deepseek-v4-flash |
+| b4b | opencode-omo sisyphus: glm-5.3-flash > glm-5.3 | opencode-omo atlas: kimi-k2.7-code > qwen3.7-plus | goose: deepseek-v4-flash > deepseek-v4-pro |
+| global | opencode-omo sisyphus: claude-sonnet-5-5 > glm-5.3 | opencode-omo hephaestus: gpt-6.1-sol > gpt-6-astra | goose: grok-4.7 > deepseek-v4-pro |
 
 Flow in the default option.
 1. The orchestrator seat splits the task: one `explore` pass finds the call sites, then the author seat writes a failing test and the fix in a throwaway worktree.
@@ -19,7 +19,7 @@ Flow in the default option.
 3. The reviewer harness runs in read-only mode with the diff and the manifest. It must try to break the fix, for example with a boundary date, and report findings as structured JSON.
 4. If the author primary hits a rate limit, the runtime walks the chain inside the same family pool. The reviewer pool never changes, so independence survives the outage.
 
-Alternate for `ultimate`: dsh authors on deepseek-v4-pro > kimi-k3, goose reviews on qwen3.8-max > qwen3.7-plus. Alternate for `global`: dsh authors on gpt-6.1-sol > gpt-6-astra > kimi-k3, goose reviews on grok-4.7 > deepseek-v4-pro.
+Alternate for `ultimate`: dsh authors on deepseek-v4-pro > kimi-k3, pi reviews on qwen3.8-max > qwen3.7-plus. Alternate for `global`: dsh authors on gpt-6.1-sol > gpt-6-astra, pi reviews on grok-4.7 > deepseek-v4-pro.
 
 ## A05 security audit and remediation
 
@@ -28,13 +28,13 @@ Scenario. A deliberately vulnerable public sample app has an injection flaw. The
 | Profile | Orchestrator | Author seat | Independent reviewer |
 |---|---|---|---|
 | ultimate | opencode-omo sisyphus: glm-5.3 > glm-5.3-flash | pi atlas: deepseek-v4-pro > kimi-k3 | goose: qwen3.8-max > qwen3.7-plus |
-| hybrid | opencode-omo sisyphus: glm-5.3 > glm-5.3-flash | pi atlas: gpt-5.6-terra > kimi-k3 | goose: deepseek-v4-pro > deepseek-v4-flash |
-| b4b | opencode-omo sisyphus: glm-5.3-flash > glm-5.3 | pi atlas: kimi-k2.7-code > gpt-5.6-luna | goose: deepseek-v4-flash > deepseek-v4-pro |
-| global | opencode-omo sisyphus: claude-sonnet-5-5 > glm-5.3 | pi atlas: gpt-6.1-sol > gpt-6-astra > kimi-k3 | goose: grok-4.7 > deepseek-v4-pro |
+| hybrid | opencode-omo sisyphus: glm-5.3 > glm-5.3-flash | pi atlas: kimi-k3 > qwen3.7-plus | goose: deepseek-v4-pro > deepseek-v4-flash |
+| b4b | opencode-omo sisyphus: glm-5.3-flash > glm-5.3 | pi atlas: kimi-k2.7-code > qwen3.7-plus | goose: deepseek-v4-flash > deepseek-v4-pro |
+| global | opencode-omo sisyphus: claude-sonnet-5-5 > glm-5.3 | pi atlas: gpt-6.1-sol > gpt-6-astra | goose: grok-4.7 > deepseek-v4-pro |
 
 Flow. Orca opens two worktrees, one for the audit and one for the fix, and waits for `worker_done` from each before the reviewer starts. Pi runs in a container with no credentials beyond the model key. The reviewer replays the exploit against the patched copy and tries a second payload that the author never saw. Production systems are never scanned.
 
-Alternate for `ultimate`: codex authors on deepseek-v4-pro > kimi-k3, goose reviews on qwen3.8-max > qwen3.7-plus, conditional on the custom-provider route for Codex CLI. In `ultimate`, Codex CLI never uses an OpenAI model.
+Alternate for `ultimate`: codex authors on deepseek-v4-pro > kimi-k3, pi reviews on qwen3.8-max > qwen3.7-plus, conditional on the custom-provider route for Codex CLI. In `ultimate`, Codex CLI never uses an OpenAI model.
 
 ## A11 browser administration
 

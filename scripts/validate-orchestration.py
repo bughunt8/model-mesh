@@ -17,12 +17,12 @@ Rules:
   O4  every chain rung exists in that profile's model table, no duplicate rung in a chain,
       no retiring or unknown-family model in a chain.
   O5  reviewer independence: reviewer harness differs from every author harness AND the
-      orchestrator harness; reviewer model families share nothing with the union of every
+      orchestrator harness; families are derived from IDs, not editable labels; they share nothing with every
       rung of every author seat and category route. The orchestrator family shares nothing
-      with authors or reviewers. An exception needs a reason and is reported, never silent.
+      with authors or reviewers. No exception is authorized in this package.
   O6  ultimate is Hong Kong-native: every rung is HK-eligible; the Codex harness appears
       only in an alternate marked conditional on a custom provider.
-  O7  hybrid and b4b obey the budget-cap placement policy mirrored from .github/checks.py.
+  O7  hybrid and b4b obey conservative price references and exact coding-tier slots.
   O8  hephaestus is only assigned to a chain whose first model is flagship-native (OpenAI family).
   O9  only 'none' and 'orca' coordinators may be used in a cell; the rest are reference only.
   O10 model table agrees with the profile example files, and profiles/global*.json exist.
@@ -55,7 +55,7 @@ HK_BLOCKED = {"openai", "anthropic", "google", "xai"}
 OVER_CAP = {"flagship-open", "div-flagship", "reasoner-xl", "coder-xl"}
 METERED_EXEMPT = {"coder-xl"}
 CLAIMS = re.compile(r"\b(verified|measured|qualified|passes|proven|certified)\b", re.I)
-CLAIM_OK = re.compile(r"(not|un|dis)[ -]?(verified|measured|qualified)|qualification|runtime-deferred", re.I)
+CLAIM_OK = re.compile(r"(not|un|dis)[ -]?(verified|measured|qualified)|not a measured|no measured|runtime-deferred", re.I)
 EXPECTED_HARNESS_FILES = {
     "opencode-omo": "opencode-omo.example.json", "dsh": "dsh.example.json", "codex": "codex.example.json",
     "pi": "pi.example.json", "qwen-code": "qwen-code.example.json", "aider": "aider.example.json",
@@ -74,7 +74,58 @@ def seats(option):
 
 def families(matrix, profile, chain):
     table = matrix["models"][profile]
-    return {table[m]["family"] for m in chain if m in table}
+    return {model_family(table[m]["id"]) for m in chain if m in table}
+
+
+# Model identity comes from the model name, never from editable labels in the matrix.
+# Different hosts for one model do not create different families.
+PREFIX_FAMILY = {"gpt-": "openai", "claude-": "anthropic", "gemini-": "google",
+                 "grok-": "xai", "deepseek-": "deepseek", "kimi-": "moonshot",
+                 "glm-": "zai", "qwen": "alibaba", "minimax-": "minimax",
+                 "mimo-": "xiaomi", "muse-": "meta"}
+NATIVE_ROUTES = {"openai": "openai", "anthropic": "anthropic", "google": "google", "xai": "xai",
+                 "deepseek": "deepseek", "moonshotai": "moonshot", "zai-coding-plan": "zai", "minimax": "minimax"}
+# Conservative list-price reference, USD / 1M output. Never a proof of billed cost.
+# Sources and transport caveats: docs/research/orchestration/PRICE-REFERENCE.md.
+# Values for native routes use conservative references where hosts differ.
+OUTPUT_REFERENCE = {"gpt-5.6-terra": 18, "gpt-5.6-luna": 1.8, "gpt-6.1-sol": 15,
+                    "gpt-6-astra": 75, "gpt-6-luna": .75, "claude-sonnet-5-5": 10,
+                    "grok-4.7": 12, "deepseek-v4-pro": 3.96, "deepseek-v4-flash": .60,
+                    "kimi-k3": 15, "kimi-k2.7-code": 4, "qwen3.8-max": 6,
+                    "qwen3.7-plus": 1.6, "qwen3.5-plus": 1.2, "glm-5.3": 4.4,
+                    "glm-5.3-flash": .5, "minimax-m3": 1.2}
+
+
+def model_family(mid):
+    if not isinstance(mid, str) or mid.count("/") != 1:
+        return "unknown"
+    name = mid.split("/", 1)[1].lower()
+    return next((fam for prefix, fam in PREFIX_FAMILY.items() if name.startswith(prefix)), "unknown")
+
+
+def cap_exempt(profile, role, index, category=False):
+    # Exact slot policy from docs/EXAMPLE-MAPPING.md. No family-wide free pass.
+    if category:
+        return role == "deep" and index == 1 or profile == "hybrid" and role == "ultrabrain" and index == 2
+    return profile == "hybrid" and role in ("atlas", "prometheus") and index == 0
+
+
+def check_native_keys(d):
+    native = parse_native(d)
+    if not isinstance(native, dict):
+        raise ValueError("native config must be an object")
+    allowed = {
+        "opencode-omo": {"$schema", "plugin", "permission"},
+        "dsh": {"dsh_home", "cwd", "provider", "model", "reasoning_effort", "max_tokens"},
+        "codex": {"model", "model_provider", "model_context_window", "model_providers"},
+        "pi": {"models_json", "settings_json"},
+        "qwen-code": {"modelProviders", "mcpServers"},
+        "aider": {"model", "architect", "editor-model", "auto-commits", "auto-test", "test-cmd", "map-tokens", "read"},
+        "goose": {"version", "title", "description", "instructions", "prompt", "extensions", "settings", "parameters", "sub_recipes", "response", "retry"},
+    }[d["harness"]]
+    if set(native) != allowed:
+        raise ValueError("native keys differ from this documented fixture: " + str(set(native) ^ allowed))
+    return native
 
 
 def validate(matrix, root=ROOT, check_files=True):
@@ -83,6 +134,27 @@ def validate(matrix, root=ROOT, check_files=True):
     def e(rule, msg):
         errs.append(f"{rule}: {msg}")
 
+    # Reject malformed collections before deeper traversal, not by traceback.
+    if not isinstance(matrix, dict) or not isinstance(matrix.get("situations"), list) or not isinstance(matrix.get("models"), dict):
+        return ["O1: invalid matrix root or collections"], []
+    for situation in matrix["situations"]:
+        if not isinstance(situation, dict) or not isinstance(situation.get("profiles"), dict):
+            return ["O1: invalid situation object"], []
+        for profile, block in situation["profiles"].items():
+            if not isinstance(block, dict) or not isinstance(block.get("options"), list):
+                return ["O1: invalid options collection"], []
+            for option in block["options"]:
+                if not isinstance(option, dict) or not isinstance(option.get("authors"), list) or not option["authors"] or not isinstance(option.get("reviewers"), list):
+                    return ["O1: invalid option seats"], []
+                if not option["reviewers"]:
+                    e("O5", "at least one reviewer is required")
+                for st in seats(option):
+                    if not isinstance(st, dict) or not {"role", "harness", "chain", "kind"} <= set(st):
+                        return ["O1: malformed seat"], []
+                    if not isinstance(st["chain"], list) or not st["chain"] or not all(isinstance(x, str) for x in st["chain"]):
+                        return ["O4: every seat needs a non-empty string chain"], []
+                if not isinstance(option.get("category_routes"), dict) or not all(isinstance(ch,list) and ch and all(isinstance(x,str) for x in ch) for ch in option["category_routes"].values()):
+                    return ["O4: non-empty category routes required"], []
     # O1
     if matrix.get("version") != 1:
         e("O1", "version must be 1")
@@ -110,6 +182,12 @@ def validate(matrix, root=ROOT, check_files=True):
         for ph, info in table.items():
             if not {"id", "family", "hk_policy_eligible", "status"} <= set(info):
                 e("O4", f"{p}:{ph} model entry incomplete")
+            actual = model_family(info.get("id"))
+            if actual != "unknown" and info.get("family") != actual:
+                e("O4", f"{p}:{ph} family label disagrees with model identity")
+            vendor = info.get("id", "").split("/", 1)[0]
+            if vendor in NATIVE_ROUTES and NATIVE_ROUTES[vendor] != actual:
+                e("O4", f"{p}:{ph} first-party route belongs to a different family")
     for s in sits:
         sid = s.get("id")
         for c in s.get("categories", []):
@@ -129,10 +207,21 @@ def validate(matrix, root=ROOT, check_files=True):
                 e("O2", f"{sid}/{p}: need unique options starting primary, alternate")
                 continue
             sets = [tuple(sorted({a["harness"] for a in o["authors"]})) for o in opts]
-            if sets[0] == sets[1]:
-                e("O2", f"{sid}/{p}: primary and alternate use the same author harness set")
+            if len(set(sets)) != len(sets):
+                e("O2", f"{sid}/{p}: every option must have a distinct author harness set")
             for o in opts:
                 where = f"{sid}/{p}/{o.get('name')}"
+                if "absolute_exception" in o:
+                    e("O5", f"{where}: no owner-approved independence exception exists in this package")
+                sequence = [a["role"] for a in o["authors"]] + [r["role"] for r in o["reviewers"]]
+                if o.get("agent_sequence") != sequence:
+                    e("O3", f"{where}: option agent_sequence must match its actual seats")
+                if o.get("orchestrator") and o["orchestrator"]["harness"] == "aider":
+                    e("O3", f"{where}: Aider is not an orchestrator")
+                if o["name"] != "primary" and o.get("orchestrator") and o["orchestrator"]["harness"] == "opencode-omo":
+                    e("O9", f"{where}: the open-source-only alternate must replace omo orchestration")
+                if any(st["harness"] == "pi" for st in seats(o)) and "pi-external-container" not in o.get("constraints", []):
+                    e("O3", f"{where}: every Pi seat requires external container isolation")
                 if o.get("pattern") not in PATTERNS:
                     e("O3", f"{where}: pattern {o.get('pattern')}")
                 if o.get("coordinator") not in COORDINATORS:
@@ -158,7 +247,7 @@ def validate(matrix, root=ROOT, check_files=True):
                         info = models[p].get(m)
                         if not info:
                             e("O4", f"{where}: {m} missing from {p} model table")
-                        elif info["status"].startswith("retires") or info["family"] == "unknown" \
+                        elif info["status"].startswith("retires") or model_family(info["id"]) in ("unknown", "google") \
                                 or info["status"].startswith("unknown"):
                             e("O4", f"{where}: {m} is {info['status']}/{info['family']}")
                 for c in s["categories"]:
@@ -170,25 +259,25 @@ def validate(matrix, root=ROOT, check_files=True):
                 a_f = set()
                 for ch in [a["chain"] for a in authors] + list(o.get("category_routes", {}).values()):
                     a_f |= families(matrix, p, ch)
+                orch = o.get("orchestrator")
+                if orch and families(matrix, p, orch["chain"]) & a_f:
+                    e("O5", f"{where}: orchestrator family overlaps authors")
+                author_ids = {models[p][mid]["id"].lower() for a in authors for mid in a["chain"] if mid in models[p]}
                 for r in o["reviewers"]:
-                    exc = o.get("absolute_exception")
+                    if r.get("execution") != "original-external-role-contract" or r["harness"] == "opencode-omo":
+                        e("O5", f"{where}: review must be an original external role contract, not native omo")
                     if r["harness"] in a_h:
-                        if exc and exc.get("reason"):
-                            notes.append(f"{where}: ABSOLUTE-EXCEPTION on harness: {exc['reason']}")
-                        else:
-                            e("O5", f"{where}: reviewer harness {r['harness']} is also an author harness")
+                        e("O5", f"{where}: reviewer harness is also an author harness")
                     shared = families(matrix, p, r["chain"]) & a_f
                     if shared:
-                        if exc and exc.get("reason"):
-                            notes.append(f"{where}: ABSOLUTE-EXCEPTION on family {sorted(shared)}: {exc['reason']}")
-                        else:
-                            e("O5", f"{where}: reviewer family {sorted(shared)} overlaps authors")
-                    if o.get("orchestrator"):
-                        orch = o["orchestrator"]
+                        e("O5", f"{where}: reviewer family {sorted(shared)} overlaps authors")
+                    if author_ids & {models[p][mid]["id"].lower() for mid in r["chain"] if mid in models[p]}:
+                        e("O5", f"{where}: reviewer repeats an author model ID")
+                    if orch:
                         if r["harness"] == orch["harness"]:
                             e("O5", f"{where}: reviewer harness equals orchestrator harness")
-                        if families(matrix, p, orch["chain"]) & (families(matrix, p, r["chain"]) | a_f):
-                            e("O5", f"{where}: orchestrator family overlaps authors or reviewers")
+                        if families(matrix, p, orch["chain"]) & families(matrix, p, r["chain"]):
+                            e("O5", f"{where}: orchestrator family overlaps reviewers")
                 # O6 HK
                 all_f = set()
                 for ch in chains:
@@ -199,24 +288,30 @@ def validate(matrix, root=ROOT, check_files=True):
                         e("O6", f"{where}: non-HK families {sorted(bad)}")
                     for ch in chains:
                         for m in ch:
-                            if m in models[p] and not models[p][m]["hk_policy_eligible"]:
-                                e("O6", f"{where}: {m} not HK eligible")
+                            if m in models[p]:
+                                inf = models[p][m]
+                                vendor = inf["id"].split("/", 1)[0]
+                                if not inf["hk_policy_eligible"] or vendor not in {"opencode", "deepseek", "moonshotai", "zai-coding-plan", "minimax"}:
+                                    e("O6", f"{where}: {m} not an eligible native/gateway HK route; proxies prohibited")
                     if any(st["harness"] == "codex" for st in seats(o)):
                         if o["name"] == "primary" or o["status"] != "conditional-custom-provider-features-deferred":
                             e("O6", f"{where}: codex in ultimate must be a conditional alternate")
-                # O7 cap
+                # O7 cap uses model identity and conservative price references.
                 if p in ("hybrid", "b4b"):
-                    for ch in chains:
-                        for m in ch:
-                            role = m.split("/", 1)[1]
-                            if role in OVER_CAP and role not in METERED_EXEMPT:
-                                e("O7", f"{where}: over-cap {role}")
-                # O8 hephaestus
+                    entries = [(st["role"], i, mid, False) for st in seats(o) for i,mid in enumerate(st["chain"])]
+                    entries += [(c,i,mid,True) for c,ch in o["category_routes"].items() for i,mid in enumerate(ch)]
+                    for role,i,mid,iscat in entries:
+                        if mid not in models[p]:
+                            continue
+                        name = models[p][mid]["id"].split("/",1)[1].lower()
+                        price = OUTPUT_REFERENCE.get(name)
+                        allowed = name == "kimi-k3" and cap_exempt(p,role,i,iscat)
+                        if price is None or price > 4.65 and not allowed:
+                            e("O7", f"{where}: {mid} at {role}[{i}] has no cap-safe reference or exact slot exception")
+                # O8 applies to the entire chain, including fallbacks.
                 for st in seats(o):
-                    if st["role"] == "hephaestus":
-                        first = models[p][st["chain"][0]]["family"] if st["chain"] else None
-                        if first != "openai":
-                            e("O8", f"{where}: hephaestus needs a flagship-native first model, got {first}")
+                    if st["role"] == "hephaestus" and families(matrix,p,st["chain"]) != {"openai"}:
+                        e("O8", f"{where}: hephaestus needs a wholly OpenAI-family chain; use atlas otherwise")
                 # O12
                 caps = set(o.get("required_capabilities", [])) | set(o.get("constraints", []))
                 if sid == "A06" and "author-provenance-required" not in caps:
@@ -233,7 +328,7 @@ def validate(matrix, root=ROOT, check_files=True):
         elif isinstance(x, list):
             for i, v in enumerate(x):
                 walk(v, f"{path}[{i}]")
-        elif isinstance(x, str) and CLAIMS.search(x) and not CLAIM_OK.search(x) and path.endswith(("rationale", "status")):
+        elif isinstance(x, str) and CLAIMS.search(x) and not CLAIM_OK.search(x):
             e("O11", f"claim-like text at {path}")
     walk(matrix)
     if check_files:
@@ -294,7 +389,7 @@ def file_checks(matrix, root):
         if not d["limitations"]:
             errs.append(f"O13: {fn} needs limitations")
         try:
-            parse_native(d)
+            check_native_keys(d)
         except Exception as exc:
             errs.append(f"O13: {fn} native_config does not parse as {d['native_format']}: {exc}")
         if re.search(r"(sk-[A-Za-z0-9]{12,}|api[_-]?key\"?\s*[:=]\s*\"[A-Za-z0-9]{16,})", d["native_config"]):
@@ -318,8 +413,8 @@ def parse_native(d):
     if fmt == "yaml":
         try:
             import yaml
-        except ImportError:  # CI installs pyyaml; local runs without it skip only this parse
-            return None
+        except ImportError as exc:
+            raise ValueError("PyYAML required for YAML parsing") from exc
         return yaml.safe_load(text)
     raise ValueError(f"unknown format {fmt}")
 
@@ -408,16 +503,20 @@ def self_test(matrix):
     expect("A06 loses provenance requirement", lambda m: next(x for x in m["situations"] if x["id"] == "A06")["profiles"]["ultimate"]["options"][0]["constraints"].remove("author-provenance-required") if "author-provenance-required" in next(x for x in m["situations"] if x["id"] == "A06")["profiles"]["ultimate"]["options"][0]["constraints"] else next(x for x in m["situations"] if x["id"] == "A06")["profiles"]["ultimate"]["options"][0]["required_capabilities"].clear(), "O12")
     expect("situation missing", lambda m: m["situations"].pop(5), "O1")
     expect("exception needs reason", lambda m: (opt(m).update({"absolute_exception": {"reason": ""}}), opt(m)["reviewers"][0].__setitem__("harness", opt(m)["authors"][0]["harness"])), "O5")
-    # An exception with a reason is allowed but reported, never silent.
-    m = copy.deepcopy(matrix)
-    o = opt(m, "A04")
-    o["reviewers"][0]["harness"] = o["authors"][0]["harness"]
-    o["absolute_exception"] = {"reason": "synthetic fixture"}
-    errs, notes = validate(m, check_files=False)
-    if not any(x.startswith("O5:") for x in errs) and any("ABSOLUTE-EXCEPTION" in n for n in notes):
-        print("  ok   documented exception is reported, not silent")
-    else:
-        failures += 1; print("  FAIL documented exception handling")
+    expect("a reason cannot authorize an exception", lambda m: opt(m,"A04").update({"absolute_exception":{"reason":"x"}}), "O5")
+    expect("empty reviewer list", lambda m: opt(m).__setitem__("reviewers",[]), "O5")
+    expect("empty reviewer chain", lambda m: opt(m)["reviewers"][0].__setitem__("chain",[]), "O4")
+    expect("spoofed family label", lambda m: m["models"]["ultimate"]["ProviderC/open-reason-xl"].__setitem__("family","alibaba"), "O4")
+    expect("same family on another host", lambda m: m["models"]["ultimate"]["ProviderB/flagship-open"].update({"id":"opencode/deepseek-v4-flash","family":"deepseek"}), "O5")
+    expect("HK proxy hidden by label", lambda m: m["models"]["ultimate"]["ProviderC/open-reason-xl"].update({"id":"apiyi/gpt-5.6-terra","family":"deepseek","hk_policy_eligible":True}), "O6")
+    expect("over-cap model under cheap placeholder", lambda m: m["models"]["b4b"]["ProviderB/gen-pro"].update({"id":"opencode/qwen3.8-max","family":"alibaba"}), "O7")
+    expect("coder exemption cannot leak to a helper", lambda m: opt(m,"A01","hybrid")["authors"][1]["chain"].append("ProviderE/coder-xl"), "O7")
+    expect("Pi requires isolation", lambda m: opt(m,"A05")["constraints"].remove("pi-external-container"), "O3")
+    expect("Aider cannot orchestrate", lambda m: opt(m)["orchestrator"].__setitem__("harness","aider"), "O3")
+    expect("third option clone", lambda m: [a.__setitem__("harness",opt(m)["authors"][0]["harness"]) for a in opt(m,"A01","ultimate",2)["authors"]], "O2")
+    expect("claim hidden in constraints", lambda m: opt(m)["constraints"].append("verified"), "O11")
+    expect("empty author list", lambda m: opt(m).__setitem__("authors",[]), "O1")
+    expect("retired family with benign label", lambda m: m["models"]["global"]["ProviderA/flagship-mid"].update({"id":"google/gemini-3.8-flash","family":"openai"}), "O4")
     print("self-test " + ("passed" if not failures else f"FAILED ({failures})"))
     return 1 if failures else 0
 
