@@ -1,0 +1,26 @@
+{
+  "harness": "goose",
+  "status": "docs-checked-runtime-deferred",
+  "native_path": "review.recipe.yaml, run with goose run",
+  "native_format": "yaml",
+  "native_config": "version: \"1.0.0\"\ntitle: \"Independent change review\"\ndescription: \"Read-only adversarial review of a frozen diff and its tests\"\ninstructions: |\n  You review a change you did not write. Read the diff and the test output supplied as parameters.\n  Do not edit files. List findings with file, line, evidence and a reproduction command.\n  If you find nothing, say what you checked.\nprompt: \"Review the change described in the parameters.\"\nextensions: []\nsettings:\n  goose_provider: \"openai\"\n  goose_model: \"qwen3.8-max\"\n  temperature: 0.2\n  max_turns: 30\nparameters: []\nsub_recipes: []\nresponse:\n  json_schema:\n    type: object\n    properties:\n      findings:\n        type: array\n        items:\n          type: object\n          properties:\n            file:\n              type: string\n            line:\n              type: integer\n            evidence:\n              type: string\n            repro:\n              type: string\n      checked:\n        type: string\n    required:\n      - findings\n      - checked\nretry:\n  max_retries: 2\n  timeout_seconds: 60\n  checks: []\n  on_failure: \"echo review failed\"\n",
+  "invocation": "goose run --recipe review.recipe.yaml with the frozen diff supplied as input; set GOOSE_MODE to an approval mode that blocks file edits",
+  "sources": [
+    "https://goose-docs.ai/docs/guides/recipes/recipe-reference",
+    "https://goose-docs.ai/docs/guides/goose-permissions/"
+  ],
+  "limitations": [
+    "Recipe fields match the recipe reference. Using provider `openai` with a Qwen model needs a custom base URL, which was not documented on the fetched pages.",
+    "Permission modes are auto, smart_approve, approve and chat. The page gave no allowlist syntax, so tool restriction is not shown here.",
+    "Subagents run at most 25 turns and cannot nest.",
+    "The `retry.checks` list is empty here; the docs example uses a shell check.",
+    "No install, load or dry-run was executed."
+  ],
+  "role_binding": "The default independent reviewer for omo-authored work (momus seat in the matrix) and an author for CI-shaped rows A04, A08 and A10.",
+  "profiles": {
+    "ultimate": "Reviewer model chain qwen3.8-max > qwen3.7-plus on code rows; deepseek-v4-pro > kimi-k3 on general rows.",
+    "hybrid": "Reviewer deepseek-v4-pro > deepseek-v4-flash.",
+    "b4b": "Reviewer deepseek-v4-flash > deepseek-v4-pro.",
+    "global": "Reviewer grok-4.7 > deepseek-v4-pro."
+  }
+}

@@ -117,6 +117,9 @@ RELAY_NATIVE_NAMES = {
     "minimax-m3", "minimax-m2.7",
     # MiMo (relay) / Grok (relay)
     "mimo-v2.5-pro", "mimo-v2.5-free", "grok-4.6", "grok-4.5",
+    # Global profile (first-party IDs verified 2026-10-11; see docs/research/orchestration/GLOBAL-PROFILE.md)
+    "gpt-6.1-sol", "gpt-6-astra", "gpt-6-luna", "claude-sonnet-5-5", "claude-opus-5-5",
+    "grok-4.7",
 }
 
 def model_id_valid(full):
@@ -335,7 +338,7 @@ else:
 # in a shipped example profile is caught, not only in the full deployable file.
 print("[R12b] example-profile model IDs are valid")
 _prof_bad = []
-for _pf in ("ultimate", "hybrid", "b4b"):
+for _pf in ("ultimate", "hybrid", "b4b", "global"):
     _pp = os.path.join(ROOT, "profiles", f"{_pf}.example.json")
     if not os.path.exists(_pp):
         continue

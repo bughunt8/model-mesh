@@ -42,7 +42,7 @@ model-mesh is that idea, made concrete and deployable:
         ┌───────────────────────── THE ROUTING ────────────────────────┐
         │  each role → a model FAMILY (not a leaderboard rank)          │
         │  hephaestus  oracle  momus  atlas  prometheus  sisyphus  …    │
-        │  profiles:   ultimate   ·   hybrid (default)   ·   b4b        │
+        │  profiles: ultimate · hybrid (default) · b4b · global         │
         └───────────────────────────────┬───────────────────────────────┘
                                          │  kept current by
                                          ▼
@@ -62,7 +62,7 @@ Three layers, one principle at each: **method over improvisation, family-fit ove
 
 ```bash
 git clone https://github.com/bughunt8/model-mesh && cd model-mesh
-./setup-config.sh hybrid          # ultimate | hybrid (default) | b4b
+./setup-config.sh hybrid          # ultimate | hybrid (default) | b4b | global
 # → backs up any existing ~/.omo/omo.jsonc, writes the chosen profile
 ```
 
@@ -110,7 +110,7 @@ The `ultimate` column shows `open-reason-xl` for the three flagship-native seats
 
 **Why hybrid is the default:** it spends the flagship budget only where it has the highest leverage, the read-only **architect** and the **flagship coding tier**, while holding the implementer and reviewer at the mid tier. `hephaestus` keeps a **flagship-native primary tier**, one documented open-weight **lifeline** rung (a different-provider model, so a flagship-proxy outage still reaches something that works), and, where set, a single cross-family `ultrawork` escape hatch. (`flagship-native-only` is the stricter rule the validator enforces on the deployable *example* config.)
 
-**Pick your profile:** `ultimate` = max capability, cost secondary · `hybrid` = best value + best-in-class coding/architecture · `b4b` = strict performance-per-dollar.
+**Pick your profile:** `ultimate` = max capability, cost secondary · `hybrid` = best value + best-in-class coding/architecture · `b4b` = strict performance-per-dollar · `global` = no region limit and no budget cap.
 
 > **`ultimate` is Hong Kong-native.** Its example mapping deliberately omits every model whose **developer API is not natively available in Hong Kong**, the US frontier vendors' proprietary flagships (US vendors self-restrict HK developer-API access; one such vendor shipped a consumer app in HK but its native developer API and studio still refuse HK, and an enterprise `asia-east2` region is that vendor's only compliant dev route). `ultimate` uses no geo-unlock proxy and routes only to the strongest HK-reachable models (open-weight reasoning, coding-specialist, communicator-class, generalist, and multimodal families). `hybrid` and `b4b` remain **global** and unchanged. The concrete excluded vendors, the placeholder→real-model table, and the availability citations are in [`docs/EXAMPLE-MAPPING.md`](docs/EXAMPLE-MAPPING.md) (denylist-exempt).
 
@@ -133,17 +133,28 @@ New models drop constantly. Instead of a human eyeballing leaderboards, model-me
 
 ---
 
+## Multi-agent orchestration (design proposal)
+
+The routing above sends roles to models inside one harness. [`docs/ORCHESTRATION.md`](docs/ORCHESTRATION.md) extends it to several agents across seven harnesses (OpenCode with omo, DSH, Codex CLI, Pi, Qwen Code, Aider, Goose), with Orca as the default coordinator when parallel worktrees exist. It maps twelve situations (A01 to A12) to a harness, a model chain with fallbacks and an independent reviewer, for all four profiles.
+
+- The reviewer always runs in a different harness and a different model family from every author rung. CI enforces it.
+- The generated table is [`docs/research/orchestration/MATRIX.md`](docs/research/orchestration/MATRIX.md). Worked cases are in [`EXAMPLES.md`](docs/research/orchestration/EXAMPLES.md), and seven harness configuration examples are in [`examples/orchestration/harnesses/`](examples/orchestration/harnesses).
+- Status: documentation and schema checks only. Nothing was installed or run. The omo licence needs an owner decision for client work, and the `global` profile excludes the retired Google family.
+
+---
+
 ## What's in here
 
 ```
 profiles/
-  ultimate.json · hybrid.json · b4b.json     genericized FRAGMENTS (agents + categories)
+  ultimate.json · hybrid.json · b4b.json · global.json     genericized FRAGMENTS (agents + categories)
   *.example.json                             same fragment with REAL provider/model IDs
 setup-config.sh · scripts/materialize.py     wrap a fragment into a deployable ~/.omo/omo.jsonc
 examples/
   omo.full.example.json                      complete deployable [opencode] config (real IDs)
   dsh-settings.example.yaml                   the harness plugin settings reference
   README.md                                  how the examples fit together
+  orchestration/                             situation matrix + seven harness config examples
 skills/  mm-method · mm-loop · mm-verify · mm-domain     the loop, installable
 scripts/landscape/                           the self-governing landscape engine + review gate
 install.sh · install.ps1                      copy the loop skills into place

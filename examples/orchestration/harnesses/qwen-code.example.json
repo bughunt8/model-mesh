@@ -1,0 +1,25 @@
+{
+  "harness": "qwen-code",
+  "status": "docs-checked-runtime-deferred",
+  "native_path": "settings.json (user or project level)",
+  "native_format": "json",
+  "native_config": "{\n  \"modelProviders\": {\n    \"openai\": [\n      {\n        \"id\": \"qwen3.8-max\",\n        \"name\": \"Qwen3.8 Max\",\n        \"envKey\": \"DASHSCOPE_API_KEY\",\n        \"baseUrl\": \"https://dashscope-intl.aliyuncs.com/compatible-mode/v1\"\n      }\n    ]\n  },\n  \"mcpServers\": {\n    \"playwright\": {\n      \"command\": \"npx\",\n      \"args\": [\n        \"@playwright/mcp@latest\"\n      ],\n      \"timeout\": 30000,\n      \"trust\": false\n    }\n  }\n}",
+  "invocation": "qwen -p \"<task>\" from the task worktree; use the SDK or serve mode for long runs",
+  "sources": [
+    "https://qwenlm.github.io/qwen-code-docs/en/users/configuration/model-providers/",
+    "https://qwenlm.github.io/qwen-code-docs/en/users/features/mcp/"
+  ],
+  "limitations": [
+    "`modelProviders` and `mcpServers` shapes match the Qwen Code docs. The DashScope base URL and the `@playwright/mcp` package name were not fetched in this session.",
+    "The docs do not give a Playwright example. Keep `trust` false so each tool call asks, or run with a throwaway browser profile.",
+    "Sandbox is off by default. Alibaba benchmarked Qwen3.8-Max in a different harness, so the Qwen Code plus Qwen pairing is an unmeasured tie-breaker.",
+    "No install, load or dry-run was executed."
+  ],
+  "role_binding": "Author seat for A07, A08, A10 to A12 where bundled image, PDF, audio and video input matters. In ultimate and global rows the model chain is the alibaba pool; the reviewer is a different harness and family.",
+  "profiles": {
+    "ultimate": "Author with qwen3.8-max > qwen3.7-plus on general rows.",
+    "hybrid": "Author with qwen3.7-plus > qwen3.5-plus (cap-safe).",
+    "b4b": "Same as hybrid.",
+    "global": "Author with qwen3.8-max > qwen3.7-plus."
+  }
+}

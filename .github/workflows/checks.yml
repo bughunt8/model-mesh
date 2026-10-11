@@ -28,6 +28,10 @@ jobs:
           assert yaml.safe_load((base / "sources.yaml").read_text()) == json.loads((base / "sources.json").read_text())
           print("landscape config mirrors match")
           PY
+      - name: Validate orchestration matrix and harness examples
+        run: python scripts/validate-orchestration.py
+      - name: Orchestration validator self-test (mutations must be caught)
+        run: python scripts/validate-orchestration.py --self-test
       - name: Run landscape regression suite
         run: python scripts/landscape/landscape_scan.py --self-test
       - name: Check committed landscape golden result

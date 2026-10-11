@@ -2,7 +2,7 @@
 # model-mesh config setup — materializes a chosen profile into a complete,
 # schema-valid deployable config and installs it safely (backup, never blind overwrite).
 #
-# Usage:  ./setup-config.sh [hybrid|ultimate|b4b]     (default: hybrid)
+# Usage:  ./setup-config.sh [hybrid|ultimate|b4b|global]     (default: hybrid)
 #
 # What it does:
 #   1. Checks prerequisites (python3, and warns if oh-my-openagent is not installed)
@@ -16,7 +16,7 @@
 set -euo pipefail
 
 profile="${1:-hybrid}"
-case "$profile" in hybrid|ultimate|b4b) ;; *) echo "Unknown profile: $profile (use hybrid|ultimate|b4b)"; exit 1;; esac
+case "$profile" in hybrid|ultimate|b4b|global) ;; *) echo "Unknown profile: $profile (use hybrid|ultimate|b4b|global)"; exit 1;; esac
 
 src="$(cd "$(dirname "$0")" && pwd)"
 frag="$src/profiles/$profile.json"

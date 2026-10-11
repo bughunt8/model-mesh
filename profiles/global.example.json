@@ -1,0 +1,203 @@
+{
+  "agents": {
+    "hephaestus": {
+      "model": "openai/gpt-6.1-sol",
+      "fallback_models": [
+        {
+          "model": "openai/gpt-6-astra"
+        },
+        {
+          "model": "openai/gpt-6-luna"
+        }
+      ],
+      "reasoning": "high",
+      "ultrawork": {
+        "model": "openai/gpt-6-astra",
+        "reasoning": "max"
+      }
+    },
+    "oracle": {
+      "model": "openai/gpt-6-astra",
+      "fallback_models": [
+        {
+          "model": "openai/gpt-6.1-sol"
+        },
+        {
+          "model": "moonshotai/kimi-k3"
+        }
+      ],
+      "reasoning": "max"
+    },
+    "momus": {
+      "model": "xai/grok-4.7",
+      "fallback_models": [
+        {
+          "model": "opencode/qwen3.8-max"
+        }
+      ],
+      "reasoning": "high"
+    },
+    "sisyphus": {
+      "model": "anthropic/claude-sonnet-5-5",
+      "fallback_models": [
+        {
+          "model": "zai-coding-plan/glm-5.3"
+        }
+      ],
+      "reasoning": "high"
+    },
+    "sisyphus-junior": {
+      "model": "openai/gpt-6-luna",
+      "fallback_models": [
+        {
+          "model": "deepseek/deepseek-v4-flash"
+        }
+      ]
+    },
+    "atlas": {
+      "model": "openai/gpt-6.1-sol",
+      "fallback_models": [
+        {
+          "model": "moonshotai/kimi-k3"
+        },
+        {
+          "model": "deepseek/deepseek-v4-pro"
+        }
+      ],
+      "reasoning": "high"
+    },
+    "prometheus": {
+      "model": "moonshotai/kimi-k3",
+      "fallback_models": [
+        {
+          "model": "openai/gpt-6.1-sol"
+        },
+        {
+          "model": "opencode/qwen3.8-max"
+        }
+      ],
+      "reasoning": "high"
+    },
+    "metis": {
+      "model": "moonshotai/kimi-k3",
+      "fallback_models": [
+        {
+          "model": "deepseek/deepseek-v4-pro"
+        }
+      ],
+      "reasoning": "high"
+    },
+    "librarian": {
+      "model": "opencode/qwen3.6-plus",
+      "fallback_models": [
+        {
+          "model": "opencode/qwen3.7-plus"
+        }
+      ]
+    },
+    "explore": {
+      "model": "deepseek/deepseek-v4-flash",
+      "fallback_models": [
+        {
+          "model": "openai/gpt-6-luna"
+        }
+      ]
+    },
+    "multimodal-looker": {
+      "model": "minimax/MiniMax-M3",
+      "fallback_models": [
+        {
+          "model": "opencode/qwen3.8-max"
+        }
+      ]
+    }
+  },
+  "categories": {
+    "visual-engineering": {
+      "models": [
+        {
+          "model": "minimax/MiniMax-M3"
+        },
+        {
+          "model": "opencode/qwen3.8-max"
+        }
+      ]
+    },
+    "ultrabrain": {
+      "models": [
+        {
+          "model": "openai/gpt-6-astra"
+        },
+        {
+          "model": "openai/gpt-6.1-sol"
+        },
+        {
+          "model": "moonshotai/kimi-k3"
+        }
+      ]
+    },
+    "deep": {
+      "models": [
+        {
+          "model": "openai/gpt-6.1-sol"
+        },
+        {
+          "model": "moonshotai/kimi-k3"
+        },
+        {
+          "model": "deepseek/deepseek-v4-pro"
+        }
+      ]
+    },
+    "artistry": {
+      "models": [
+        {
+          "model": "opencode/qwen3.8-max"
+        },
+        {
+          "model": "opencode/qwen3.7-plus"
+        }
+      ]
+    },
+    "quick": {
+      "models": [
+        {
+          "model": "openai/gpt-6-luna"
+        },
+        {
+          "model": "deepseek/deepseek-v4-flash"
+        }
+      ]
+    },
+    "unspecified-low": {
+      "models": [
+        {
+          "model": "opencode/qwen3.5-plus"
+        },
+        {
+          "model": "deepseek/deepseek-v4-flash"
+        }
+      ]
+    },
+    "unspecified-high": {
+      "models": [
+        {
+          "model": "moonshotai/kimi-k3"
+        },
+        {
+          "model": "deepseek/deepseek-v4-pro"
+        }
+      ]
+    },
+    "writing": {
+      "models": [
+        {
+          "model": "opencode/qwen3.7-plus"
+        },
+        {
+          "model": "opencode/qwen3.8-max"
+        }
+      ]
+    }
+  }
+}
