@@ -32,9 +32,17 @@ DSH_ALLOW = re.compile(
     re.I,
 )
 
+# --- Narrow harness-name allowlist ------------------------------------------
+# Orchestration docs must name the harnesses they compare. Only these exact
+# product names are neutralized. A bare vendor word or any model ID still fails.
+HARNESS_ALLOW = re.compile(
+    r"(@openai/codex|@qwen-code/qwen-code|codex cli|codex exec|qwen code|qwen-code)",
+    re.I,
+)
+
 def deny_hit(text):
-    """True if `text` contains a forbidden token after removing exact DSH tokens."""
-    return bool(DENY.search(DSH_ALLOW.sub("", text)))
+    """True if `text` contains a forbidden token after removing exact DSH and harness tokens."""
+    return bool(DENY.search(HARNESS_ALLOW.sub("", DSH_ALLOW.sub("", text))))
 # A bare `fable` reference is allowed only on lines that also carry the attribution
 # context (the upstream repo/author). Anywhere else it is a leak.
 FABLE = re.compile(r"\bfable\b", re.I)
@@ -71,6 +79,8 @@ DENY_EXEMPT_PATHS = {
     # Operational runbook for the weekly scan: intentionally names the reviewer
     # model id + API host as literal run instructions. Doc-only, no config.
     "scripts/landscape/CRON_TASK.md",
+    # Orchestration validator: names vendors and harnesses as rule logic.
+    "scripts/validate-orchestration.py",
 }
 # Human research reports and the one deterministic golden result intentionally
 # preserve concrete research IDs. Keep both exemptions narrow and self-tested.
@@ -120,11 +130,14 @@ _must_fail = [
     f"{_ds}/{_ds}-v4-pro", "api" + "yi/gpt-" + "5.6-sol", "moonshotai/ki" + "mi-k3",
     "zai-coding-plan/gl" + "m-5.2", "minimax/Mini" + "Max-M3", f"we use {_ds} here",
     "open" + "code/co" + "dex", "x" + "ai/gr" + "ok-4.6",
+    "co" + "dex-mini", "qw" + "en models", "Qwen Code with qw" + "en as the vendor",
+    "Codex CLI uses gpt-" + "5 models",
 ]
 _must_pass = [
     f"@{_ds}-ai/dsh", f"@{_ds}-ai/cordis", f"{_ds}-harness",
     f"github.com/{_ds}-ai/{_ds}-harness", "the dsh CLI",
     f"{_ds}.com/harness/en", f"{_ds} harness",
+    "Codex CLI", "codex exec", "@openai/codex", "Qwen Code", "@qwen-code/qwen-code",
 ]
 for s in _must_fail:
     ok(f"still blocked: {s}") if deny_hit(s) else fail(f"self-test: should block but passed: {s}")
@@ -137,6 +150,7 @@ _expected_exempt_paths = {
     "scripts/landscape/sources.yaml",
     "scripts/landscape/sources.json",
     "scripts/landscape/CRON_TASK.md",
+    "scripts/validate-orchestration.py",
 }
 if DENY_EXEMPT_PATHS == _expected_exempt_paths:
     ok("landscape denylist path exemptions remain exact")
@@ -192,7 +206,7 @@ for skill in ["mm-method", "mm-loop", "mm-verify", "mm-domain"]:
 # ---------------------------------------------------------------------------
 print("[4] profiles")
 _profile_files = []
-for prof in ["ultimate", "hybrid", "b4b"]:
+for prof in ["ultimate", "hybrid", "b4b", "global"]:
     _profile_files.append(f"{prof}.json")
     ex = os.path.join(ROOT, "profiles", f"{prof}.example.json")
     if os.path.exists(ex):
@@ -336,6 +350,21 @@ for prof in ("hybrid", "b4b"):
         for v in viol: fail(f"{prof}.json: {v}")
     else:
         ok(f"{prof}.json budget-cap placement")
+
+# ---------------------------------------------------------------------------
+# 4d. The orchestration validator mirrors the cap placement policy above.
+# ---------------------------------------------------------------------------
+print("[4d] orchestration validator mirrors checks.py")
+try:
+    import importlib.util
+    _spec = importlib.util.spec_from_file_location("validate_orchestration", os.path.join(ROOT, "scripts", "validate-orchestration.py"))
+    _vo = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(_vo)
+    if _vo.OVER_CAP == OVER_CAP and _vo.METERED_EXEMPT == set(METERED_EXEMPT):
+        ok("orchestration cap policy mirrors checks.py")
+    else:
+        fail("scripts/validate-orchestration.py OVER_CAP or METERED_EXEMPT drifted from checks.py")
+except Exception as e:
+    fail(f"could not load orchestration validator: {e}")
 
 # ---------------------------------------------------------------------------
 # 5. Local markdown links resolve

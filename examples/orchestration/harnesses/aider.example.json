@@ -1,0 +1,24 @@
+{
+  "harness": "aider",
+  "status": "docs-checked-runtime-deferred",
+  "native_path": ".aider.conf.yml in the repository root",
+  "native_format": "yaml",
+  "native_config": "model: deepseek/deepseek-v4-pro\narchitect: true\neditor-model: deepseek/deepseek-v4-flash\nauto-commits: false\nauto-test: true\ntest-cmd: pytest -q\nmap-tokens: 2048\nread:\n  - CONVENTIONS.md\n",
+  "invocation": "aider --message \"<scoped task>\" --yes-always inside a throwaway branch; one shot, no chat",
+  "sources": [
+    "https://aider.chat/docs/config/aider_conf.html"
+  ],
+  "limitations": [
+    "Option names come from the aider configuration page. Model strings depend on the LiteLLM provider prefix and the v4-pro and v4-flash strings were not checked.",
+    "The editor model is also an author, so it must share the author family. It does here.",
+    "Latest release is v0.86.0 from 2025-08-09 with later commits. No MCP, subagents or sandbox. Never an orchestrator.",
+    "No install, load or dry-run was executed."
+  ],
+  "role_binding": "Alternate for A03 and A06: scoped refactor or one-shot diff review. Architect and editor models both count as author or reviewer seats.",
+  "profiles": {
+    "ultimate": "Alternate for A03 and A06 on the pool shown.",
+    "hybrid": "Same with the hybrid pool.",
+    "b4b": "Same with the cheaper rungs first.",
+    "global": "Same with the global pool."
+  }
+}

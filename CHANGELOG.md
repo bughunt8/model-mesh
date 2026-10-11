@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.2.0
+
+### Added
+- **Multi-agent orchestration direction.** `docs/ORCHESTRATION.md` extends routing from one agent and its sub-agents to several agents across seven harnesses, using omo role and category names. Twelve situations (A01 to A12) map to a harness, a model chain with fallbacks, and an independent reviewer, for four profiles. Design proposal only: nothing was installed or run.
+- **`global` profile.** The unrestricted twin of `ultimate` (no region limit, no budget cap). `profiles/global.json` and `profiles/global.example.json`; `setup-config.sh global` works. The retired Google family stays retired.
+- **`scripts/validate-orchestration.py`.** Checks vocabulary, review independence over every fallback rung, the Hong Kong rule for `ultimate`, cap placement for `hybrid` and `b4b`, hephaestus family, and that the generated table matches the data. A mutation self-test proves 24 failure cases are caught. Both modes run in CI.
+- **Seven harness configuration examples** under `examples/orchestration/harnesses/`, each with sources and limitations. Docs-checked only; install, load and dry-run are deferred.
+- **Research record** under `docs/research/orchestration/`: council reports, synthesis, harness and coordinator evidence, worked examples, and the independent review.
+
+### Changed
+- `.github/checks.py`: a narrow harness-name allowlist (Codex CLI, Qwen Code) so orchestration docs can name harnesses without admitting model IDs, with must-pass and must-fail self-tests; the validator script joins the exact exemption list; `global` joins the profile schema loop; a mirror check keeps the cap policy in `validate-orchestration.py` equal to `checks.py`.
+- `scripts/validate-full-config.py`: the model-ID catalog accepts the verified `global` IDs, and R12b covers `global.example.json`.
+
+### Known issues found by the audit, not fixed here
+- In the shipped `ultimate` and `hybrid` profiles, `momus` uses the same model as `hephaestus`, inside one harness. The orchestration matrix fixes this with an external reviewer; the base profiles are unchanged.
+- The `opencode/mimo-v2.5-free` route used in the example profiles stops working on 2026-10-21.
+- omo is under the Sustainable Use License 1.0. The owner accepted it as an explicit exception. Client or commercial use needs a separate licence check.
+
 ## 1.1.5
 
 ### Fixed
