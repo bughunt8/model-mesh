@@ -5,7 +5,7 @@
 ### Added
 - **Multi-agent orchestration direction.** `docs/ORCHESTRATION.md` extends routing from one agent and its sub-agents to several agents across seven harnesses, using omo role and category names. Twelve situations (A01 to A12) map to a harness, a model chain with fallbacks, and an independent reviewer, for four profiles. Design proposal only: nothing was installed or run.
 - **`global` profile.** The unrestricted twin of `ultimate` (no region limit, no budget cap). `profiles/global.json` and `profiles/global.example.json`; `setup-config.sh global` works. The retired Google family stays retired.
-- **`scripts/validate-orchestration.py`.** Checks vocabulary, review independence over every fallback rung, the Hong Kong rule for `ultimate`, cap placement for `hybrid` and `b4b`, hephaestus family, and that the generated table matches the data. A mutation self-test proves 37 failure cases are caught, including every hole the independent review found. Both modes run in CI.
+- **`scripts/validate-orchestration.py`.** Checks vocabulary, review independence over every fallback rung, the Hong Kong rule for `ultimate`, cap placement for `hybrid` and `b4b`, hephaestus family, and that the generated table matches the data. A mutation self-test proves 40 failure cases are caught, including every hole the independent review found. Both modes run in CI.
 - **Seven harness configuration examples** under `examples/orchestration/harnesses/`, each with sources and limitations. Docs-checked only; install, load and dry-run are deferred.
 - **Research record** under `docs/research/orchestration/`: council reports, synthesis, harness and coordinator evidence, worked examples, and the independent review.
 

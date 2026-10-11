@@ -103,8 +103,10 @@ def model_family(mid):
     return next((fam for prefix, fam in PREFIX_FAMILY.items() if name.startswith(prefix)), "unknown")
 
 
-def cap_exempt(profile, role, index, category=False):
-    # Exact slot policy from docs/EXAMPLE-MAPPING.md. No family-wide free pass.
+def cap_exempt(profile, role, index, category=False, kind="author"):
+    # Exact slot policy from docs/EXAMPLE-MAPPING.md. Author seats only; never the orchestrator.
+    if kind != "author":
+        return False
     if category:
         return role == "deep" and index == 1 or profile == "hybrid" and role == "ultrabrain" and index == 2
     return profile == "hybrid" and role in ("atlas", "prometheus") and index == 0
@@ -125,6 +127,29 @@ def check_native_keys(d):
     }[d["harness"]]
     if set(native) != allowed:
         raise ValueError("native keys differ from this documented fixture: " + str(set(native) ^ allowed))
+    def sub(obj, keys, label):
+        if not isinstance(obj, dict) or not set(obj) <= keys:
+            raise ValueError(f"{label} has keys outside the cited page: {sorted(set(obj) - keys) if isinstance(obj, dict) else 'not an object'}")
+    h = d["harness"]
+    if h == "goose":
+        sub(native["settings"], {"goose_provider", "goose_model", "temperature", "max_turns"}, "settings")
+        sub(native["response"], {"json_schema"}, "response")
+        sub(native["retry"], {"max_retries", "timeout_seconds", "checks", "on_failure"}, "retry")
+    elif h == "qwen-code":
+        for entries in native["modelProviders"].values():
+            for item in entries:
+                sub(item, {"id", "name", "envKey", "baseUrl"}, "modelProviders entry")
+        for item in native["mcpServers"].values():
+            sub(item, {"command", "args", "env", "cwd", "timeout", "trust"}, "mcpServers entry")
+    elif h == "codex":
+        for item in native["model_providers"].values():
+            sub(item, {"name", "base_url", "env_key", "wire_api"}, "model_providers entry")
+    elif h == "pi":
+        sub(native["settings_json"], {"defaultProvider", "defaultModel", "defaultThinkingLevel", "enableAnalytics", "enableInstallTelemetry"}, "settings_json")
+        for item in native["models_json"]["providers"].values():
+            sub(item, {"baseUrl", "api", "apiKey", "models"}, "providers entry")
+    elif h == "opencode-omo":
+        sub(native["permission"], {"edit", "bash"}, "permission")
     return native
 
 
@@ -185,6 +210,10 @@ def validate(matrix, root=ROOT, check_files=True):
             actual = model_family(info.get("id"))
             if actual != "unknown" and info.get("family") != actual:
                 e("O4", f"{p}:{ph} family label disagrees with model identity")
+            lowered = info.get("id", "").lower().split("/", 1)[-1]
+            hits = {fam for prefix, fam in PREFIX_FAMILY.items() if prefix.rstrip("-") in lowered}
+            if len(hits) > 1 or re.search(r"gpt|claude|gemini|grok|openai|anthropic|apiyi", lowered) and p == "ultimate":
+                e("O4", f"{p}:{ph} model name mixes vendor markers or carries a blocked one")
             vendor = info.get("id", "").split("/", 1)[0]
             if vendor in NATIVE_ROUTES and NATIVE_ROUTES[vendor] != actual:
                 e("O4", f"{p}:{ph} first-party route belongs to a different family")
@@ -193,9 +222,8 @@ def validate(matrix, root=ROOT, check_files=True):
         for c in s.get("categories", []):
             if c not in CATEGORIES:
                 e("O3", f"{sid}: unknown category {c}")
-        for a in s.get("agent_sequence", []):
-            if a not in AGENTS:
-                e("O3", f"{sid}: unknown agent {a}")
+        if "agent_sequence" in s:
+            e("O3", f"{sid}: roles belong to each option, not to the situation")
         for p in PROFILES:
             block = s.get("profiles", {}).get(p)
             if not block:
@@ -298,14 +326,14 @@ def validate(matrix, root=ROOT, check_files=True):
                             e("O6", f"{where}: codex in ultimate must be a conditional alternate")
                 # O7 cap uses model identity and conservative price references.
                 if p in ("hybrid", "b4b"):
-                    entries = [(st["role"], i, mid, False) for st in seats(o) for i,mid in enumerate(st["chain"])]
-                    entries += [(c,i,mid,True) for c,ch in o["category_routes"].items() for i,mid in enumerate(ch)]
-                    for role,i,mid,iscat in entries:
+                    entries = [(st["role"], i, mid, False, st["kind"]) for st in seats(o) for i,mid in enumerate(st["chain"])]
+                    entries += [(c,i,mid,True,"author") for c,ch in o["category_routes"].items() for i,mid in enumerate(ch)]
+                    for role,i,mid,iscat,kind in entries:
                         if mid not in models[p]:
                             continue
                         name = models[p][mid]["id"].split("/",1)[1].lower()
                         price = OUTPUT_REFERENCE.get(name)
-                        allowed = name == "kimi-k3" and cap_exempt(p,role,i,iscat)
+                        allowed = name == "kimi-k3" and cap_exempt(p,role,i,iscat,kind)
                         if price is None or price > 4.65 and not allowed:
                             e("O7", f"{where}: {mid} at {role}[{i}] has no cap-safe reference or exact slot exception")
                 # O8 applies to the entire chain, including fallbacks.
@@ -515,6 +543,9 @@ def self_test(matrix):
     expect("Aider cannot orchestrate", lambda m: opt(m)["orchestrator"].__setitem__("harness","aider"), "O3")
     expect("third option clone", lambda m: [a.__setitem__("harness",opt(m)["authors"][0]["harness"]) for a in opt(m,"A01","ultimate",2)["authors"]], "O2")
     expect("claim hidden in constraints", lambda m: opt(m)["constraints"].append("verified"), "O11")
+    expect("orchestrator cannot borrow the coding-tier exemption", lambda m: (opt(m,"A01","hybrid")["orchestrator"].update({"role":"atlas","chain":["ProviderE/coder-xl"]})) , "O7")
+    expect("wrapped blocked model name", lambda m: m["models"]["ultimate"]["ProviderC/open-reason-xl"].update({"id":"opencode/qwen-wrapped-gpt-6.1-sol","family":"alibaba"}), "O4")
+    expect("situation-level role list", lambda m: m["situations"][0].__setitem__("agent_sequence", ["explore"]), "O3")
     expect("empty author list", lambda m: opt(m).__setitem__("authors",[]), "O1")
     expect("retired family with benign label", lambda m: m["models"]["global"]["ProviderA/flagship-mid"].update({"id":"google/gemini-3.8-flash","family":"openai"}), "O4")
     print("self-test " + ("passed" if not failures else f"FAILED ({failures})"))

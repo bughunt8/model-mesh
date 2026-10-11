@@ -36,7 +36,7 @@ DSH_ALLOW = re.compile(
 # Orchestration docs must name the harnesses they compare. Only these exact
 # product names are neutralized. A bare vendor word or any model ID still fails.
 HARNESS_ALLOW = re.compile(
-    r"(?<![\w@/.-])(@openai/codex|@qwen-code/qwen-code|codex cli|codex exec|qwen code|qwen-code)(?![\w/.-])",
+    r"(?<![\w@/.-])(@openai/codex|@qwen-code/qwen-code|codex cli|codex exec|qwen code|qwen-code)(?=\s|$|[,.;)](?:\s|$))",
     re.I,
 )
 
@@ -134,6 +134,7 @@ _must_fail = [
     "Codex CLI uses gpt-" + "5 models",
     "@openai/codex-mini", "qwen-coder", "qwen-code-plus", "@qwen-code/qwen-coder-plus",
     "codex clipboard", "codex executive summary", "the model is qwen-code-flash",
+    "qwen-code:" + "kimi-k3", "@openai/codex:" + "kimi-k3", "Qwen Code,gpt-" + "5.4", "Codex CLI;" + "kimi-k3",
 ]
 _must_pass = [
     f"@{_ds}-ai/dsh", f"@{_ds}-ai/cordis", f"{_ds}-harness",

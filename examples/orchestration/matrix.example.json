@@ -464,11 +464,6 @@
       "id": "A01",
       "title": "Regression bug repair",
       "priority": "Reproduction and regression discrimination before throughput",
-      "agent_sequence": [
-        "explore",
-        "hephaestus",
-        "momus"
-      ],
       "categories": [
         "deep",
         "quick"
@@ -1408,13 +1403,6 @@
       "id": "A02",
       "title": "Bounded feature delivery",
       "priority": "Acceptance completeness and integration risk; parallelize separable work",
-      "agent_sequence": [
-        "prometheus",
-        "metis",
-        "atlas",
-        "multimodal-looker",
-        "momus"
-      ],
       "categories": [
         "deep",
         "visual-engineering"
@@ -2194,12 +2182,6 @@
       "id": "A03",
       "title": "Behavior-preserving refactor",
       "priority": "Observable equivalence before diff size or speed",
-      "agent_sequence": [
-        "explore",
-        "metis",
-        "hephaestus",
-        "momus"
-      ],
       "categories": [
         "deep"
       ],
@@ -3210,12 +3192,6 @@
       "id": "A04",
       "title": "CI or deployment diagnosis",
       "priority": "Reproducible diagnosis, bounded tools and rollback",
-      "agent_sequence": [
-        "explore",
-        "sisyphus-junior",
-        "atlas",
-        "momus"
-      ],
       "categories": [
         "quick",
         "unspecified-high"
@@ -3935,12 +3911,6 @@
       "id": "A05",
       "title": "Security audit and remediation",
       "priority": "Exploit discrimination and independent remediation review",
-      "agent_sequence": [
-        "librarian",
-        "oracle",
-        "atlas",
-        "momus"
-      ],
       "categories": [
         "ultrabrain",
         "deep"
@@ -4664,10 +4634,6 @@
       "id": "A06",
       "title": "Independent change review",
       "priority": "Finding precision/recall and provenance, not patches authored",
-      "agent_sequence": [
-        "oracle",
-        "momus"
-      ],
       "categories": [
         "ultrabrain"
       ],
@@ -5282,11 +5248,6 @@
       "id": "A07",
       "title": "Source-grounded research brief",
       "priority": "Claim evidence, contrary findings and citation freshness",
-      "agent_sequence": [
-        "librarian",
-        "atlas",
-        "momus"
-      ],
       "categories": [
         "writing",
         "unspecified-high"
@@ -5922,12 +5883,6 @@
       "id": "A08",
       "title": "Data reconciliation and analysis",
       "priority": "Known-answer arithmetic and reproducible transformations",
-      "agent_sequence": [
-        "explore",
-        "sisyphus-junior",
-        "atlas",
-        "momus"
-      ],
       "categories": [
         "unspecified-high"
       ],
@@ -6618,12 +6573,6 @@
       "id": "A09",
       "title": "Requirements and architecture planning",
       "priority": "Traceability, contradiction discovery and separate challenge",
-      "agent_sequence": [
-        "prometheus",
-        "metis",
-        "oracle",
-        "momus"
-      ],
       "categories": [
         "ultrabrain",
         "writing"
@@ -7339,11 +7288,6 @@
       "id": "A10",
       "title": "Policy-constrained business workflow",
       "priority": "Authorization and final-state correctness before completion speed",
-      "agent_sequence": [
-        "explore",
-        "atlas",
-        "momus"
-      ],
       "categories": [
         "unspecified-low",
         "unspecified-high"
@@ -7983,12 +7927,6 @@
       "id": "A11",
       "title": "Browser administration",
       "priority": "Correct target/final state and bounded browser authority",
-      "agent_sequence": [
-        "explore",
-        "multimodal-looker",
-        "atlas",
-        "momus"
-      ],
       "categories": [
         "visual-engineering"
       ],
@@ -8663,12 +8601,6 @@
       "id": "A12",
       "title": "Cross-application office work",
       "priority": "Artifact consistency, exact references and safe handoffs",
-      "agent_sequence": [
-        "librarian",
-        "multimodal-looker",
-        "atlas",
-        "momus"
-      ],
       "categories": [
         "writing",
         "unspecified-high"
