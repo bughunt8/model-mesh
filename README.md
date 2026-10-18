@@ -10,7 +10,7 @@ _Works on any coding-agent harness. The shipped examples target two: [oh-my-open
 
 [Quickstart](#quickstart-60-seconds) · [How it works](#how-it-works) · [Profiles](#the-routing-one-role-one-family) · [Self-governing](#self-governing-the-landscape-engine) · [Validation](#validation-two-gates) · [Claims & limits](#claims--limits)
 
-`v1.1.5` · MIT · CI-gated on `main` and every PR
+`v1.2.0` · MIT · CI-gated on `main` and every PR
 
 </div>
 
@@ -86,7 +86,7 @@ Use it: `/mm-method <task>` runs the full loop · `/mm-loop <task>` orchestrates
 | **think** | `mm-method` | classify → define done → gather evidence → decide → act → verify → report |
 | **act** | `mm-loop` | orchestrated plan / execute / verify / audit across subagents |
 | **prove** | `mm-verify` | adversarial verification of finished work, tries to *break* the result |
-| **grow** | `mm-domain` | generates domain adapters (marketing, research, data, devops, …) |
+| **grow** | `mm-domain` | generates domain adapters (marketing, research, data, design, motion, devops, …) |
 
 **Hard bounds keep it honest:** 3 failed verify cycles → stop and hand back · can't name a verification → ask one pointed question · trivial asks skip the ceremony. Adapted from [fable-method](https://github.com/Sahir619/fable-method) (MIT), with engineering gates from [mattpocock/skills](https://github.com/mattpocock/skills) and verification fold-ins from the `debug-pipeline2` protocol. Full detail in [`AGENTS.md`](AGENTS.md) and `skills/`.
 

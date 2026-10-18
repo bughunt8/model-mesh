@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2.0
+
+### Added
+- **Motion/animation domain adapter (`references/domains/motion.md`).** The design/UX adapter covers the static surface (tokens, layout, contrast) but stops short of anything that moves. The new adapter takes over once a property is animated, a timeline is sequenced, or a frame is rendered, and it carries the full `TEMPLATE.md` schema: a workflow with a mermaid flowchart, a binding minimum evidence set, authority order, verification by observation, and a fraud table whose headline entry is the screenshot taken *after* the motion settled (it proves the end state, never the curve). Its stand-in for "run the tests" is captured frames at start/middle/settled plus a frame-budget measurement on the real surface under CPU throttling. Wired into every routing surface the `mm-domain` skill enumerates: the `mm-method` router paragraph, the `flowcharts.md` adapter router, the `mm-verify` sector list, and the README/`AGENTS.md` enumerations.
+- **Skill-repo integration assessment (`docs/research/2026-10-skill-repo-assessment.md`).** Ten external skill repositories were downloaded, inspected at source, and graded on two axes that actually decide an import: license (can we redistribute) and the release gate (does the text survive `.github/checks.py`'s vendor denylist). Two were adopted as cited sources; the remaining eight are recorded with their verdict and reason so a future contributor does not re-litigate them. The file is denylist-exempt by design (it lives under `docs/research/`), which is what lets it name the agent harnesses the candidates are authored for.
+
+### Changed
+- **No repository's files were vendored.** The two clean candidates (MIT, gate-clean) are cited as authoritative sources from the new adapter's Sources section and attributed in `THIRD_PARTY_NOTICES.md`, matching the repo's existing "cited/adapted, not copied" pattern. Vendoring was declined because it would have required widening the vendor-neutral release gate — the one gate that keeps this repo honest about being vendor-neutral.
+- Two of the ten candidates were declined for **licensing** reasons and are named in the assessment so they are not re-attempted without a license change: one bundles a third-party animation runtime under a non-open-source license that its own `NOTICE` confirms is not covered by its Apache grant, and one carries no repository-level license at all.
+
 ## 1.1.5
 
 ### Fixed
