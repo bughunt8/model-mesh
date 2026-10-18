@@ -131,6 +131,10 @@ If something cannot be verified (no runtime, needs credentials, needs human eyes
 - Before sending, reread once as a hostile reviewer: any claim not actually verified (verify it now, or relabel it as an explicit caveat), any answer in the wrong shape for the Step 0 classification, anything touched outside the declared scope? Fix, then send.
 - **Artifact gate, the last check before sending.** Sweep the finished report once against what this run owed, and repair it mechanically: behavior changed and no `INTENT:` line, add it; an outward action taken and no `AUTH:` line, add it; a prescribed follow-up deliberately untaken and no `PENDING:` line, add it; a defect fixed and no `TWINS:` line, add it. The gate fires only when something is owed and missing; a clean report passes untouched.
 
+## Multi-agent work
+
+When a task needs several agents or harnesses, read `docs/ORCHESTRATION.md` and pick the row of `docs/research/orchestration/MATRIX.md` that matches the situation and profile. Never review work with the harness and model family that produced it. Run `python scripts/validate-orchestration.py` after changing the matrix.
+
 ## Compressed examples
 
 **Task: "Fix the failing date test."**

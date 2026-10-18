@@ -1,0 +1,24 @@
+{
+  "harness": "dsh",
+  "status": "docs-checked-runtime-deferred",
+  "native_path": "Python SDK constructor arguments. The README also documents a persistent patch at $DSH_HOME/profiles/sdk/cordis.patch.yml, which this example does not use.",
+  "native_format": "json",
+  "native_config": "{\n  \"dsh_home\": \"/absolute/path/to/isolated-dsh-home\",\n  \"cwd\": \"/absolute/path/to/task-worktree\",\n  \"provider\": \"deepseek-official\",\n  \"model\": \"deepseek-v4-pro\",\n  \"reasoning_effort\": \"max\",\n  \"max_tokens\": 49152\n}",
+  "invocation": "with DeepSeekHarness(**native_config) as h: result = h.run(task_text, session_id=\"A04-001\"); read result.final_response and result.finish_reason",
+  "sources": [
+    "https://github.com/deepseek-ai/deepseek-harness/blob/master/python/sdk/README.md"
+  ],
+  "limitations": [
+    "Argument names and the `deepseek-official` provider route come from the SDK README, which demonstrates `deepseek-v4-flash`. The `deepseek-v4-pro` pair is not shown there and the model ID is under lifecycle change.",
+    "Public preview. MCP, memory and worktree handling appear only as community plugins, which get no weight here. Treat as an alternate, never the only path.",
+    "Provider routes for Kimi or other fallbacks depend on the chosen composition and are not documented in the README.",
+    "The community omo emulation plugin was not evaluated. No install, load or dry-run was executed."
+  ],
+  "role_binding": "DSH executes one author seat per SDK session in an isolated worktree. The matrix model chain is applied by the caller (retry with the next rung on failure); DSH has no omo fallback logic.",
+  "profiles": {
+    "ultimate": "Alternate for A01 and A04. First rung deepseek-v4-pro, next rung kimi-k3 through a separate provider route.",
+    "hybrid": "Alternate for A01 and A04. First rung gpt-5.6-terra is not DSH-native, so treat it as unavailable unless a provider route exists.",
+    "b4b": "Same limitation as hybrid for the OpenAI rung.",
+    "global": "Alternate for A01 and A04 with the same caveat for non-DeepSeek rungs."
+  }
+}

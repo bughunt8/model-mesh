@@ -125,3 +125,24 @@ The cost-capped profiles (`hybrid`, `b4b`) hold their **generalist / utility / o
 | `div-flagship` = grok-4.6 ($6) | **none** (dropped from HK-native `ultimate`; never in metered) | xAI has no HK developer API; not referenced by any current profile |
 
 Every **other** metered-profile rung resolves to a model at or under $4.65 output. `.github/checks.py` enforces this: a placeholder tagged over-cap in this table's exemption list may appear in `hybrid.json`/`b4b.json` only in its listed exempt slots; any over-cap placeholder **not** on the exempt list fails the build if it lands in a metered profile.
+
+## The `global` mapping
+
+`global` is the unrestricted twin of `ultimate`: no region limit and no budget cap, so the over-cap placeholders are allowed. It adds three first-party providers and one placeholder, and it keeps Gemini retired.
+
+| Placeholder | Real ID | Why |
+|---|---|---|
+| `ProviderA/flagship-xl` | `openai/gpt-6-astra` | Ultrawork and oracle primary; $50/1M output |
+| `ProviderA/flagship-mid` | `openai/gpt-6.1-sol` | Default implementer; $10/1M output |
+| `ProviderA/flagship-lite` | `openai/gpt-6-luna` | Quick and junior seats; $0.50/1M output |
+| `ProviderH/premium-comm` | `anthropic/claude-sonnet-5-5` | Orchestrator; $10/1M output. The top Anthropic tier (`claude-opus-5-5`, $20/1M) is an optional escalation |
+| `ProviderG/div-flagship` | `xai/grok-4.7` | Independent reviewer; $6/1M output under 200k prompt |
+
+All other global placeholders reuse the `ultimate` mapping above. Evidence and open decisions are in [docs/research/orchestration/GLOBAL-PROFILE.md](research/orchestration/GLOBAL-PROFILE.md).
+
+### Known ID churn found during the orchestration audit
+
+- `deepseek-v4-flash` currently routes to V4.1-Flash and may change; the model name `deepseek-flash` is the maintained alias.
+- DeepSeek V4-Pro stays on the API after 2026-09-14 per the API changelog, but the V4.1-Flash release page says V4-Pro requests route to V4.1-Flash until V4.1-Pro launches. The two statements conflict.
+- `opencode/mimo-v2.5-free` (the `ProviderB/open-coder` mapping) stops working on 2026-10-21. MiMo V2.6 Pro and Flash exist. The orchestration matrix does not use the retiring route.
+- The model-ID catalog in `scripts/validate-full-config.py` still lacks the newer DeepSeek and MiMo IDs. Extend it only with verified IDs.

@@ -1,0 +1,26 @@
+{
+  "harness": "codex",
+  "status": "docs-checked-runtime-deferred",
+  "native_path": "~/.codex/config.toml",
+  "native_format": "toml",
+  "native_config": "model = \"kimi-k3\"\nmodel_provider = \"kimi\"\nmodel_context_window = 1048576\n\n[model_providers.kimi]\nname = \"Kimi\"\nbase_url = \"https://api.moonshot.ai/v1\"\nenv_key = \"KIMI_API_KEY\"\nwire_api = \"responses\"\n",
+  "invocation": "codex exec \"<task>\" from the task worktree",
+  "sources": [
+    "https://platform.kimi.ai/docs/guide/codex-kimi",
+    "https://www.codex-docs.com/en/docs/config-file/config-reference"
+  ],
+  "limitations": [
+    "The block mirrors the Kimi vendor guide. Whether a Codex release accepts a non-OpenAI provider end to end was not run here.",
+    "Built-in provider IDs openai, ollama and lmstudio are reserved, so this uses a new ID `kimi`.",
+    "Sandbox and approval keys are omitted because they were not retrievable in this session. Set them before any real use.",
+    "In the ultimate profile Codex is allowed only as a conditional alternate on an HK-reachable model. The OpenAI provider is unavailable there.",
+    "The Moonshot international base URL is shown; confirm the endpoint your account is allowed to use from Hong Kong."
+  ],
+  "role_binding": "Used for A05 alternate: one author seat in a sandbox. Reviewer stays a different harness and model family.",
+  "profiles": {
+    "ultimate": "Conditional alternate: kimi-k3 first rung via the custom provider above.",
+    "hybrid": "Alternate may use an OpenAI route through the metered gateway only if that route is configured as a custom provider.",
+    "b4b": "Same as hybrid, and cap placement still applies.",
+    "global": "May use the built-in OpenAI provider with gpt-6.1-sol; no custom block needed."
+  }
+}
