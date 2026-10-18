@@ -1,0 +1,121 @@
+# Benchmark provenance for OMO-Benchmark v1.0
+# Snapshot date: 2026-10-18
+# If a CSV number cannot be traced to an entry here, it is unverified.
+
+dimensions:
+
+  AE:
+    label: Agentic Execution
+    primary:
+      name: Terminal-Bench 4.0
+      url: https://www.tbench.ai/leaderboard
+      notes: >
+        Cross-model table published by DeepSeek for V4.1-Flash-1017 is the
+        cleanest single-source comparison. Anthropic and Google launch tables
+        are harness-consistent within themselves.
+    secondary:
+      name: DeepSWE v1.1
+      url: https://datacurve.ai/leaderboard
+      notes: Run-to-run variation 1.4-3.2 points. Top four within 0.55 points.
+
+  TO:
+    label: Tool Orchestration
+    primary:
+      name: MCP Atlas
+      url: https://benchgen.ai/mcp-atlas
+    secondary:
+      - name: MCP Mark Verified
+      - name: Toolathlon Verified
+      - name: Function-calling pass rate (provider verification)
+
+  IP:
+    label: Instruction / Procedure
+    primary:
+      name: SkillsBench
+      url: https://vals.ai/benchmarks/skillsbench
+      notes: >
+        Discrepancy flagged: DeepSeek V4.1 Flash scores 56.5 on Hermes harness
+        and 69.80 on Vals/OpenHands. Conservative value used.
+    secondary:
+      - name: Hermes Bench (analytical and planning subsets)
+      - name: Instruction-following measured score (Sol 74.2, Sonnet 5.5 56.8)
+
+  R:
+    label: Reasoning
+    primary:
+      name: Artificial Analysis Intelligence Index
+      url: https://artificialanalysis.ai/
+      notes: Includes per-effort breakdowns for Opus 5.5 and GPT-6.1 Sol.
+    secondary:
+      - name: HLE (Humanity's Last Exam)
+      - name: GPQA Diamond
+
+  CR:
+    label: Context and Retrieval
+    primary:
+      name: AA-LCR
+      notes: Long-context reasoning within Artificial Analysis.
+    secondary:
+      - name: 1M-token MRCR v2 retrieval (Gemini 3 Flash)
+      - name: Long-context coding suites
+
+  VD:
+    label: Vision / Document
+    primary:
+      name: OmniDocBench
+      url: https://github.com/opendatalab/OmniDocBench
+    secondary:
+      - name: OCRBench V2
+      - name: IDP Core
+      - name: MMMU-Pro
+
+  LC:
+    label: Latency and Cost
+    primary:
+      name: Hermes Index cost per task
+      notes: USD per completed task, inclusive of retries.
+    secondary:
+      - name: Output tokens per second
+      - name: Time to first token
+
+  REL:
+    label: Reliability
+    primary:
+      name: Absence of documented loop or instruction-following failures
+      notes: >
+        Sources include model cards (GLM-5.3 multi-turn collapse), provider
+        verification reports (packyapi function-calling 7-20%), and community
+        bug reports (Kimi K3 tool-call repeat).
+    secondary:
+      - name: Provider function-calling pass rate
+      - name: Provider thinking-signature pass rate
+
+composites:
+
+  hermes_index:
+    name: Hermes Index
+    url: https://portal.nousresearch.com/bench
+    notes: >
+      The only benchmark that runs models inside a real agent harness with
+      files, follow-ups, and state grading. Anchor for the chain economics,
+      not for any single dimension.
+
+config_sources:
+
+  omo_docs:
+    name: oh-my-openagent documentation
+    url: https://github.com/code-yeongyu/oh-my-openagent
+
+  omo_schema:
+    name: omo.schema.json
+    url: https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/v4.19.4/assets/omo.schema.json
+
+  tokeness_pricing:
+    url: https://tokeness.ai/pricing
+
+  packyapi_pricing:
+    url: https://www.packyapi.com/pricing
+
+  zai_flash_docs:
+    name: GLM-5.3-Flash VLM guide
+    url: https://docs.z.ai/guides/vlm/glm-5.3-flash

@@ -1,0 +1,17 @@
+model,AE,TO,IP,R,CR,VD,LC,REL,price_per_task,hermes_index,notes
+claude-opus-5-5,95,88,90,100,85,78,30,85,4.99,63.31,Hermes #1; Skills 69.6
+gpt-6.1-sol,88,82,80,88,80,62,80,92,1.19,57.09,Hermes #2; best value
+gpt-6-astra,75,80,78,92,85,65,25,70,11.61,56.25,highest reasoning ceiling; asks clarifying questions
+claude-sonnet-5-5,65,78,85,82,90,72,55,75,2.82,53.14,Skills 66.9; IF regressed -7.1 vs Sonnet 5
+gpt-6-sol,55,75,80,70,75,55,70,82,1.35,44.04,DeepSWE 68.8; Skills 60.5
+glm-5.3,72,70,45,75,75,60,65,30,3.78,39.23,TB4 37.9 vs Skills 45.6 inversion; plan-adherence failure
+kimi-k3,45,95,70,80,80,50,45,60,6.50,39.16,MCP Atlas 84.2; TB4 12.6; tool-call repeat bug
+kimi-k2.7-code,50,88,75,65,65,40,60,80,3.52,not_ranked,MCP Atlas 76.0; MCP Mark 81.1
+deepseek-v4.1-flash,80,68,78,70,75,55,100,65,0.26,36.91,TB4 42.3 DeepSWE 77.0; parser drift risk
+minimax-m3,65,75,65,60,75,88,70,75,1.31,not_ranked,OmniDocBench 91.6; 24h/1959 calls
+qwen3.8-max,50,60,70,65,70,75,30,55,6.69,36.17,Skills 70.2; TB4 17.5
+claude-haiku-5-5,55,60,75,55,70,60,95,75,0.488,37.00,TB4 39.2
+glm-5.3-flash,60,80,50,55,60,50,90,45,0.497,34.95,Toolathlon 78.4
+gpt-6-luna,25,50,65,45,60,40,100,70,0.141,33.89,TB4 6.3
+gemini-4-argon,82,75,70,88,95,80,45,75,1.99,not_ranked,TB4 57.4; DeepSWE 77.9; 1M context
+mimo-v2.6-pro,55,70,50,65,90,60,80,35,1.20,not_ranked,1M context; tool-call repetition (MOPD-mitigated)

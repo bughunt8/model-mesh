@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.3.0
+
+### Added
+- **OMO-Benchmark integrated at the repository root.** The profile-weighted evaluation framework for `omo.jsonc` chains now lives alongside the routing layer: an eight-dimension model scorecard (AE, TO, IP, R, CR, VD, LC, REL), profile-weighted chain scoring with geometric decay `[0.50, 0.25, 0.12, 0.08, 0.05]`, a Contract Risk (CXR) penalty for machine-parsed output contracts, per-agent matrices for all 11 agent profiles, and per-category matrices for all 10 category lanes.
+- **Recommended configuration and tooling.** `configs/omo.recommended.jsonc` carries the 14 audited corrections; `scripts/validate.sh` checks JSONC syntax, required keys, and duplicate keys; `scripts/score.py` recomputes every chain from the CSVs; `data/sources.yaml` records full benchmark provenance. `data/model-scores.csv` and `data/profile-fits.csv` are the machine-readable scorecard and slot weights.
+- **Benchmark documentation.** `BENCHMARK.md` is the entry point; `docs/01-methodology.md` through `docs/06-handover.md` carry the methodology, scorecard, per-agent and per-category matrices, data-quality caveats, and handover rules.
+
+### Known issues
+- SkillsBench has a 13-point harness-dependent discrepancy for one high-volume model. The conservative value is used.
+- DeepSWE v1.1 run-to-run variation is 1.4–3.2 points. Grade bands, not ranks, are authoritative inside the noise floor.
+- Function-calling reliability for one relay route is unverified as of this snapshot. Historical pass rate: 7–20%.
+
+### Changed
+- The benchmark now lives at the repository root: `BENCHMARK.md`, `configs/`, `data/`, and `docs/01`–`06`.
+- The benchmark's real model IDs are its product, so `BENCHMARK.md`, `docs/01`–`06`, `configs/`, and `data/` are deliberately exempt from the vendor-name gate; each exemption is exact and self-tested. No other path gains an exemption.
+
 ## 1.2.0
 
 ### Added

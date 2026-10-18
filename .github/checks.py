@@ -71,10 +71,18 @@ DENY_EXEMPT_PATHS = {
     # Operational runbook for the weekly scan: intentionally names the reviewer
     # model id + API host as literal run instructions. Doc-only, no config.
     "scripts/landscape/CRON_TASK.md",
+    # OMO-Benchmark surfaces: real model IDs are the benchmark's product.
+    "BENCHMARK.md",
+    "docs/01-methodology.md",
+    "docs/02-model-scorecard.md",
+    "docs/03-agent-profiles.md",
+    "docs/04-category-lanes.md",
+    "docs/05-data-quality.md",
+    "docs/06-handover.md",
 }
-# Human research reports and the one deterministic golden result intentionally
-# preserve concrete research IDs. Keep both exemptions narrow and self-tested.
-DENY_EXEMPT_PREFIXES = ("docs/research/",)
+# Human research reports, benchmark configs, and benchmark data intentionally
+# preserve concrete model IDs. Each prefix is coextensive with that content.
+DENY_EXEMPT_PREFIXES = ("configs/", "data/", "docs/research/")
 LANDSCAPE_GOLDEN_PATH = "scripts/landscape/expected/scan-2026-09-04.expected.json"
 
 def is_example(rel):
@@ -137,15 +145,22 @@ _expected_exempt_paths = {
     "scripts/landscape/sources.yaml",
     "scripts/landscape/sources.json",
     "scripts/landscape/CRON_TASK.md",
+    "BENCHMARK.md",
+    "docs/01-methodology.md",
+    "docs/02-model-scorecard.md",
+    "docs/03-agent-profiles.md",
+    "docs/04-category-lanes.md",
+    "docs/05-data-quality.md",
+    "docs/06-handover.md",
 }
 if DENY_EXEMPT_PATHS == _expected_exempt_paths:
-    ok("landscape denylist path exemptions remain exact")
+    ok("denylist path exemptions remain exact")
 else:
-    fail(f"landscape denylist path exemptions widened: {sorted(DENY_EXEMPT_PATHS - _expected_exempt_paths)}")
-if DENY_EXEMPT_PREFIXES == ("docs/research/",):
-    ok("research report exemption remains exact")
+    fail(f"denylist path exemptions widened: {sorted(DENY_EXEMPT_PATHS - _expected_exempt_paths)}")
+if DENY_EXEMPT_PREFIXES == ("configs/", "data/", "docs/research/"):
+    ok("denylist prefix exemptions remain exact")
 else:
-    fail(f"research report exemption widened: {DENY_EXEMPT_PREFIXES}")
+    fail(f"denylist prefix exemption widened: {DENY_EXEMPT_PREFIXES}")
 if LANDSCAPE_GOLDEN_PATH == "scripts/landscape/expected/scan-2026-09-04.expected.json":
     ok("landscape golden exemption remains exact")
 else:
@@ -157,6 +172,12 @@ _must_not_be_exempt = [
     "docs/research-adjacent/report.md",
     "examples/settings.yaml",       # only *.example.yaml is exempt, not bare .yaml
     "config.yml",
+    # Benchmark exemptions must not leak into nearby names or directories.
+    "docs/benchmark/01-methodology.md",
+    "datasets/sources.yaml",
+    "benchmarking.md",
+    "scripts/score.py",
+    "docs/benchmarks/03-agent-profiles.md",
 ]
 for _path in _must_not_be_exempt:
     ok(f"not exempt: {_path}") if not is_example(_path) else fail(f"self-test: exemption widened to {_path}")

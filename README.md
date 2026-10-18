@@ -10,7 +10,7 @@ _Works on any coding-agent harness. The shipped examples target two: [oh-my-open
 
 [Quickstart](#quickstart-60-seconds) · [How it works](#how-it-works) · [Profiles](#the-routing-one-role-one-family) · [Self-governing](#self-governing-the-landscape-engine) · [Validation](#validation-two-gates) · [Claims & limits](#claims--limits)
 
-`v1.2.0` · MIT · CI-gated on `main` and every PR
+`v1.3.0` · MIT · CI-gated on `main` and every PR
 
 </div>
 
@@ -153,6 +153,10 @@ AGENTS.md · CHANGELOG.md · CONTRIBUTING.md · DOC.md · THIRD_PARTY_NOTICES.md
 ```
 
 The three `profiles/*.json` are **fragments** (agents + categories only); `setup-config.sh` wraps a chosen one in the required `[opencode]` structure. Each ships a `*.example.json` with real IDs as a concrete mapping reference (exempt from the vendor-name CI check by design). Newest at a glance is always in [`CHANGELOG.md`](CHANGELOG.md). `v1.1.5` reframed the cost cap as an enforced policy knob, added a native-vision fallback, and removed no-op fallback rungs at the mapping level.
+
+### OMO-Benchmark
+
+[`BENCHMARK.md`](BENCHMARK.md) is a profile-weighted evaluation framework for `omo.jsonc` chains: it scores the 11 agent profiles and 10 category lanes across eight benchmark dimensions and ships the recommended config, the scorecard, and the scorer. `configs/`, `data/`, `BENCHMARK.md`, and `docs/01`–`06` are deliberately exempt from the vendor-name gate by design, because real model IDs are the benchmark's product.
 
 ---
 

@@ -1,0 +1,37 @@
+name: benchmark
+
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate config (layers 1-2)
+        run: bash scripts/validate.sh --layers 1,2
+
+      - name: Recompute chain scores
+        run: python3 scripts/score.py --all
+
+      - name: Check scorecard CSV is well formed
+        run: |
+          python3 - <<'PY'
+          import csv, pathlib
+          p = pathlib.Path("data/model-scores.csv")
+          rows = list(csv.DictReader(p.open()))
+          assert len(rows) >= 16, f"expected at least 16 models, got {len(rows)}"
+          dims = ("AE","TO","IP","R","CR","VD","LC","REL")
+          for r in rows:
+              for d in dims:
+                  v = float(r[d])
+                  assert 0 <= v <= 100, f"{r['model']} {d}={v} out of range"
+          print(f"{len(rows)} models, all dimensions in range")
+          PY
