@@ -12,6 +12,7 @@ Checks:
   D4 the lens table in docs/REVIEW-PANEL.md lists the same lens ids as examples/orchestration/lenses.json
      (ids only, not the descriptive text) and every lens is used by a situation
   D5 relative links and repo paths exist in the orchestration docs, the research notes and TESTING.md
+     (review records are checked for links only, because they quote paths from other repositories)
   D6 the CHANGELOG top version equals the plugin and marketplace versions
   D7 every script under scripts/ with a --self-test flag is run by a CI workflow
   D8 the tier and gate tables in docs/REVIEW-PANEL.md match the matrix (situations per tier, lens limits,
@@ -122,6 +123,8 @@ def run(root):
                 continue
             if not os.path.exists(os.path.normpath(os.path.join(base, target))):
                 add("D5", d, f"link target {target} does not exist")
+        if "review" in os.path.basename(d):
+            continue  # review records quote paths from other repositories
         for target in re.findall(r"`((?:scripts|examples|docs|profiles|skills)/[A-Za-z0-9_./-]+\.[a-z]+)`", read(root, d)):
             if not os.path.exists(os.path.join(root, target)):
                 add("D5", d, f"path {target} does not exist")
