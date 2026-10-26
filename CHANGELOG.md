@@ -5,14 +5,16 @@
 ### Added
 - **Review panel.** `docs/REVIEW-PANEL.md` defines how reviews run: zero-context reviewers with read-only tools, twelve review lenses, a fan-out budget by tier, an aggregator, and spec and drift gates. The design was informed by a study of the Elephant-Goldfish Model, recorded in `docs/research/orchestration/EGM-ANALYSIS.md`. No source text was copied.
 - **Matrix fields.** Every situation has `review_tier`, `lenses` and `gates`. Every reviewer seat has `lenses`. Every option has an `aggregator` seat and the `zero-context-review` constraint. A05 and A06 get a second reviewer seat from a disjoint model family, with the primary lens run by both.
-- **Validator rules O15 to O18** with 23 new mutation cases in `--self-test`.
+- **Validator rules O15 to O18** with 34 new mutation cases, including file-based cases that finally cover O10, O13 and O14 in `--self-test`.
 - **`examples/orchestration/lenses.json`, `finding.schema.json` and `standards/`** (spec readiness and drift).
-- **`scripts/aggregate-findings.py`.** Validates findings, clusters them deterministically and marks cross-family corroboration.
+- **`scripts/aggregate-findings.py`.** Validates findings, clusters them deterministically against the first finding's range, namespaces ids by file, normalizes paths and families, marks cross-family corroboration and lists possible duplicates for the model merge.
 - **`scripts/score-review.py`, `examples/orchestration/seeded/` and `docs/research/orchestration/SEEDED-DEFECTS.md`.** The scorer and protocol for testing whether more lenses or more families catch more. The fixture is invented and no result is claimed.
-- **`scripts/check-drift.py`.** Compares counts, IDs, links and versions in the docs with the data and scripts.
+- **`scripts/check-drift.py`.** Compares counts, IDs, links, versions, tier and gate tables and the test counts in the docs with the data and scripts (rules D1 to D9).
 - **`scripts/validate-scenarios.py`, `tests/scenarios/` and `TESTING.md`.** Skill front matter and size cap checks and static scenario patterns.
 
 ### Changed
+- Rule O14 now reads `MATRIX.md` under the root it is given, so the self-test can cover it.
+- Spread options outside ultimate use a third family as the aggregator's first rung where the model table has one.
 - `MATRIX.md` gains lens and aggregator columns and a review panel table.
 - The independence rule gains a fifth point: the aggregator sits outside the author and orchestrator harness and families.
 - `mm-domain` and `mm-verify` gain a `description` in their front matter. Both had none.

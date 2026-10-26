@@ -19,6 +19,8 @@ Every reviewer call starts fresh. Each option carries the constraints `zero-cont
 
 1. The reviewer receives three things: the artifact under review, the standard or lens it applies, and any explicit context the orchestrator chooses to pass as text.
 2. It does not receive the author's conversation, the orchestrator's plan, earlier reviewer findings or the author's own summary of what changed.
+
+The validator checks the part it can see (rule O15). Each reviewer seat may carry only the keys `role`, `seat`, `harness`, `chain`, `kind`, `execution` and `lenses`, so a seat cannot declare write tools or an author transcript in the data. Whether a runner honors the contract at run time is not checked and not tested.
 3. It gets read-only tools. It cannot edit the artifact, push, or call the author's harness.
 4. Its project instruction files are the ones for review, not the author's.
 5. It returns findings in the shape of [finding.schema.json](../examples/orchestration/finding.schema.json). Free text does not enter the merge.
@@ -46,7 +48,7 @@ A lens is a set of questions. The library is [lenses.json](../examples/orchestra
 
 ## Tiers and fan-out budget
 
-Every lens is one fresh reviewer call by default. Putting several lenses in one call saves money and gives up the diversity the lens was for. The tier caps the cost (rule O17).
+Every lens is one fresh reviewer call by default. The primary lens is named in the situation's `primary_lens` field and must be the first lens. Putting several lenses in one call saves money and gives up the diversity the lens was for. The tier caps the cost, and rule O17 enforces the split for the spread tier: the primary lens runs on both seats and every other lens runs on exactly one seat. For the other tiers O17 caps lens count and seat count only.
 
 | Tier | Situations | Lenses at most | Reviewer seats | Reviewer calls per round |
 |---|---|---|---|---|
@@ -60,15 +62,18 @@ The spread tier is for security work and independent change review, where one fa
 
 ## Aggregator
 
-Each option has an aggregator seat (rule O16). It sits outside the author and orchestrator harness and families, so the merge step cannot inherit the author's bias. It may use the same harness and chain as a reviewer seat. If you want it separate from reviewers too, change the data and the validator will still hold.
+Each option has an aggregator seat (rule O16). It sits outside the author and orchestrator harness and families, so the merge step cannot inherit the author's bias.
+
+In the spread tier the merge model would otherwise be one of the two reviewing families. Outside ultimate, the aggregator's first rung is therefore a third family whenever the model table has one under the cap, and a later rung may fall back to a reviewer family. Where no third family exists the aggregator copies reviewer seat 1. That is the case for A05 on hybrid and b4b, and for every option on ultimate. Rule O16 enforces the third-family preference. When the aggregator shares a family with a reviewer, treat the merge as less neutral and keep the single-family blocker rule below.
 
 Merge in this order:
 
 1. Validate every finding against the schema. Reject free text.
-2. Cluster with [aggregate-findings.py](../scripts/aggregate-findings.py): same path, same category, line ranges within 3 lines. Keep the highest severity. Record the lenses, harnesses and families that reported it.
+2. Cluster with [aggregate-findings.py](../scripts/aggregate-findings.py): same path, same category, and a range within 3 lines of the range of the cluster's first finding, so a chain of nearby findings cannot grow into one cluster. Paths and family names are normalized and ids are prefixed with the input file name. Keep the highest severity. Record the lenses, harnesses and families that reported it.
 3. Mark a cluster `corroborated` when two or more families reported it. A single-family cluster is kept and labeled, not dropped.
-4. Only findings with no line range can be left for a model merge. The script flags them as `needs_model_merge`.
+4. Possible duplicates the rules cannot settle go to a model merge. The script lists them in `related_clusters` and sets `needs_model_merge`: the same place under a different category, a finding with no line range next to ranged findings of the same category, and several rangeless findings on one path and category.
 5. Sort by severity, then corroborated first. Blockers stop the round.
+6. The model merge must keep each cluster's families, severity and corroboration flag. A blocker reported by one family stays a blocker. The script does not check what the model merge does with its output.
 
 The deterministic step runs first so the model merge cannot silently rewrite what two reviewers said.
 
@@ -90,6 +95,14 @@ A09 produces the spec that the A02 and A03 gate reads. It has no gate of its own
 ## Measuring
 
 [score-review.py](../scripts/score-review.py) scores runs against seeded defects. For each run it reports recall, cluster precision, what each lens and each family caught alone, and what only one of them caught. The committed fixture is invented. The protocol for a real corpus is in [SEEDED-DEFECTS.md](research/orchestration/SEEDED-DEFECTS.md).
+
+## Known limits
+
+- On ultimate, the second spread reviewer seat in A05 and A06 is a single rung with no fallback. The model table has no legal fallback for it: every other eligible family overlaps an author, the orchestrator or reviewer seat 1, or is retiring, and the one family it uses has a single model row. If that rung fails, the round runs with one reviewer family and should be reported as degraded.
+- On hybrid, b4b and global, the second seat has one fallback from another family. The seat that answers can change between runs, and a run should record which family answered.
+- Spread seats run on qwen-code in the example data. Most second-seat models there come from other vendors than the harness maker, so that pairing needs an adapter that has not been built or run.
+- `corroborated` means two families reported a finding in the same place. It does not mean the finding is correct, because families can share an error.
+- Nothing here has run on a real artifact.
 
 ## Not adopted
 

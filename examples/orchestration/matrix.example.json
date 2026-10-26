@@ -518,7 +518,8 @@
                     "regression-risk",
                     "contract-fit",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -608,7 +609,8 @@
                     "regression-risk",
                     "contract-fit",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -699,7 +701,8 @@
                     "regression-risk",
                     "contract-fit",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -795,7 +798,8 @@
                     "regression-risk",
                     "contract-fit",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -885,7 +889,8 @@
                     "regression-risk",
                     "contract-fit",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -976,7 +981,8 @@
                     "regression-risk",
                     "contract-fit",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -1072,7 +1078,8 @@
                     "regression-risk",
                     "contract-fit",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -1162,7 +1169,8 @@
                     "regression-risk",
                     "contract-fit",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -1253,7 +1261,8 @@
                     "regression-risk",
                     "contract-fit",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -1349,7 +1358,8 @@
                     "regression-risk",
                     "contract-fit",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -1439,7 +1449,8 @@
                     "regression-risk",
                     "contract-fit",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -1530,7 +1541,8 @@
                     "regression-risk",
                     "contract-fit",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -1587,7 +1599,8 @@
       "gates": {
         "pre": "none",
         "post": "none"
-      }
+      },
+      "primary_lens": "regression-risk"
     },
     {
       "id": "A02",
@@ -1665,7 +1678,8 @@
                     "regression-risk",
                     "migration-compat",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -1774,7 +1788,8 @@
                     "regression-risk",
                     "migration-compat",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -1889,7 +1904,8 @@
                     "regression-risk",
                     "migration-compat",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -1998,7 +2014,8 @@
                     "regression-risk",
                     "migration-compat",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -2113,7 +2130,8 @@
                     "regression-risk",
                     "migration-compat",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -2222,7 +2240,8 @@
                     "regression-risk",
                     "migration-compat",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -2337,7 +2356,8 @@
                     "regression-risk",
                     "migration-compat",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -2446,7 +2466,8 @@
                     "regression-risk",
                     "migration-compat",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -2505,7 +2526,8 @@
       "gates": {
         "pre": "spec-readiness",
         "post": "drift"
-      }
+      },
+      "primary_lens": "contract-fit"
     },
     {
       "id": "A03",
@@ -2573,7 +2595,8 @@
                     "regression-risk",
                     "contract-fit",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -2669,7 +2692,8 @@
                     "regression-risk",
                     "contract-fit",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -2766,7 +2790,8 @@
                     "regression-risk",
                     "contract-fit",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -2868,7 +2893,8 @@
                     "regression-risk",
                     "contract-fit",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -2964,7 +2990,8 @@
                     "regression-risk",
                     "contract-fit",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -3061,7 +3088,8 @@
                     "regression-risk",
                     "contract-fit",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -3163,7 +3191,8 @@
                     "regression-risk",
                     "contract-fit",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -3259,7 +3288,8 @@
                     "regression-risk",
                     "contract-fit",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -3356,7 +3386,8 @@
                     "regression-risk",
                     "contract-fit",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -3458,7 +3489,8 @@
                     "regression-risk",
                     "contract-fit",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -3554,7 +3586,8 @@
                     "regression-risk",
                     "contract-fit",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -3651,7 +3684,8 @@
                     "regression-risk",
                     "contract-fit",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -3705,7 +3739,8 @@
       "gates": {
         "pre": "spec-readiness",
         "post": "drift"
-      }
+      },
+      "primary_lens": "regression-risk"
     },
     {
       "id": "A04",
@@ -3774,7 +3809,8 @@
                     "evidence-provenance",
                     "operability",
                     "regression-risk"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -3875,7 +3911,8 @@
                     "evidence-provenance",
                     "operability",
                     "regression-risk"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -3981,7 +4018,8 @@
                     "evidence-provenance",
                     "operability",
                     "regression-risk"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -4082,7 +4120,8 @@
                     "evidence-provenance",
                     "operability",
                     "regression-risk"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -4188,7 +4227,8 @@
                     "evidence-provenance",
                     "operability",
                     "regression-risk"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -4289,7 +4329,8 @@
                     "evidence-provenance",
                     "operability",
                     "regression-risk"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -4395,7 +4436,8 @@
                     "evidence-provenance",
                     "operability",
                     "regression-risk"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -4496,7 +4538,8 @@
                     "evidence-provenance",
                     "operability",
                     "regression-risk"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -4554,7 +4597,8 @@
       "gates": {
         "pre": "none",
         "post": "none"
-      }
+      },
+      "primary_lens": "evidence-provenance"
     },
     {
       "id": "A05",
@@ -4623,7 +4667,8 @@
                     "security-abuse",
                     "regression-risk",
                     "operability"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 },
                 {
                   "role": "momus",
@@ -4637,7 +4682,8 @@
                     "security-abuse",
                     "contract-fit",
                     "evidence-provenance"
-                  ]
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -4739,7 +4785,8 @@
                     "security-abuse",
                     "regression-risk",
                     "operability"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 },
                 {
                   "role": "momus",
@@ -4753,7 +4800,8 @@
                     "security-abuse",
                     "contract-fit",
                     "evidence-provenance"
-                  ]
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -4861,7 +4909,8 @@
                     "security-abuse",
                     "regression-risk",
                     "operability"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 },
                 {
                   "role": "momus",
@@ -4876,7 +4925,8 @@
                     "security-abuse",
                     "contract-fit",
                     "evidence-provenance"
-                  ]
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -4978,7 +5028,8 @@
                     "security-abuse",
                     "regression-risk",
                     "operability"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 },
                 {
                   "role": "momus",
@@ -4993,7 +5044,8 @@
                     "security-abuse",
                     "contract-fit",
                     "evidence-provenance"
-                  ]
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -5101,7 +5153,8 @@
                     "security-abuse",
                     "regression-risk",
                     "operability"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 },
                 {
                   "role": "momus",
@@ -5116,7 +5169,8 @@
                     "security-abuse",
                     "contract-fit",
                     "evidence-provenance"
-                  ]
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -5218,7 +5272,8 @@
                     "security-abuse",
                     "regression-risk",
                     "operability"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 },
                 {
                   "role": "momus",
@@ -5233,7 +5288,8 @@
                     "security-abuse",
                     "contract-fit",
                     "evidence-provenance"
-                  ]
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -5341,7 +5397,8 @@
                     "security-abuse",
                     "regression-risk",
                     "operability"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 },
                 {
                   "role": "momus",
@@ -5356,7 +5413,8 @@
                     "security-abuse",
                     "contract-fit",
                     "evidence-provenance"
-                  ]
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -5395,8 +5453,8 @@
               "aggregator": {
                 "harness": "goose",
                 "chain": [
-                  "ProviderG/div-flagship",
-                  "ProviderC/open-reason-xl"
+                  "ProviderF/vision-xl",
+                  "ProviderG/div-flagship"
                 ],
                 "kind": "aggregation",
                 "execution": "deterministic-key-first-then-model-merge"
@@ -5458,7 +5516,8 @@
                     "security-abuse",
                     "regression-risk",
                     "operability"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 },
                 {
                   "role": "momus",
@@ -5473,7 +5532,8 @@
                     "security-abuse",
                     "contract-fit",
                     "evidence-provenance"
-                  ]
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -5513,8 +5573,8 @@
               "aggregator": {
                 "harness": "pi",
                 "chain": [
-                  "ProviderG/div-flagship",
-                  "ProviderC/open-reason-xl"
+                  "ProviderF/vision-xl",
+                  "ProviderG/div-flagship"
                 ],
                 "kind": "aggregation",
                 "execution": "deterministic-key-first-then-model-merge"
@@ -5535,7 +5595,8 @@
       "gates": {
         "pre": "none",
         "post": "none"
-      }
+      },
+      "primary_lens": "security-abuse"
     },
     {
       "id": "A06",
@@ -5595,7 +5656,8 @@
                     "regression-risk",
                     "simplicity",
                     "evidence-provenance"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 },
                 {
                   "role": "momus",
@@ -5609,7 +5671,8 @@
                     "contract-fit",
                     "security-abuse",
                     "comprehension"
-                  ]
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -5699,7 +5762,8 @@
                     "regression-risk",
                     "simplicity",
                     "evidence-provenance"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 },
                 {
                   "role": "momus",
@@ -5713,7 +5777,8 @@
                     "contract-fit",
                     "security-abuse",
                     "comprehension"
-                  ]
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -5808,7 +5873,8 @@
                     "regression-risk",
                     "simplicity",
                     "evidence-provenance"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 },
                 {
                   "role": "momus",
@@ -5823,7 +5889,8 @@
                     "contract-fit",
                     "security-abuse",
                     "comprehension"
-                  ]
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -5858,8 +5925,8 @@
               "aggregator": {
                 "harness": "goose",
                 "chain": [
-                  "ProviderC/open-reason-xl",
-                  "ProviderC/open-reason-lite"
+                  "ProviderF/vision-xl",
+                  "ProviderC/open-reason-xl"
                 ],
                 "kind": "aggregation",
                 "execution": "deterministic-key-first-then-model-merge"
@@ -5913,7 +5980,8 @@
                     "regression-risk",
                     "simplicity",
                     "evidence-provenance"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 },
                 {
                   "role": "momus",
@@ -5928,7 +5996,8 @@
                     "contract-fit",
                     "security-abuse",
                     "comprehension"
-                  ]
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -5963,8 +6032,8 @@
               "aggregator": {
                 "harness": "pi",
                 "chain": [
-                  "ProviderC/open-reason-xl",
-                  "ProviderC/open-reason-lite"
+                  "ProviderF/vision-xl",
+                  "ProviderC/open-reason-xl"
                 ],
                 "kind": "aggregation",
                 "execution": "deterministic-key-first-then-model-merge"
@@ -6023,7 +6092,8 @@
                     "regression-risk",
                     "simplicity",
                     "evidence-provenance"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 },
                 {
                   "role": "momus",
@@ -6038,7 +6108,8 @@
                     "contract-fit",
                     "security-abuse",
                     "comprehension"
-                  ]
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -6073,8 +6144,8 @@
               "aggregator": {
                 "harness": "goose",
                 "chain": [
-                  "ProviderC/open-reason-lite",
-                  "ProviderC/open-reason-xl"
+                  "ProviderF/vision-xl",
+                  "ProviderC/open-reason-lite"
                 ],
                 "kind": "aggregation",
                 "execution": "deterministic-key-first-then-model-merge"
@@ -6128,7 +6199,8 @@
                     "regression-risk",
                     "simplicity",
                     "evidence-provenance"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 },
                 {
                   "role": "momus",
@@ -6143,7 +6215,8 @@
                     "contract-fit",
                     "security-abuse",
                     "comprehension"
-                  ]
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -6178,8 +6251,8 @@
               "aggregator": {
                 "harness": "pi",
                 "chain": [
-                  "ProviderC/open-reason-lite",
-                  "ProviderC/open-reason-xl"
+                  "ProviderF/vision-xl",
+                  "ProviderC/open-reason-lite"
                 ],
                 "kind": "aggregation",
                 "execution": "deterministic-key-first-then-model-merge"
@@ -6238,7 +6311,8 @@
                     "regression-risk",
                     "simplicity",
                     "evidence-provenance"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 },
                 {
                   "role": "momus",
@@ -6253,7 +6327,8 @@
                     "contract-fit",
                     "security-abuse",
                     "comprehension"
-                  ]
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -6288,8 +6363,8 @@
               "aggregator": {
                 "harness": "goose",
                 "chain": [
-                  "ProviderG/div-flagship",
-                  "ProviderC/open-reason-xl"
+                  "ProviderF/vision-xl",
+                  "ProviderG/div-flagship"
                 ],
                 "kind": "aggregation",
                 "execution": "deterministic-key-first-then-model-merge"
@@ -6343,7 +6418,8 @@
                     "regression-risk",
                     "simplicity",
                     "evidence-provenance"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 },
                 {
                   "role": "momus",
@@ -6358,7 +6434,8 @@
                     "contract-fit",
                     "security-abuse",
                     "comprehension"
-                  ]
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -6393,8 +6470,8 @@
               "aggregator": {
                 "harness": "pi",
                 "chain": [
-                  "ProviderG/div-flagship",
-                  "ProviderC/open-reason-xl"
+                  "ProviderF/vision-xl",
+                  "ProviderG/div-flagship"
                 ],
                 "kind": "aggregation",
                 "execution": "deterministic-key-first-then-model-merge"
@@ -6416,7 +6493,8 @@
       "gates": {
         "pre": "none",
         "post": "none"
-      }
+      },
+      "primary_lens": "contract-fit"
     },
     {
       "id": "A07",
@@ -6476,7 +6554,8 @@
                     "evidence-provenance",
                     "comprehension",
                     "contract-fit"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -6566,7 +6645,8 @@
                     "evidence-provenance",
                     "comprehension",
                     "contract-fit"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -6662,7 +6742,8 @@
                     "evidence-provenance",
                     "comprehension",
                     "contract-fit"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -6752,7 +6833,8 @@
                     "evidence-provenance",
                     "comprehension",
                     "contract-fit"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -6848,7 +6930,8 @@
                     "evidence-provenance",
                     "comprehension",
                     "contract-fit"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -6938,7 +7021,8 @@
                     "evidence-provenance",
                     "comprehension",
                     "contract-fit"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -7034,7 +7118,8 @@
                     "evidence-provenance",
                     "comprehension",
                     "contract-fit"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -7124,7 +7209,8 @@
                     "evidence-provenance",
                     "comprehension",
                     "contract-fit"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -7181,7 +7267,8 @@
       "gates": {
         "pre": "none",
         "post": "none"
-      }
+      },
+      "primary_lens": "evidence-provenance"
     },
     {
       "id": "A08",
@@ -7249,7 +7336,8 @@
                     "numerics-reconciliation",
                     "evidence-provenance",
                     "consistency"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -7346,7 +7434,8 @@
                     "numerics-reconciliation",
                     "evidence-provenance",
                     "consistency"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -7449,7 +7538,8 @@
                     "numerics-reconciliation",
                     "evidence-provenance",
                     "consistency"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -7546,7 +7636,8 @@
                     "numerics-reconciliation",
                     "evidence-provenance",
                     "consistency"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -7649,7 +7740,8 @@
                     "numerics-reconciliation",
                     "evidence-provenance",
                     "consistency"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -7746,7 +7838,8 @@
                     "numerics-reconciliation",
                     "evidence-provenance",
                     "consistency"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -7849,7 +7942,8 @@
                     "numerics-reconciliation",
                     "evidence-provenance",
                     "consistency"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -7946,7 +8040,8 @@
                     "numerics-reconciliation",
                     "evidence-provenance",
                     "consistency"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -8001,7 +8096,8 @@
       "gates": {
         "pre": "none",
         "post": "none"
-      }
+      },
+      "primary_lens": "numerics-reconciliation"
     },
     {
       "id": "A09",
@@ -8073,7 +8169,8 @@
                     "cost-quota",
                     "operability",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -8176,7 +8273,8 @@
                     "cost-quota",
                     "operability",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -8285,7 +8383,8 @@
                     "cost-quota",
                     "operability",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -8388,7 +8487,8 @@
                     "cost-quota",
                     "operability",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -8497,7 +8597,8 @@
                     "cost-quota",
                     "operability",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -8600,7 +8701,8 @@
                     "cost-quota",
                     "operability",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -8709,7 +8811,8 @@
                     "cost-quota",
                     "operability",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -8812,7 +8915,8 @@
                     "cost-quota",
                     "operability",
                     "simplicity"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -8873,7 +8977,8 @@
       "gates": {
         "pre": "none",
         "post": "none"
-      }
+      },
+      "primary_lens": "contract-fit"
     },
     {
       "id": "A10",
@@ -8933,7 +9038,8 @@
                     "authorization-state",
                     "security-abuse",
                     "contract-fit"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -9024,7 +9130,8 @@
                     "authorization-state",
                     "security-abuse",
                     "contract-fit"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -9120,7 +9227,8 @@
                     "authorization-state",
                     "security-abuse",
                     "contract-fit"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -9211,7 +9319,8 @@
                     "authorization-state",
                     "security-abuse",
                     "contract-fit"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -9307,7 +9416,8 @@
                     "authorization-state",
                     "security-abuse",
                     "contract-fit"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -9398,7 +9508,8 @@
                     "authorization-state",
                     "security-abuse",
                     "contract-fit"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -9494,7 +9605,8 @@
                     "authorization-state",
                     "security-abuse",
                     "contract-fit"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -9585,7 +9697,8 @@
                     "authorization-state",
                     "security-abuse",
                     "contract-fit"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -9642,7 +9755,8 @@
       "gates": {
         "pre": "none",
         "post": "none"
-      }
+      },
+      "primary_lens": "authorization-state"
     },
     {
       "id": "A11",
@@ -9709,7 +9823,8 @@
                     "authorization-state",
                     "security-abuse",
                     "evidence-provenance"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -9804,7 +9919,8 @@
                     "authorization-state",
                     "security-abuse",
                     "evidence-provenance"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -9905,7 +10021,8 @@
                     "authorization-state",
                     "security-abuse",
                     "evidence-provenance"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -10000,7 +10117,8 @@
                     "authorization-state",
                     "security-abuse",
                     "evidence-provenance"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -10101,7 +10219,8 @@
                     "authorization-state",
                     "security-abuse",
                     "evidence-provenance"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -10196,7 +10315,8 @@
                     "authorization-state",
                     "security-abuse",
                     "evidence-provenance"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -10297,7 +10417,8 @@
                     "authorization-state",
                     "security-abuse",
                     "evidence-provenance"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -10392,7 +10513,8 @@
                     "authorization-state",
                     "security-abuse",
                     "evidence-provenance"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -10446,7 +10568,8 @@
       "gates": {
         "pre": "none",
         "post": "none"
-      }
+      },
+      "primary_lens": "authorization-state"
     },
     {
       "id": "A12",
@@ -10506,7 +10629,8 @@
                     "consistency",
                     "numerics-reconciliation",
                     "comprehension"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -10598,7 +10722,8 @@
                     "consistency",
                     "numerics-reconciliation",
                     "comprehension"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -10696,7 +10821,8 @@
                     "consistency",
                     "numerics-reconciliation",
                     "comprehension"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -10788,7 +10914,8 @@
                     "consistency",
                     "numerics-reconciliation",
                     "comprehension"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -10886,7 +11013,8 @@
                     "consistency",
                     "numerics-reconciliation",
                     "comprehension"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -10978,7 +11106,8 @@
                     "consistency",
                     "numerics-reconciliation",
                     "comprehension"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -11076,7 +11205,8 @@
                     "consistency",
                     "numerics-reconciliation",
                     "comprehension"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -11168,7 +11298,8 @@
                     "consistency",
                     "numerics-reconciliation",
                     "comprehension"
-                  ]
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -11227,7 +11358,8 @@
       "gates": {
         "pre": "none",
         "post": "none"
-      }
+      },
+      "primary_lens": "consistency"
     }
   ],
   "mandatory_independence": {

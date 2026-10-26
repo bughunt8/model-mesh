@@ -20,15 +20,15 @@ EGM is a design-stage review protocol, not a routing system. The flow is brainst
 
 Repo fact: EGM reviewer adapters declare `model: inherit` ([.claude-plugin/agents/zoom_out.md](https://github.com/google/elephant-goldfish-model/blob/main/.claude-plugin/agents/zoom_out.md)). A reviewer therefore runs the same model and the same harness as the author. EGM isolates by context and tools: reviewers get read-only tools, no parent transcript and no CLAUDE.md ([docs/claude.md](https://github.com/google/elephant-goldfish-model/blob/main/docs/claude.md)). The doc says this is not filesystem isolation. The interactive review preset also runs checkpoint gates between stages ([egm_review](https://github.com/google/elephant-goldfish-model/blob/main/skills/egm_review/SKILL.md)).
 
-model-mesh isolates by harness and model family and says little about context hygiene. The two rules cover different failure modes, so they combine without conflict.
+Before this change model-mesh isolated by harness and model family and said little about context hygiene. The two rules cover different failure modes, so they combine without conflict.
 
 ## Do multiple angles work?
 
-Judgement, not measured. I found no benchmark, defect-detection rate or false-positive data in the repo. Its claim that context-free review reduces hallucinations ([docs/index.md](https://github.com/google/elephant-goldfish-model/blob/main/docs/index.md)) is asserted. The tests check protocol compliance with regex assertions, not review quality.
+Judgement, not measured. I found no measured defect-detection rate or false-positive data in the repo. Its design doc labels each `test_scenarios.yaml` an evaluation benchmark for precision and recall ([docs/designs/review.md](https://github.com/google/elephant-goldfish-model/blob/main/docs/designs/review.md)), but the example file I read holds pattern assertions, not rates. Its claim that context-free review reduces hallucinations ([docs/index.md](https://github.com/google/elephant-goldfish-model/blob/main/docs/index.md)) is asserted. The tests check protocol compliance with regex assertions, not review quality.
 
 - Coverage: yes, plausibly. Different rubrics prompt different questions, which finds different classes of defect.
 - Independence: no. Six lenses on one model share training biases, so they tend to agree on the same blind spots. A same-family reviewer can look thorough while repeating the author's error.
-- Noise: six to eight reviewers per stage produce overlapping findings, and the dedupe step is an LLM summarising free text.
+- Noise: a stage runs one or three reviewers, and the synthesizer can launch two instances of each, so up to six reviews per stage ([agents/synthesizer.md](https://github.com/google/elephant-goldfish-model/blob/main/agents/synthesizer.md)). The findings overlap, and the dedupe step is an LLM summarising free text.
 
 Working position: lens count adds breadth and family count adds independence. Treat them as separate axes.
 
