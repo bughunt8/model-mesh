@@ -23,7 +23,7 @@ Most multi-model setups do one of two things: pin everything to a single "best" 
 model-mesh is that idea, made concrete and deployable:
 
 - **A loop** that makes a capable model work like a methodical senior engineer. Classify the ask, define "done," gather evidence, decide, act surgically, verify by observation, report outcome-first.
-- **A routing layer** that assigns each agent role (implementer, architect, reviewer, coders, orchestrator, explorers) to a model *family*, not a raw benchmark rank, across three ready profiles.
+- **A routing layer** that assigns each agent role (implementer, architect, reviewer, coders, orchestrator, explorers) to a model *family*, not a raw benchmark rank, across four ready profiles.
 - **A self-governing update engine**: a committed weekly **runbook** an agent cron executes on your side, scoring new releases against the repo's own rules, having an **independent model review the recommendation**, and opening a PR only when a change is actually warranted. (The scripts and gates ship here; the schedule and the reviewer credential are yours to wire up.)
 
 > **Honesty up front:** the routing rationale is a set of design heuristics, not measured benchmarks. Because you map placeholders to your own models, no fixed cost or quality number holds across all mappings. See [Claims & limits](#claims--limits). This is a design opinion you can deploy and measure, not a guarantee.
@@ -139,6 +139,7 @@ The routing above sends roles to models inside one harness. [`docs/ORCHESTRATION
 
 - The reviewer always runs in a different harness and a different model family from every author rung. CI enforces it.
 - The generated table is [`docs/research/orchestration/MATRIX.md`](docs/research/orchestration/MATRIX.md). Worked cases are in [`EXAMPLES.md`](docs/research/orchestration/EXAMPLES.md), and seven harness configuration examples are in [`examples/orchestration/harnesses/`](examples/orchestration/harnesses).
+- Review panel: [`docs/REVIEW-PANEL.md`](docs/REVIEW-PANEL.md) adds zero-context reviewers, twelve review lenses, a two-family spread tier for security and change review, an aggregator seat, spec and drift gates, and a scorer for seeded-defect runs.
 - Status: documentation and schema checks only. Nothing was installed or run. The omo licence needs an owner decision for client work, and the `global` profile excludes the retired Google family.
 
 ---
@@ -154,7 +155,7 @@ examples/
   omo.full.example.json                      complete deployable [opencode] config (real IDs)
   dsh-settings.example.yaml                   the harness plugin settings reference
   README.md                                  how the examples fit together
-  orchestration/                             situation matrix + seven harness config examples
+  orchestration/                             situation matrix, lenses, finding schema, review standards + seven harness config examples
 skills/  mm-method · mm-loop · mm-verify · mm-domain     the loop, installable
 scripts/landscape/                           the self-governing landscape engine + review gate
 install.sh · install.ps1                      copy the loop skills into place
@@ -163,7 +164,7 @@ docs/  ROUTING.md · PROVIDERS.md · EXAMPLE-MAPPING.md · research/
 AGENTS.md · CHANGELOG.md · CONTRIBUTING.md · DOC.md · THIRD_PARTY_NOTICES.md
 ```
 
-The three `profiles/*.json` are **fragments** (agents + categories only); `setup-config.sh` wraps a chosen one in the required `[opencode]` structure. Each ships a `*.example.json` with real IDs as a concrete mapping reference (exempt from the vendor-name CI check by design). Newest at a glance is always in [`CHANGELOG.md`](CHANGELOG.md). `v1.1.5` reframed the cost cap as an enforced policy knob, added a native-vision fallback, and removed no-op fallback rungs at the mapping level.
+The four `profiles/*.json` are **fragments** (agents + categories only); `setup-config.sh` wraps a chosen one in the required `[opencode]` structure. Each ships a `*.example.json` with real IDs as a concrete mapping reference (exempt from the vendor-name CI check by design). Newest at a glance is always in [`CHANGELOG.md`](CHANGELOG.md). `v1.1.5` reframed the cost cap as an enforced policy knob, added a native-vision fallback, and removed no-op fallback rungs at the mapping level.
 
 ---
 

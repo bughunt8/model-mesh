@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Review finding",
+  "description": "One finding from one reviewer seat. scripts/aggregate-findings.py enforces this shape and does not need a schema library. The family is derived from the model name by the runner, never typed by the reviewer.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "lens", "harness", "family", "severity", "category", "path", "claim", "evidence"],
+  "properties": {
+    "id": {"type": "string", "description": "Unique within one review run."},
+    "lens": {"type": "string", "description": "An id from examples/orchestration/lenses.json."},
+    "harness": {"type": "string", "description": "Harness that ran the reviewer seat."},
+    "family": {"type": "string", "description": "Model family of the rung that answered."},
+    "severity": {"enum": ["blocker", "major", "nit"]},
+    "category": {"enum": ["correctness", "regression", "security", "spec-gap", "simplicity", "operability", "compatibility", "cost", "clarity", "evidence", "numeric", "authorization", "consistency"]},
+    "path": {"type": "string", "description": "Path of the artifact the finding points at, relative to the review root."},
+    "line_start": {"type": "integer", "minimum": 1},
+    "line_end": {"type": "integer", "minimum": 1},
+    "claim": {"type": "string", "description": "What is wrong, in one or two sentences."},
+    "evidence": {"type": "string", "description": "The quote, command output or reference that shows it."},
+    "fix": {"type": "string", "description": "Optional smallest change that would remove the problem."}
+  }
+}

@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.3.0
+
+### Added
+- **Review panel.** `docs/REVIEW-PANEL.md` defines how reviews run: zero-context reviewers with read-only tools, twelve review lenses, a fan-out budget by tier, an aggregator, and spec and drift gates. The design was informed by a study of the Elephant-Goldfish Model, recorded in `docs/research/orchestration/EGM-ANALYSIS.md`. No source text was copied.
+- **Matrix fields.** Every situation has `review_tier`, `lenses` and `gates`. Every reviewer seat has `lenses`. Every option has an `aggregator` seat and the `zero-context-review` constraint. A05 and A06 get a second reviewer seat from a disjoint model family, with the primary lens run by both.
+- **Validator rules O15 to O18** with 23 new mutation cases in `--self-test`.
+- **`examples/orchestration/lenses.json`, `finding.schema.json` and `standards/`** (spec readiness and drift).
+- **`scripts/aggregate-findings.py`.** Validates findings, clusters them deterministically and marks cross-family corroboration.
+- **`scripts/score-review.py`, `examples/orchestration/seeded/` and `docs/research/orchestration/SEEDED-DEFECTS.md`.** The scorer and protocol for testing whether more lenses or more families catch more. The fixture is invented and no result is claimed.
+- **`scripts/check-drift.py`.** Compares counts, IDs, links and versions in the docs with the data and scripts.
+- **`scripts/validate-scenarios.py`, `tests/scenarios/` and `TESTING.md`.** Skill front matter and size cap checks and static scenario patterns.
+
+### Changed
+- `MATRIX.md` gains lens and aggregator columns and a review panel table.
+- The independence rule gains a fifth point: the aggregator sits outside the author and orchestrator harness and families.
+- `mm-domain` and `mm-verify` gain a `description` in their front matter. Both had none.
+- `README.md` said three profiles in two places. It now says four.
+
 ## 1.2.0
 
 ### Added

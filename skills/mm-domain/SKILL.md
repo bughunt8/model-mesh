@@ -1,5 +1,6 @@
 ---
 name: mm-domain
+description: Build a new domain adapter for the mm-method. Runs discuss, research, generate and verify stages and delivers a step-by-step workflow with a flowchart, the adapter, its sourced facts and a smoke-eval, or nothing.
 ---
 
 # mm-domain

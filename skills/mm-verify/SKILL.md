@@ -1,5 +1,6 @@
 ---
 name: mm-verify
+description: Judge a piece of finished work or a skill without believing its report. Treats every claim as unproven until observed, checks for weakened tests and silent scope growth, and returns a verdict with evidence.
 ---
 
 # mm-verify

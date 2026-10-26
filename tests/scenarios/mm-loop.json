@@ -1,0 +1,67 @@
+{
+  "skill": "mm-loop",
+  "note": "Static checks on the skill text. They show the contract is still written down. They do not show an agent follows it.",
+  "scenarios": [
+    {
+      "id": "gate-first",
+      "description": "The loop opens with the triviality gate.",
+      "required": [
+        "\\*\\*Gate first\\.\\*\\*"
+      ],
+      "forbidden": []
+    },
+    {
+      "id": "four-stages",
+      "description": "All four stages exist in order.",
+      "required": [
+        "## Stage 1 - PLAN",
+        "## Stage 2 - EXECUTE",
+        "## Stage 3 - VERIFY",
+        "## Stage 4 - AUDIT and REPORT"
+      ],
+      "forbidden": []
+    },
+    {
+      "id": "evidence-fan-out-parallel",
+      "description": "Evidence gatherers run in parallel in one message.",
+      "required": [
+        "\\*\\*Evidence fan-out\\.\\*\\*",
+        "ONE message"
+      ],
+      "forbidden": []
+    },
+    {
+      "id": "decision-gate",
+      "description": "A decision gate separates reversible work from plan-first work.",
+      "required": [
+        "\\*\\*Decision gate\\.\\*\\*"
+      ],
+      "forbidden": []
+    },
+    {
+      "id": "adversarial-lens",
+      "description": "Attackers refute the work from a distinct lens.",
+      "required": [
+        "REFUTE",
+        "distinct lens"
+      ],
+      "forbidden": []
+    },
+    {
+      "id": "bounded-retries",
+      "description": "Fix-verify cycles are bounded.",
+      "required": [
+        "3 failed fix-verify cycles"
+      ],
+      "forbidden": []
+    },
+    {
+      "id": "when-not-to-use",
+      "description": "The skill says when not to use the loop.",
+      "required": [
+        "## When NOT to use this loop"
+      ],
+      "forbidden": []
+    }
+  ]
+}

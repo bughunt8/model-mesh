@@ -2,7 +2,7 @@
 
 model-mesh started as one agent routing work to sub-agents inside one harness. This document extends the direction to several agents across several harnesses, still using oh-my-openagent (omo) role and category names as the shared vocabulary.
 
-Status: a design proposal dated 2026-10-11. The matrix is checked for structure and policy in CI. No row has been run, installed or measured. The [review record](research/orchestration/REVIEW.md) lists what a reviewer challenged.
+Status: a design proposal dated 2026-10-11, extended on 2026-10-26 with a review panel. The matrix is checked for structure and policy in CI. No row has been run, installed or measured. The [review record](research/orchestration/REVIEW.md) lists what a reviewer challenged.
 
 ## Four profiles, same names
 
@@ -54,9 +54,19 @@ Do not review generated work with the harness and model that produced it. A cell
 2. The reviewer model families share nothing with every rung of every author seat and every category route. Helper roles, editor models and multimodal lookers count as authors.
 3. The orchestrator family shares nothing with authors or reviewers.
 4. omo `momus` and `oracle` run inside the worker harness, so they are internal gates only and never the independent review. The `momus` label in a reviewer seat means an original task contract run in the reviewer's own harness, not a call to the omo plugin.
-5. The validator derives each family from the model ID, not from labels in the data, and rejects any `absolute_exception` key. The owner can grant an exception in a later change. None exists now.
+5. The aggregator that merges review findings also sits outside the author and orchestrator harness and families. See [REVIEW-PANEL.md](REVIEW-PANEL.md).
+6. The validator derives each family from the model ID, not from labels in the data, and rejects any `absolute_exception` key. The owner can grant an exception in a later change. None exists now.
 
 When authorship is unknown, as in A06, the cell requires an author provenance manifest. A judge cannot certify independence from a patch with no known author.
+
+## Review panel
+
+How a review is run is in [REVIEW-PANEL.md](REVIEW-PANEL.md). Four additions apply to every row:
+
+- Reviewers start with zero context and read-only tools.
+- Each situation lists review lenses, twelve in the library. Lenses add breadth. Only harness and family add independence.
+- A05 and A06 use the spread tier: two reviewer seats from disjoint families, both running the primary lens.
+- An aggregator seat merges schema-valid findings deterministically before any model merge. A02 and A03 add a spec-readiness gate before the work and a drift gate after it.
 
 ## Seven harnesses
 

@@ -1,0 +1,55 @@
+{
+  "skill": "mm-method",
+  "note": "Static checks on the skill text. They show the contract is still written down. They do not show an agent follows it.",
+  "scenarios": [
+    {
+      "id": "steps-present",
+      "description": "The seven numbered steps are all present.",
+      "required": [
+        "## Step 0 - Classify the ask",
+        "## Step 1 - Define done",
+        "## Step 2 - Gather evidence",
+        "## Step 3",
+        "## Step 4",
+        "## Step 5",
+        "## Step 6"
+      ],
+      "forbidden": []
+    },
+    {
+      "id": "triviality-gate",
+      "description": "A trivial-task shortcut exists so small asks skip the stages.",
+      "required": [
+        "(?i)triviality gate"
+      ],
+      "forbidden": []
+    },
+    {
+      "id": "false-green-defence",
+      "description": "The method names the false-green defence and the negative test.",
+      "required": [
+        "(?i)false-green",
+        "(?i)negative test"
+      ],
+      "forbidden": []
+    },
+    {
+      "id": "evidence-standard",
+      "description": "Claims carry evidence.",
+      "required": [
+        "(?i)evidence standard"
+      ],
+      "forbidden": []
+    },
+    {
+      "id": "no-placeholders",
+      "description": "No unfinished markers ship in the skill.",
+      "required": [],
+      "forbidden": [
+        "TODO",
+        "FIXME",
+        "TBD"
+      ]
+    }
+  ]
+}
