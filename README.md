@@ -140,6 +140,7 @@ The routing above sends roles to models inside one harness. [`docs/ORCHESTRATION
 - The reviewer always runs in a different harness and a different model family from every author rung. CI enforces it.
 - The generated table is [`docs/research/orchestration/MATRIX.md`](docs/research/orchestration/MATRIX.md). Worked cases are in [`EXAMPLES.md`](docs/research/orchestration/EXAMPLES.md), and seven harness configuration examples are in [`examples/orchestration/harnesses/`](examples/orchestration/harnesses).
 - Review panel: [`docs/REVIEW-PANEL.md`](docs/REVIEW-PANEL.md) adds zero-context reviewers, twelve review lenses, a two-family spread tier for security and change review, an aggregator seat, spec and drift gates, and a scorer for seeded-defect runs.
+- Study behind the review panel: [`docs/research/orchestration/EGM-ANALYSIS.md`](docs/research/orchestration/EGM-ANALYSIS.md) compares Google's Elephant-Goldfish Model with model-mesh and records what was adopted, adapted and left out.
 - Status: documentation and schema checks only. Nothing was installed or run. The omo licence needs an owner decision for client work, and the `global` profile excludes the retired Google family.
 
 ---
