@@ -2,18 +2,18 @@
 
 A superloop is an outer loop that keeps sending work to agents until a goal is met. This page defines the model-mesh version: code owns the loop, omo workers do the work in bounded batches, a typed decision model answers bounded questions at fixed points, and only evidence ends the loop.
 
-Status: design plus a driver tested offline, dated 2026-10-29. No live run has happened. No decision model is adopted: the shipped configs run the decision model in shadow mode, where its answers are logged and change nothing. Every speed, cost and accuracy figure for any decision model is unmeasured for model-mesh. The research and the council debate behind this page are in [SUPERLOOP-COUNCIL.md](research/orchestration/SUPERLOOP-COUNCIL.md) and [SYSTEM-ONE.md](research/orchestration/SYSTEM-ONE.md).
+Status: design plus a driver tested offline, dated 2026-10-29, hardened after an independent review on another model family reproduced seven ways to forge a success (see [the review record](research/orchestration/SUPERLOOP-COUNCIL.md#independent-review)). No live run has happened. No decision model is adopted: the shipped configs run the decision model in shadow mode, where its answers are logged and change nothing. Every speed, cost and accuracy figure for any decision model is unmeasured for model-mesh. The research and the council debate behind this page are in [SUPERLOOP-COUNCIL.md](research/orchestration/SUPERLOOP-COUNCIL.md) and [SYSTEM-ONE.md](research/orchestration/SYSTEM-ONE.md).
 
 ## The four parts
 
-Think of a railway. The trains are the omo workers. The timetable writer is the omo planner agent, which writes plans in prose. The signalman is the decision model: he pulls one lever from a fixed set, shows red or green, or reads a gauge, and he cannot lay track or write the timetable. The interlocking is plain code that refuses an unsafe route whatever the signalman wants. The track circuits are the acceptance checks.
+Think of a railway. The omo workers are the trains and the decision model is the signalman: he pulls one lever from a fixed set and cannot lay track or write the timetable. The interlocking is plain code that refuses an unsafe route whatever he wants, and the track circuits are the acceptance checks.
 
 | Part | What it does | What it may never do |
 |---|---|---|
 | Control plane (`scripts/mm-superloop.py`) | Owns the loop, the caps, the budget, the lineage ledger, the stop rules and the log | Trust a worker's own report of success |
 | Decision model | Answers typed questions (choice, yes or no, ordered score) about a state built from facts | Write plans, prompts or code. End the loop as a success. Skip a check. Change the profile. Approve an action |
-| Workers | One omo batch per iteration in the run's worktree, under the frozen profile and matrix option | Run their own continuation loop inside the superloop |
-| Verifier | Acceptance checks, then a zero-context review in a harness and model family that never authored in this run | Be replaced or overruled by the decision model |
+| Workers | One omo batch per iteration in the run's worktree, under the frozen profile and matrix option, with only the cell's author and orchestrator model families in their config | Run their own continuation loop inside the superloop. Edit their own config |
+| Verifier | Acceptance checks, then a zero-context review in a fresh folder by a reviewer whose harness and families never authored in this run, then the checks again | Be replaced or overruled by the decision model |
 
 "Decision model at the core" therefore means the control plane asks it at every fork. It does not mean it plans. Planning stays with a generating model.
 
@@ -60,29 +60,34 @@ A wrong brake costs one look from a person or one review call. A wrong accelerat
 ## One iteration
 
 1. Interlocks, with no model call: stop file, iteration cap, wall clock, and the budget reservation for the next batch.
-2. One worker batch: `oh-my-openagent run --agent sisyphus --json --directory <worktree> "<prompt>"` from a local, pinned omo 4.19.4 install. The prompt is built by code from the goal, the failing checks and the open review findings. The worker is told not to declare the goal complete.
-3. Acceptance checks run as argv lists with timeouts. The control plane hashes the whole tree and the protected paths.
-4. Facts: check results, tree change, unchanged streak, regressions, protected-path changes, the worker's exit and timeout, and the last review's counts.
-5. Decision questions: `progress`, `blocked`, `needs_human`, `goal_met` and `next_action`, plus `situation` once at the start. The rules baseline answers the same questions, and both answers are logged.
-6. Brakes, if advisory mode and a qualified answer crosses its threshold.
-7. Stop rules in code: protected path changed, worker reported blocked, no progress, fix-verify cycles exhausted.
-8. Review, when every check passes, when a brake adds one, or on an optional cadence. The reviewer gets the diff and its lenses and nothing else.
-9. Success, only when every check passes on the current tree and a cross-family review of that same tree found no blocker and no corroborated major finding.
+2. The control plane rewrites `.omo/omo.jsonc` from the frozen config.
+3. One worker batch: `oh-my-openagent run --agent sisyphus --json --directory <worktree> "<prompt>"` from a local, pinned omo 4.19.4 install. The prompt is built by code from the goal, the failing checks and the open review findings. It tells the worker not to declare the goal complete, not to edit protected paths or the omo config, and not to send, publish, pay, change permissions or delete outside the worktree.
+4. Batch checks: the omo config must be unchanged, and the session's agents and models must be readable, all in `expect_agents`, and all in the cell's families. Otherwise the run stops with `policy_denied`.
+5. Acceptance checks run as argv lists. Each gets the smaller of its own timeout and the wall-clock time left, so the clock can run out mid-batch and still stop the run.
+6. The control plane hashes the whole tree, ignored files included, and the protected paths. Only the worker's status file and the controller's omo config are left out of the hash; the config is checked on its own.
+7. Facts: check results, tree change, idle streak, regressions, protected-path changes, the worker's exit and timeout, and the last review's counts.
+8. Decision questions: `progress`, `blocked`, `needs_human`, `goal_met` and `next_action`, plus `situation` once at the start. The rules baseline answers the same questions, and both answers are logged.
+9. Brakes, if advisory mode and an answer crosses a verified threshold.
+10. Stop rules in code: protected path changed, worker reported blocked, no progress, fix-verify cycles exhausted.
+11. Review, when every check passes, when a brake adds one, or on an optional cadence. The reviewer runs in a fresh folder holding only the diff since admission and its lenses. It must exit 0 within its timeout and write its findings file during the call. An invalid findings file stops the run. If the worktree changed during the review, the run stops.
+12. Success, only when the review found no blocker and no major finding, the tree is still the reviewed tree, every check passes a second time on it, and wall-clock time is left.
 
 ## Stops and defaults
 
 | Cap | Default | Source |
 |---|---|---|
 | Outer iterations | 10 | Council, three of five members |
-| Wall clock | 30 minutes | Council, unanimous |
-| No-progress streak | 2 batches with the same tree and the same failing checks | Council, unanimous |
-| Fix-verify cycles on one failure | 3 | The existing mm-loop bound |
+| Wall clock | 30 minutes, checked before every call and after every check | Council, unanimous |
+| No-progress streak | 2 batches in a row that leave the tree and the failing checks unchanged | Council, unanimous |
+| Fix-verify cycles | 3 batches with the same failing checks, or 3 reviews in a row with a blocker or major | The existing mm-loop bound |
 | Per call | 600 seconds | Proposed |
 | Budget | Set by the owner. The example uses 5 USD | Owner decision |
 
-Spend is reserved before each call from the controller's per-call reservations, because missing usage is not zero cost. Resuming a run or carrying work into a new run never resets the lineage: earlier authors go in the goal's `prior_lineage`.
+Spend is reserved before each call from the controller's per-call reservations, because missing usage is not zero cost. Worker and review reservations must be above zero, and so must the decision reservation when a remote backend is used. A dual backend reserves two decision calls. A reservation the controller leaves out stops the run instead of counting as free.
 
-Terminal states: `verified_pending_owner` or `verified` (success), `cap_iterations`, `cap_wall_clock`, `cap_budget`, `no_progress`, `fix_cycles_exhausted`, `blocked_human`, `review_unavailable`, `worker_failure`, `policy_denied`, `cancelled`. Running out of a cap never counts as success.
+The lineage is never reset. Earlier authors go in the goal's `prior_lineage`, and every admitted run also appends its lineage to a registry outside the worktree (`~/.local/state/model-mesh/superloop-lineage.jsonl` by default), keyed by repository and branch and by goal id. A new run on the same branch or goal inherits those entries even if the goal file leaves them out. A run refuses an output directory that already holds a log.
+
+Terminal states: `verified_pending_owner` or `verified` (success), `cap_iterations`, `cap_wall_clock`, `cap_budget`, `no_progress`, `fix_cycles_exhausted`, `blocked_human`, `review_unavailable`, `worker_failure`, `policy_denied`, `cancelled`. Running out of a cap never counts as success. `final.json` lists any open blocker or major findings.
 
 ## Endless, in a sentence the owner can sign
 
@@ -92,37 +97,43 @@ Terminal states: `verified_pending_owner` or `verified` (success), `cap_iteratio
 
 | Mode | What the decision model's answers do | Admission |
 |---|---|---|
-| `shadow` (default) | Logged next to the rules baseline. Nothing else | Any backend. Under ultimate, a remote endpoint must be verified as Hong Kong reachable, because shadow calls still send the state |
-| `advisory` | A qualified brake or smoke answer may act, within the authority rule | A disclosed base family that shares nothing with any seat in the run, and a qualification record per question |
+| `shadow` (default) | Logged next to the rules baseline. Nothing else | Any backend, except that the ultimate profile admits only local or offline backends, because shadow calls still send the state. No controller flag overrides that until a reachability and data-policy check exists |
+| `advisory` | A brake or smoke answer above a verified threshold may act, within the authority rule | A base family on the known family list that shares nothing with any seat in the run, and a verified qualification record per acting question |
 
 There is no mode in which the decision model controls the loop.
 
-A point threshold such as 0.8 is a label, not a promise. One audit found point-chosen gates broke their promise in 147 of 190 evaluations, while learn-then-test kept it in all 190 ([Confidence Is Not a Promise](https://arxiv.org/html/2610.36311v1)). So a threshold acts only through a qualification record made by [qualify.py](../scripts/superloop/qualify.py): a fixed-sequence learn-then-test procedure over at least 100 labelled decisions from model-mesh's own runs, with stated alpha and delta, for one backend, one pinned model, one question revision and one locale. Labels come from people or deterministic ground truth, never from the decision model. The control plane reads raw probabilities and computes its own top probability and margin, because vendors define "confidence" differently.
+A point threshold such as 0.8 is a label, not a promise. One audit found point-chosen gates broke their promise in 147 of 190 evaluations, while learn-then-test kept it in all 190 ([Confidence Is Not a Promise](https://arxiv.org/html/2610.36311v1)). So a threshold acts only through a qualification record file written by [qualify.py](../scripts/superloop/qualify.py): a fixed-sequence learn-then-test procedure over at least 100 labelled decisions from model-mesh's own runs, with stated alpha and delta, for one backend, one pinned model, one question revision and one locale. Every label must name a person or deterministic ground truth as its source, never the decision model. The controller only points at the record. At admission the driver checks that the dataset still matches its recorded hash and re-runs the procedure; a record whose threshold does not come out the same is refused. The control plane reads raw probabilities and computes its own top probability and margin, because vendors define "confidence" differently.
 
 ## Independence
 
-- The decision seat is an orchestration seat once it can act. In advisory mode its base family must be disclosed and must share nothing with any author, orchestrator, reviewer or aggregator family in the run. A model fine-tuned from an open base takes the base model's family. Undisclosed lineage blocks advisory mode.
+- The omo config is restricted to the frozen cell. A profile config names models from many families, and omo can call any of them through delegation, categories or fallback. So the control plane keeps only models whose family belongs to the cell's author and orchestrator seats, disables an agent with none left, gives an empty category the run agent's model, turns runtime fallback and team mode off, and refuses the run if any other family remains. Without this step no reviewer in the shipped matrix would be independent.
+- The decision seat is an orchestration seat once it can act. In advisory mode its base family must be on the known family list and must share nothing with any author, orchestrator, reviewer or aggregator family in the run. A model fine-tuned from an open base takes the base model's family. Undisclosed lineage blocks advisory mode.
 - A shadow seat is exempt from the family rule because its answers reach no acting agent, but its provider, pinned model and lineage are logged.
-- The lineage ledger records every harness and family that authored or orchestrated, across all fallback rungs and earlier segments. A reviewer that shares any of them is refused. If none is left, the run stops with `review_unavailable`.
+- The lineage ledger records every harness and family that authored or orchestrated: all fallback rungs of the cell's seats, every family left in the config, every model a session reported, `prior_lineage` and the registry entries. A reviewer that shares any of them is refused. If none is left, the run stops with `review_unavailable`.
+- Aggregation is code (`scripts/aggregate-findings.py`), not a model call, so the matrix's aggregator seat is not used and its family is not part of the reviewer conflict set.
+- Reviewers are not defined in the controller. The controller names a harness and a reference. The owner's reviewer registry, outside every worktree (`~/.config/model-mesh/reviewers.json` by default), holds the argv and a SHA-256 for the executable and any recipe or script. A pin that does not match stops the run. This is only as strong as the owner's file permissions: a worker that can write the registry can replace the reviewer.
 - The profile and matrix option are frozen at admission. Switching mid-run could put a reviewer over its own family's earlier work: in A01, one profile uses a family as an author and another uses the same family as the reviewer.
 
 ## What the decision model sees
 
-The state is built from facts the control plane observed: check results, hashes, counters, review counts and the owner's goal text. A worker's narrative never enters as a fact. Its status file is kept under `claims`, marked untrusted, and only a "blocked" claim is used, because that can only stop the run. Evidence spans from any extractor are admitted only when the text at the stated character or byte offsets of the original file equals the span. Summaries and compressed context never enter the state, because a rewrite can drop the one line that matters and cannot be checked against its source. Strings that look like keys are redacted. If the required facts do not fit the backend's token budget, every answer becomes an abstention.
+The state is built from facts the control plane observed: check results, hashes, counters, review counts and the owner's goal text. A worker's narrative never enters as a fact. Its status file is kept under `claims`, marked untrusted, and only a "blocked" claim is used, because that can only stop the run. Evidence spans from any extractor are admitted only when the text at the stated character or byte offsets of the original file equals the span. Summaries and compressed context never enter the state, because a rewrite can drop the one line that matters and cannot be checked against its source. Strings that look like keys or tokens are redacted: common provider key prefixes, bearer tokens, JWTs and key=value pairs. That is a backstop, not a guarantee. If the required facts do not fit the backend's token budget, that fork is logged as `decision_skipped` and every answer is an abstention; success never depends on an answer, so the run goes on under the rules and the caps. The driver passes no extracted spans today, because no extractor is wired in; the offset check is the contract one would have to meet.
 
 Schema-valid output is not correct output. A paper on constrained decoding found that grammar constraints made five small models 100 percent schema-valid while one output still scored 1.000 with an email body of "1. 2. 3. 4. 5." ([Chavan](https://arxiv.org/html/2609.23742)). The control plane therefore checks the meaning of every answer in code: the option must be on the menu it offered, the probabilities must sum to about 1, the chosen option must be the most probable, and no answer can stand in for a check.
 
 ## The omo link
 
-- Pin omo 4.19.4, the version the repo's schema follows, and run its local binary, not a runtime package download.
-- The control plane materializes the profile into `<worktree>/.omo/omo.jsonc` with `goal.enabled` false and the `goal`, `todo-continuation-enforcer`, `start-work` and `atlas` hooks disabled, so each call is one batch and the superloop owns continuation.
-- `opencode run --agent` looks the agent up by exact host key, and omo registers display names. The omo wrapper resolves config keys. Either way the control plane checks the agent the JSON output reports against the expected names and refuses a mismatch.
+- Pin omo 4.19.4, the version the repo's schema follows, and run its local binary, not a runtime package download. The control plane checks the version the binary reports before the first batch.
+- The control plane writes `<worktree>/.omo/omo.jsonc` from the profile, restricted to the cell's families, with `goal.enabled` false, runtime fallback and team mode off, the `goal`, `todo-continuation-enforcer`, `start-work`, `atlas` and `runtime-fallback` hooks disabled, and the `goal` and `start-work` commands disabled. It rewrites the file before every batch and stops the run if a batch changed it.
+- `opencode run --agent` looks the agent up by exact host key, and omo registers display names. The omo wrapper resolves config keys.
+- In 4.19.4 the `--json` result has only `sessionId`, `success`, `durationMs`, `messageCount` and `summary` ([types.ts](https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/v4.19.4/packages/omo-opencode/src/cli/run/types.ts)), so it cannot show which agent or model ran. The control plane reads the session through an export command (default `opencode export <sessionId>`) and refuses the batch if it cannot read an agent and a model, if any agent is outside `expect_agents`, or if any model family is outside the cell. Subagent sessions are not read; their models come from the restricted config. The export format was not checked on a live install.
 - Known gap: with the todo enforcer disabled, the wrapper still waits while todos are open, so a worker that stops with open todos waits until the per-call timeout. A follow-up can attach to an `opencode serve` instance and stop on idle with open todos.
-- None of this has been run against a live omo install. The first live run should be a dry run that records the effective config, the resolved agent and the exit behavior.
+- None of this has been run against a live omo install. The first live run should be a dry run that records the effective config, the export output, the resolved agent and the exit behavior.
 
 ## What is not built
 
 - No decision model is adopted, and the orchestration matrix has no decision seat. Matrix rules for a decision seat wait until one is adopted.
+- Owner-written acceptance checks are trusted. The validator refuses obvious no-ops (`true`, `echo`, `exit 0`) and checks that read the status file or the omo config, but it cannot tell a weak test from a strong one. That stays the owner's job, together with listing the tests under `protected_paths`.
+- Hashing ignored files makes a large dependency folder in the worktree slow to hash. A nested git repository is hashed as a link, not by content.
 - No vendor-specific backend code. The generic `http` backend sends one request shape to any compatible endpoint; the example config points it at one vendor in shadow mode.
 - No extraction, summarization or compression service.
 - No migration to omo 5.x or its native edition.
@@ -136,4 +147,4 @@ python scripts/mm-superloop.py --goal GOAL.json --controller CONTROLLER.json --w
 python scripts/mm-superloop.py --self-test
 ```
 
-Templates: [goal.example.json](../examples/superloop/goal.example.json), [controller.example.json](../examples/superloop/controller.example.json) for a shadow pilot, and [controller.rules.example.json](../examples/superloop/controller.rules.example.json) for the offline rules baseline. The agent-facing instructions are in [skills/mm-superloop/SKILL.md](../skills/mm-superloop/SKILL.md).
+Templates: [goal.example.json](../examples/superloop/goal.example.json), [controller.example.json](../examples/superloop/controller.example.json) for a shadow pilot, [controller.rules.example.json](../examples/superloop/controller.rules.example.json) for the offline rules baseline, and [reviewers.example.json](../examples/superloop/reviewers.example.json) for the owner's reviewer registry. The agent-facing instructions are in [skills/mm-superloop/SKILL.md](../skills/mm-superloop/SKILL.md).

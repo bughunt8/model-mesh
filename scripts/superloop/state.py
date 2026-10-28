@@ -11,13 +11,24 @@ Rules:
      stated offsets of the original file equals the span. Offsets may be characters or
      bytes; the unit must be stated. Rejected spans are logged, never sent.
   4. The state must fit the backend's token budget. Spans are dropped first. If required
-     facts still do not fit, building fails and the driver treats every answer as an
-     abstention.
-  5. Secrets that look like API keys are redacted from every string.
+     facts still do not fit, building fails; the driver logs decision_skipped and every
+     answer for that fork is an abstention. Success never depends on an answer, so the run
+     goes on under the rules baseline and the caps.
+  5. Strings that look like keys or tokens are redacted from every string: common provider
+     key prefixes, bearer tokens, JWTs and key=value pairs named key, secret, token or
+     password. Pattern redaction is a backstop, not a guarantee.
+
+The driver passes no spans today, because no extractor is wired in. verify_span is the
+contract an extractor has to meet before its output may enter a state.
 """
 import json, os, re
 
-SECRET = re.compile(r"(sk-[A-Za-z0-9_-]{12,}|(?i:bearer)\s+[A-Za-z0-9._-]{16,}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{20,})")
+SECRET = re.compile("|".join([
+    r"sk-[A-Za-z0-9_-]{12,}", r"[sr]k_(?:live|test)_[A-Za-z0-9]{8,}", r"(?i:bearer)\s+[A-Za-z0-9._~+/=-]{16,}",
+    r"AKIA[0-9A-Z]{16}", r"gh[pousr]_[A-Za-z0-9]{20,}", r"github_pat_[A-Za-z0-9_]{20,}",
+    r"xox[abprs]-[A-Za-z0-9-]{10,}", r"AIza[0-9A-Za-z_-]{16,}", r"glpat-[A-Za-z0-9_-]{16,}",
+    r"eyJ[A-Za-z0-9_-]{8,}\.eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}",
+    r"(?i:api[_-]?key|secret|token|password)\s*[:=]\s*[^\s,;]{8,}"]))
 MAX_SPANS = 20
 MAX_SPAN_CHARS = 600
 MAX_FAILING = 30

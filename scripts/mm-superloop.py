@@ -18,7 +18,7 @@ reviewers and recorded decision answers. MM_OFFLINE=1 is set, so no request can 
 import argparse, copy, json, os, shutil, subprocess, sys, tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from superloop import control, decide, ledger, qualify, state as statemod  # noqa: E402
+from superloop import control, decide, ledger, qualify, state as statemod, workers  # noqa: E402
 
 ROOT = control.ROOT
 
@@ -65,49 +65,83 @@ def make_repo(tmp):
     return wt
 
 
+def check_for(name, f):
+    return {"name": name, "description": f"{f} exists", "argv": [x.format(f=f) for x in CHECK], "timeout_seconds": 30}
+
+
 def base_goal():
     return {"id": "t", "objective": "Create a.txt and b.txt.", "situation": "A02", "profile": "hybrid",
             "option": "primary", "protected_paths": ["tests"], "owner_approval_required": True,
-            "acceptance": [{"name": "a", "description": "a.txt exists", "argv": [x.format(f="a.txt") for x in CHECK], "timeout_seconds": 30},
-                           {"name": "b", "description": "b.txt exists", "argv": [x.format(f="b.txt") for x in CHECK], "timeout_seconds": 30}]}
+            "acceptance": [check_for("a", "a.txt"), check_for("b", "b.txt")]}
+
+
+def cell():
+    return control.assign.assignment(control.assign.load_matrix(), "A02", "hybrid", "primary")
 
 
 def seat_harnesses():
-    """Reviewer harnesses and families from the matrix, so the test names no vendor."""
+    """Reviewer harnesses from the matrix, so the test names no vendor."""
     m = control.assign.load_matrix()
-    a02 = control.assign.assignment(m, "A02", "hybrid", "primary")
     a06 = control.assign.assignment(m, "A06", "hybrid", "primary")
-    return a02["reviewers"][0], a06["reviewers"][1]
+    return cell()["reviewers"][0], a06["reviewers"][1]
+
+
+def worker_model():
+    return cell()["orchestrator"]["model_ids"][0]
 
 
 def base_controller():
-    first, second = seat_harnesses()
+    first, _ = seat_harnesses()
     c = json.load(open(os.path.join(ROOT, "examples", "superloop", "controller.rules.example.json"), encoding="utf-8"))
-    c["worker"] = {"kind": "fake", "name": "worker"}
-    c["reviewers"] = [{"harness": first["harness"], "kind": "fake", "name": "reviewer"},
-                      {"harness": second["harness"], "kind": "fake", "name": "reviewer2"}]
-    c["materialize"] = {"fragment": "profiles/hybrid.example.json", "disabled_hooks": ["goal", "todo-continuation-enforcer", "start-work", "atlas"], "always": True}
+    c["worker"] = {"kind": "fake", "name": "worker", "agent": "sisyphus", "expect_agents": ["sisyphus"]}
+    c["reviewers"] = [{"harness": first["harness"], "kind": "fake", "name": "reviewer"}]
     return c
 
 
-def writer(steps):
-    """Fake worker: steps maps iteration -> list of (path, text) to write; missing means no-op."""
+def two_seat_matrix():
+    """Test-only matrix: A02 hybrid primary gains a second reviewer seat on a family no author uses."""
+    m = copy.deepcopy(control.assign.load_matrix())
+    _, second = seat_harnesses()
+    key = next(k for k, v in m["models"]["hybrid"].items() if control.assign.family_of(v["id"]) == "openai")
+    opt = next(s for s in m["situations"] if s["id"] == "A02")["profiles"]["hybrid"]["options"][0]
+    opt["reviewers"].append({"role": "reviewer-2", "harness": second["harness"], "chain": [key],
+                             "lenses": ["contract-fit"], "seat": "reviewer-2"})
+    return m
+
+
+def writer(steps, report=None):
+    """Fake worker: steps maps iteration -> list of (path, text); text None deletes the path."""
     def fn(wt, prompt, it, extra):
         for path, text in steps.get(it, []):
             full = os.path.join(wt, path)
+            if text is None:
+                os.remove(full)
+                continue
             os.makedirs(os.path.dirname(full), exist_ok=True)
             open(full, "w").write(text)
-        return {"exit_code": 0, "reported": {"agent": "sisyphus"}}
+        return {"exit_code": 0, "reported": report if report is not None else
+                {"agents": ["sisyphus"], "models": [worker_model()]}}
     return fn
 
 
-def reviewer(findings_by_call):
+def finding(sev, path="a.txt", n="1", extra=None):
+    f = {"id": n, "lens": "contract-fit", "harness": "goose", "family": "fam-r", "severity": sev,
+         "category": "correctness", "path": path, "line_start": 1, "line_end": 1,
+         "claim": f"{path} is hollow", "evidence": "line 1"}
+    f.update(extra or {})
+    return f
+
+
+def reviewer(findings_by_call, side=None):
     calls = {"n": 0}
 
-    def fn(wt, prompt, it, extra):
+    def fn(rdir, prompt, it, extra):
         calls["n"] += 1
-        items = findings_by_call(calls["n"], it)
-        json.dump(items, open(extra["findings_out"], "w"))
+        if side:
+            r = side(rdir, calls["n"], extra)
+            if r is not None:
+                return r
+        json.dump(findings_by_call(calls["n"], it), open(extra["findings_out"], "w"))
         return {"exit_code": 0}
     return fn
 
@@ -117,46 +151,58 @@ def clean(*_):
 
 
 def blocker_once(n, it):
-    if n == 1:
-        return [{"id": "1", "lens": "contract-fit", "harness": "goose", "family": "fam-r", "severity": "blocker",
-                 "category": "correctness", "path": "a.txt", "line_start": 1, "line_end": 1,
-                 "claim": "a.txt is hollow", "evidence": "line 1"}]
-    return []
+    return [finding("blocker")] if n == 1 else []
 
 
 def recording(answers, default=None):
     return {"kind": "replay", "model": "rec-1.0", "recording": {"answers": answers, "default": default or {}}}
 
 
+def make_record(tmp, question, scores, grid):
+    ds = os.path.join(tmp, f"labels-{question}.json")
+    json.dump([{"score": scores, "correct": True, "label_source": "human"}] * 150, open(ds, "w"))
+    rec = qualify.make_record(ds, 0.05, 0.05, grid, "rec-1.0", question, 1, "en")
+    path = os.path.join(tmp, f"record-{question}.json")
+    json.dump(rec, open(path, "w"))
+    return path
+
+
 def self_test():
     os.environ["MM_OFFLINE"] = "1"
     fails = 0
-    results = {}
 
-    def scenario(label, want, steps=None, rev=clean, goal_mut=None, ctl_mut=None, deps_mut=None, check=None):
+    def scenario(label, want, steps=None, rev=clean, goal_mut=None, ctl_mut=None, deps_mut=None, check=None,
+                 report=None, rev2=clean, pre=None):
         nonlocal fails
         tmp = tempfile.mkdtemp()
         try:
             wt = make_repo(tmp)
             g, c = base_goal(), base_controller()
+            ctx = {"tmp": tmp, "wt": wt, "out": os.path.join(tmp, "run")}
             if goal_mut:
                 goal_mut(g)
             if ctl_mut:
-                ctl_mut(c)
-            deps = {"fakes": {"worker": writer(steps or {}), "reviewer": reviewer(rev), "reviewer2": reviewer(clean)}}
+                ctl_mut(c) if ctl_mut.__code__.co_argcount == 1 else ctl_mut(c, ctx)
+            deps = {"allow_fakes": True, "registry": os.path.join(tmp, "lineage.jsonl"),
+                    "fakes": {"worker": writer(steps or {}, report),
+                              "reviewer": rev(ctx) if rev.__code__.co_varnames[:1] == ("ctx",) else reviewer(rev),
+                              "reviewer2": reviewer(rev2)}}
             if deps_mut:
-                deps_mut(deps, tmp)
-            out = os.path.join(tmp, "run")
-            res = run(g, c, wt, out, deps)
-            ok = res["status"] == want and (check is None or check(res, out, wt))
-            ok = ok and ledger.verify_chain(os.path.join(out, "events.jsonl")) if os.path.exists(os.path.join(out, "events.jsonl")) else ok
-            results[label] = res
-            print(("  ok   " if ok else "  FAIL ") + f"{label}: {res['status']} ({res['detail']})")
+                deps_mut(deps, ctx)
+            if pre:
+                pre(g, c, deps, ctx)
+            res = run(g, c, wt, ctx["out"], deps)
+            ok = res["status"] == want and (check is None or check(res, ctx["out"], wt))
+            ev = os.path.join(ctx["out"], "events.jsonl")
+            if os.path.exists(ev):
+                ok = ok and ledger.verify_chain(ev)
+            print(("  ok   " if ok else "  FAIL ") + f"{label}: {res['status']} ({str(res['detail'])[:110]})")
             fails += 0 if ok else 1
         finally:
             shutil.rmtree(tmp)
 
     done2 = {1: [("a.txt", "a\n")], 2: [("b.txt", "b\n")]}
+    both = {1: [("a.txt", "a\n"), ("b.txt", "b\n")]}
 
     def events(out, kind):
         return [json.loads(l) for l in open(os.path.join(out, "events.jsonl")) if json.loads(l)["kind"] == kind]
@@ -164,41 +210,49 @@ def self_test():
     def omo_config_ok(res, out, wt):
         cfg = json.load(open(os.path.join(wt, ".omo", "omo.jsonc")))
         b = cfg["[opencode]"]
-        return b["goal"] == {"enabled": False} and {"goal", "todo-continuation-enforcer", "start-work"} <= set(b["disabled_hooks"])
+        fams = {control.assign.family_of(x) for x in control.config_models(cfg)}
+        allowed = set().union(*[set(s["families"]) for s in cell()["authors"]]) | set(cell()["orchestrator"]["families"])
+        return b["goal"] == {"enabled": False} and set(control.REQUIRED_HOOKS) <= set(b["disabled_hooks"]) \
+            and {"goal", "start-work"} <= set(b["disabled_commands"]) and b["runtime_fallback"] == {"enabled": False} \
+            and b["team_mode"]["enabled"] is False and fams <= allowed and "hephaestus" in b["disabled_agents"]
 
-    scenario("converges after two batches, review clean", "verified_pending_owner", done2, check=omo_config_ok)
+    # -- the loop works --------------------------------------------------------------------------
+    scenario("converges after two batches, review clean, config restricted to the cell", "verified_pending_owner",
+             done2, check=omo_config_ok)
     scenario("never converges, stops at the iteration cap", "cap_iterations",
-             {i: [(f"n{i}.txt", "x")] for i in range(1, 30)}, ctl_mut=lambda c: c["caps"].update(max_iterations=4, fix_verify_cycles=20))
+             {i: [(f"n{i}.txt", "x")] for i in range(1, 30)}, ctl_mut=lambda c: c["caps"].update(max_iterations=4, fix_verify_cycles=20),
+             check=lambda r, o, w: r["iterations"] == 4)
     scenario("worker claims done while checks fail", "no_progress",
              {1: [(".superloop/status.json", '{"status": "done"}'), ("claim.md", "ALL GOALS MET")]})
     scenario("worker edits a protected test", "blocked_human", {1: [("tests/spec.txt", "weakened\n")]})
     scenario("hollow pass: checks green, reviewer blocker, then fixed", "verified_pending_owner",
              {1: [("a.txt", "a\n"), ("b.txt", "b\n")], 2: [("a.txt", "a real\n")]}, rev=blocker_once)
-    scenario("no progress for two batches", "no_progress", {})
+    scenario("no progress: stops after exactly two idle batches", "no_progress", {},
+             check=lambda r, o, w: r["iterations"] == 2 and "2 batches" in r["detail"])
     scenario("same failure three times", "fix_cycles_exhausted",
              {i: [(f"n{i}.txt", "x")] for i in range(1, 30)}, ctl_mut=lambda c: c["caps"].update(max_iterations=20, fix_verify_cycles=3))
     scenario("worker reports blocked", "blocked_human", {1: [(".superloop/status.json", '{"status": "blocked", "reason": "credential"}')]})
-    scenario("stop file", "cancelled", done2, deps_mut=lambda d, tmp: (os.makedirs(os.path.join(tmp, "run")), open(os.path.join(tmp, "run", "STOP"), "w").close()))
+    scenario("stop file", "cancelled", done2, pre=lambda g, c, d, x: (os.makedirs(x["out"]),
+             open(os.path.join(x["out"], "STOP"), "w").close()))
 
-    def slow_clock(d, tmp):
+    def slow_clock(d, x):
         t = {"v": 0.0}
 
         def clock():
-            t["v"] += 400.0
+            t["v"] += 40.0
             return t["v"]
         d["clock"] = clock
     scenario("wall clock cap", "cap_wall_clock", {i: [(f"n{i}.txt", "x")] for i in range(1, 30)},
-             ctl_mut=lambda c: c["caps"].update(fix_verify_cycles=20), deps_mut=slow_clock)
+             ctl_mut=lambda c: c["caps"].update(fix_verify_cycles=20, max_iterations=50), deps_mut=slow_clock)
     scenario("budget cap before dispatch", "cap_budget", done2, ctl_mut=lambda c: c["caps"].update(budget_usd=0.5))
     scenario("worker ran as an unexpected agent", "policy_denied", done2,
              ctl_mut=lambda c: c["worker"].update(expect_agents=["prometheus"]))
-    scenario("option not on opencode-omo", "policy_denied", done2, goal_mut=lambda g: g.update(situation="A05"),
-             ctl_mut=lambda c: c["worker"].update(kind="omo", binary="./x", pinned_version="4.19.4", agent="sisyphus"))
+    scenario("option not on opencode-omo", "policy_denied", done2, goal_mut=lambda g: g.update(situation="A05"))
     scenario("ultimate with a remote decision endpoint", "policy_denied", done2,
              goal_mut=lambda g: g.update(profile="ultimate"),
              ctl_mut=lambda c: c["decision"].update(backend={"kind": "http", "base_url": "https://example.invalid", "path": "/v1/x",
                                                              "model": "m-1.0", "api_key_env": "X_KEY"},
-                                                    egress={"hk_reachable_verified": False}))
+                                                    egress={"hk_reachable_verified": True}))
     scenario("advisory mode without qualification is refused", "policy_denied", done2,
              ctl_mut=lambda c: c.update(mode="advisory"))
 
@@ -209,39 +263,171 @@ def self_test():
     def lineage_conflict(g):
         g["prior_lineage"] = [{"harness": "dsh", "families": list(seat_harnesses()[0]["families"]),
                                "note": "an earlier segment under another profile"}]
-    scenario("reviewer family authored earlier in the lineage", "review_unavailable", done2,
-             goal_mut=lineage_conflict, ctl_mut=lambda c: c.update(reviewers=[c["reviewers"][0]]))
+    scenario("reviewer family authored earlier in the lineage", "review_unavailable", done2, goal_mut=lineage_conflict)
 
-    # decision-model scenarios
+    # -- forgeries from the independent review must fail --------------------------------------------
+    def deleting_reviewer(ctx):
+        def side(rdir, n, extra):
+            os.remove(os.path.join(ctx["wt"], "a.txt"))
+            return None
+        return reviewer(clean, side)
+    scenario("reviewer deletes a file after the checks", "policy_denied", both, rev=deleting_reviewer)
+
+    def exit2_reviewer(ctx):
+        return reviewer(clean, lambda rdir, n, extra: {"exit_code": 2, "timed_out": True})
+    scenario("reviewer fails and writes nothing", "review_unavailable", both, rev=exit2_reviewer)
+
+    def silent_reviewer(ctx):
+        return reviewer(clean, lambda rdir, n, extra: {"exit_code": 0})
+
+    scenario("planted findings file with a silent reviewer", "review_unavailable", both, rev=silent_reviewer,
+             pre=lambda g, c, d, x: (os.makedirs(os.path.join(x["out"], "scratch", "review-001"), exist_ok=True),
+                                     json.dump([], open(os.path.join(x["out"], "scratch", "review-001",
+                                                             f"findings-{seat_harnesses()[0]['harness']}.json"), "w"))))
+
+    def diff_has(text):
+        def chk(r, o, w):
+            p = os.path.join(o, "scratch", "review-001", "change.patch")
+            return os.path.exists(p) and text in open(p).read()
+        return chk
+    scenario("files under .superloop are hashed and reviewed", "verified_pending_owner",
+             {1: [("a.txt", "a\n"), ("b.txt", "b\n"), (".superloop/win", "PAYLOAD-W\n")]}, check=diff_has("PAYLOAD-W"))
+    scenario("ignored files are hashed and reviewed", "verified_pending_owner",
+             {1: [("a.txt", "a\n"), ("b.txt", "b\n"), (".gitignore", "secret.local\n"), ("secret.local", "PAYLOAD-I\n")]},
+             check=diff_has("PAYLOAD-I"))
+    scenario("worker rewrites the omo config", "policy_denied", {1: [(".omo/omo.jsonc", "{}\n")]})
+
+    def jump_clock(d, x):
+        t = {"v": 1000.0}
+        d["clock"] = lambda: t["v"]
+        inner = d["fakes"]["worker"]
+
+        def fn(wt, prompt, it, extra):
+            r = inner(wt, prompt, it, extra)
+            t["v"] += 1825.0
+            return r
+        d["fakes"]["worker"] = fn
+    scenario("clock runs out inside a batch that made the checks green", "cap_wall_clock", both, deps_mut=jump_clock)
+    scenario("missing review reservation is refused", "policy_denied", both,
+             ctl_mut=lambda c: c["reservations_usd"].pop("review_call"))
+    scenario("a reused output directory is refused", "policy_denied", both,
+             pre=lambda g, c, d, x: (os.makedirs(x["out"]), open(os.path.join(x["out"], "events.jsonl"), "w").close()))
+
+    def registry_entry(g, c, d, x):
+        wt = x["wt"]
+        common = os.path.realpath(os.path.join(wt, control.git(wt, "rev-parse", "--git-common-dir")))
+        branch = control.git(wt, "rev-parse", "--abbrev-ref", "HEAD")
+        ledger.Registry(d["registry"]).append({"repo_key": f"{common}#{branch}", "goal": "earlier", "run": "r0",
+                                               "status": "no_progress", "harnesses": ["dsh"],
+                                               "families": list(seat_harnesses()[0]["families"])})
+    scenario("an earlier run on the branch is inherited without prior_lineage", "review_unavailable", both, pre=registry_entry)
+    scenario("a lone major blocks success", "fix_cycles_exhausted", {i: [(f"n{i}.txt", "x"), ("a.txt", "a\n"), ("b.txt", "b\n")] for i in range(1, 30)},
+             rev=lambda n, it: [finding("major")], ctl_mut=lambda c: c["caps"].update(fix_verify_cycles=3),
+             check=lambda r, o, w: r["iterations"] == 3 and r["open_findings"])
+    scenario("a defect that moves path each round still exhausts the cycles", "fix_cycles_exhausted",
+             {i: [(f"n{i}.txt", "x"), ("a.txt", "a\n"), ("b.txt", "b\n")] for i in range(1, 30)},
+             rev=lambda n, it: [finding("blocker", path=f"p{n}.txt")], ctl_mut=lambda c: c["caps"].update(fix_verify_cycles=3, max_iterations=6),
+             check=lambda r, o, w: r["iterations"] == 3)
+    scenario("missing agent report is refused", "policy_denied", both, report={})
+    scenario("worker model outside the cell's families is refused", "policy_denied", both,
+             report={"agents": ["sisyphus"], "models": [next(v["id"] for v in control.assign.load_matrix()["models"]["hybrid"].values()
+                                                              if control.assign.family_of(v["id"]) == "openai")]})
+    scenario("invalid findings with a blocker stop the run", "review_unavailable", both,
+             rev=lambda n, it: [finding("blocker", extra={"note": "x"})] if n == 1 else [])
+    scenario("a decision state over budget abstains without crashing", "verified_pending_owner", both,
+             ctl_mut=lambda c: c["decision"].update(budget_tokens=1),
+             check=lambda r, o, w: len(events(o, "decision_skipped")) >= 2)
+    scenario("omo version mismatch is refused", "policy_denied", both,
+             deps_mut=lambda d, x: d["fakes"].__setitem__("worker@version", "5.1.48"))
+
+    def command_reviewer(c, x, tamper=False):
+        script = os.path.join(x["tmp"], "review.py")
+        open(script, "w").write("import json,sys\njson.dump([], open(sys.argv[2], 'w'))\n")
+        exe = os.path.realpath(sys.executable)
+        pins = {exe: workers.sha256_file(exe), script: workers.sha256_file(script)}
+        if tamper:
+            pins[script] = "0" * 64
+        reg = {"reviewers": {"r1": {"harness": c["reviewers"][0]["harness"], "argv": [exe, script, "{diff_file}", "{findings_out}"],
+                                    "pins": pins}}}
+        path = os.path.join(x["tmp"], "reviewers.json")
+        json.dump(reg, open(path, "w"))
+        x["reviewer_registry"] = path
+        c["reviewers"] = [{"harness": c["reviewers"][0]["harness"], "kind": "command", "ref": "r1"}]
+    scenario("pinned command reviewer from the owner's registry", "verified_pending_owner", both,
+             ctl_mut=lambda c, x: command_reviewer(c, x), deps_mut=lambda d, x: d.__setitem__("reviewer_registry", x["reviewer_registry"]))
+    scenario("command reviewer whose pin does not match is refused", "policy_denied", both,
+             ctl_mut=lambda c, x: command_reviewer(c, x, tamper=True),
+             deps_mut=lambda d, x: d.__setitem__("reviewer_registry", x["reviewer_registry"]))
+
+    def stub_omo(c, x, model=None):
+        """Real omo adapter, no fakes: stub binaries stand in for oh-my-openagent and opencode export."""
+        command_reviewer(c, x)
+        prov, mid = (model or worker_model()).split("/", 1)
+        omo = os.path.join(x["tmp"], "omo-stub")
+        open(omo, "w").write("#!" + sys.executable + "\n"
+                             "import json,os,sys\n"
+                             "a=sys.argv[1:]\n"
+                             "if a==['--version']: print('oh-my-openagent 4.19.4'); sys.exit(0)\n"
+                             "wt=a[a.index('--directory')+1]\n"
+                             "for f in ('a.txt','b.txt'): open(os.path.join(wt,f),'w').write('x\\n')\n"
+                             "print(json.dumps({'sessionId':'ses_stub','success':True,'durationMs':1,'messageCount':2,'summary':'done'}))\n")
+        exp = os.path.join(x["tmp"], "export-stub")
+        open(exp, "w").write("#!" + sys.executable + "\n"
+                             "import json\n"
+                             f"print(json.dumps({{'info':{{'id':'ses_stub','agent':'sisyphus','providerID':{prov!r},'modelID':{mid!r}}}}}))\n")
+        for f in (omo, exp):
+            os.chmod(f, 0o755)
+        c["worker"] = {"kind": "omo", "binary": omo, "pinned_version": "4.19.4", "agent": "sisyphus",
+                       "expect_agents": ["sisyphus"], "export_argv": [exp, "{session_id}"], "env": {}}
+
+    def no_fakes(d, x):
+        d["allow_fakes"] = False
+        d["fakes"] = {}
+        d["reviewer_registry"] = x["reviewer_registry"]
+    scenario("omo adapter end to end with stub binaries, no fakes", "verified_pending_owner", {},
+             ctl_mut=lambda c, x: stub_omo(c, x), deps_mut=no_fakes,
+             check=lambda r, o, w: os.path.exists(os.path.join(w, ".omo", "omo.jsonc")))
+    scenario("omo adapter: an export naming a model outside the cell is refused", "policy_denied", {},
+             ctl_mut=lambda c, x: stub_omo(c, x, model=next(v["id"] for v in control.assign.load_matrix()["models"]["hybrid"].values()
+                                                            if control.assign.family_of(v["id"]) == "openai")),
+             deps_mut=no_fakes)
+
+    # -- decision-model scenarios ----------------------------------------------------------------
     shadow_rec = recording({"1": {"blocked": {"type": "noul", "noul": 0.99},
                                   "progress": {"type": "choice", "choice": "stalled", "probabilities": {"stalled": 0.97, "regressing": 0.01, "drifting": 0.01, "progressing": 0.01}}}})
+    scenario("shadow: a confident brake changes nothing", "verified_pending_owner", done2,
+             ctl_mut=lambda c: c["decision"].update(backend=shadow_rec), check=lambda r, o, w: r["disagreements"] >= 2)
 
-    def shadow(c):
-        c["decision"]["backend"] = shadow_rec
-    scenario("shadow: a confident brake changes nothing", "verified_pending_owner", done2, ctl_mut=shadow,
-             check=lambda r, o, w: r["disagreements"] >= 2)
-
-    def advisory(c, qid="blocked", thr=0.9, model="rec-1.0"):
+    def advisory(c, x, qid="blocked", scores=0.99, grid=(0.99, 0.95)):
         c["decision"]["backend"] = shadow_rec
         c["mode"] = "advisory"
-        c["decision"]["lineage"] = {"provider": "test", "model": "rec-1.0", "base_family": "fam-decider"}
-        c["qualifications"] = [{"question_id": qid, "revision": 1, "method": "learn-then-test-fixed-sequence",
-                                "labelled": 150, "alpha": 0.05, "delta": 0.05, "threshold": thr, "model": model, "locale": "en"}]
-    scenario("advisory: a qualified brake pauses for a person", "blocked_human", done2, ctl_mut=advisory)
+        c["decision"]["lineage"] = {"provider": "test", "model": "rec-1.0", "base_family": "meta"}
+        c["qualifications"] = [{"question_id": qid, "model": "rec-1.0", "locale": "en",
+                                "record": make_record(x["tmp"], qid, scores, list(grid))}]
+    scenario("advisory: a qualified brake pauses for a person", "blocked_human", done2, ctl_mut=lambda c, x: advisory(c, x))
     scenario("advisory: an unqualified question cannot act", "verified_pending_owner", done2,
-             ctl_mut=lambda c: (advisory(c, qid="needs_human")))
+             ctl_mut=lambda c, x: advisory(c, x, qid="needs_human"))
     scenario("advisory: a brake below its qualified threshold cannot act", "verified_pending_owner", done2,
-             ctl_mut=lambda c: advisory(c, thr=0.995))
+             ctl_mut=lambda c, x: advisory(c, x, scores=0.999, grid=(0.999, 0.995)))
+
+    def edited_record(c, x):
+        advisory(c, x)
+        p = c["qualifications"][0]["record"]
+        r = json.load(open(p))
+        r["threshold"] = 0.01
+        json.dump(r, open(p, "w"))
+    scenario("advisory: a hand-edited threshold is refused", "policy_denied", done2, ctl_mut=edited_record)
     done_rec = recording({}, default={"goal_met": {"type": "noul", "noul": 0.99}})
     scenario("decision says done while checks fail: no effect", "no_progress", {},
              ctl_mut=lambda c: c["decision"].update(backend=done_rec))
     smoke_rec = recording({}, default={"goal_met": {"type": "noul", "noul": 0.05}})
 
-    def smoke(c):
-        advisory(c, qid="goal_met")
+    def smoke(c, x):
+        advisory(c, x, qid="goal_met")
         c["decision"]["backend"] = smoke_rec
+        c["reviewers"].append({"harness": seat_harnesses()[1]["harness"], "kind": "fake", "name": "reviewer2"})
     scenario("advisory smoke detector adds every reviewer seat", "verified_pending_owner", done2, ctl_mut=smoke,
-             goal_mut=lambda g: g.update(situation="A06"),
+             deps_mut=lambda d, x: d.__setitem__("matrix", two_seat_matrix()),
              check=lambda r, o, w: len(r.get("review", [])) == 2)
     outage = recording({}, default={"_outage": True})
     scenario("decision outage falls back to rules", "verified_pending_owner", done2,
@@ -257,7 +443,7 @@ def self_test():
              ctl_mut=lambda c: c["decision"].update(backend=bad),
              check=lambda r, o, w: all(e["model"]["answers"]["blocked"]["type"] == "abstain" for e in events(o, "decision") if "blocked" in e["model"]["answers"]))
 
-    # unit checks on the parts
+    # -- unit checks on the parts ----------------------------------------------------------------
     def ok(label, cond):
         nonlocal fails
         print(("  ok   " if cond else "  FAIL ") + label)
@@ -277,13 +463,26 @@ def self_test():
         st, rep = statemod.build(g, {"checks_failed": 1}, {"status": "done"}, [{"path": "log.txt", "start": 0, "end": 2, "text": "no", "unit": "char"}], tmp)
         ok("mismatched span is never sent", st["evidence_spans"] == [] and rep["spans_rejected"])
         ok("worker narrative is not a fact", st["claims"]["untrusted"] and "worker_status" in st["claims"] and "status" not in st["facts"])
-        st2, _ = statemod.build(g, {"note": "key sk-abcdefghijklmnop1234"}, root=tmp)
-        ok("secrets are redacted", "sk-" not in json.dumps(st2))
+        keys = ["sk-abcdefghijklmnop1234", "sk_live_abcdefghijkl", "xoxb-1234567890-abcdefgh",
+                "github_pat_11AAAAAAabcdefghijklmnopqrstuvwxyz", "AIzaSyA1234567890abcdef",
+                "eyJhbGciOiJIUzI1.eyJzdWIiOiIxMjM0.abcdefghijk", "api_key=hunter2hunter2"]
+        st2, _ = statemod.build(g, {"note": " ".join(keys)}, root=tmp)
+        ok("key shapes are redacted", not any(k in json.dumps(st2) for k in keys))
         try:
             statemod.build(g, {"failing_checks": ["x" * 50] * 10}, root=tmp, budget_tokens=50)
             ok("over-budget required facts fail closed", False)
         except ValueError:
             ok("over-budget required facts fail closed", True)
+        prov, mid = worker_model().split("/", 1)
+        exp = json.dumps({"info": {"agent": "sisyphus", "providerID": prov, "modelID": mid},
+                          "messages": [{"info": {"agent": "hephaestus"}}]})
+        ps = workers.parse_session(exp)
+        ok("session parsing returns every agent, not the first", ps["agents"] == ["hephaestus", "sisyphus"]
+           and ps["models"] == [worker_model()])
+        rr = os.path.join(tmp, "run.json")
+        open(rr, "w").write('{"sessionId": "ses_1", "success": true, "durationMs": 5, "messageCount": 2, "summary": "done"}\n')
+        ok("run result yields the session id and keeps success as a claim",
+           workers.parse_run_result(rr) == {"session_id": "ses_1", "run_success_claim": True})
     finally:
         shutil.rmtree(tmp)
     wire = decide.wire_questions({"q": {"type": "choice", "instructions": "x", "criteria": {"a": "", "b": "", "c": ""}}}, ["q"], {"q": ["a", "b"]})
@@ -297,6 +496,7 @@ def self_test():
     ok("score with a legend-keyed distribution", n["s"]["type"] == "score")
     hb = decide.HttpBackend({"model": "m", "state_encoding": "text"})
     ok("text encoding serializes the whole state", json.loads(hb.payload({"a": 1}, {})["state"]["text"]) == {"a": 1})
+    ok("a dual backend reserves two calls", decide.remote_calls({"kind": "dual", "first": {"kind": "http"}, "second": {"kind": "http"}}) == 2)
     labelled = [{"score": 0.99, "correct": True}] * 140 + [{"score": 0.6, "correct": False}] * 20 + [{"score": 0.97, "correct": False}] * 2
     q = qualify.qualify(labelled, alpha=0.05, delta=0.05, grid=[0.99, 0.95, 0.9, 0.5])
     ok("learn-then-test stops at the first threshold it cannot certify", q["threshold"] == 0.9 and q["errors"] == 2

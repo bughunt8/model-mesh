@@ -69,6 +69,26 @@
         "Never put a summary or compressed context into the decision state\\."
       ],
       "forbidden": []
+    },
+    {
+      "id": "owner-approves-checks-and-registries",
+      "description": "The owner approves acceptance checks and owns the reviewer registry; the agent never edits the omo config or the registries.",
+      "required": [
+        "the owner approves them, because the loop trusts them",
+        "Do not write or edit that registry yourself",
+        "Never edit `.omo/omo.jsonc`, the reviewer registry or the lineage registry\\."
+      ],
+      "forbidden": []
+    },
+    {
+      "id": "no-major-and-recheck",
+      "description": "Success needs no blocker and no major finding, an unchanged tree during review, and a second check run.",
+      "required": [
+        "found no blocker and no major finding, the tree did not change during the review, and the checks passed again"
+      ],
+      "forbidden": [
+        "no corroborated major"
+      ]
     }
   ]
 }

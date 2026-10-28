@@ -32,7 +32,6 @@
       "base_family": "none"
     },
     "egress": {
-      "hk_reachable_verified": true,
       "retention": "local only",
       "region": "local"
     }
@@ -55,29 +54,15 @@
       "goal",
       "todo-continuation-enforcer",
       "start-work",
-      "atlas"
+      "atlas",
+      "runtime-fallback"
     ]
   },
   "reviewers": [
     {
       "harness": "goose",
       "kind": "command",
-      "tag": "review-goose",
-      "argv": [
-        "goose",
-        "run",
-        "--recipe",
-        "review.recipe.yaml",
-        "--params",
-        "diff={diff_file}",
-        "--params",
-        "findings={findings_out}",
-        "--params",
-        "lenses={lenses}"
-      ],
-      "env": {
-        "GOOSE_MODE": "approve"
-      }
+      "ref": "goose-review"
     }
   ]
 }

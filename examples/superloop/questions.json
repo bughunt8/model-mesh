@@ -79,7 +79,7 @@
       "effect": {
         "effect": "pause_human"
       },
-      "use": "Brake only. Code still requires a recorded approval for these actions whatever the answer."
+      "use": "Brake only. The superloop has no approval path: the worker prompt forbids irreversible, outward, paid and permission-changing actions, and a yes here can only pause the run for a person."
     },
     {
       "id": "goal_met",

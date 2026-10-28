@@ -10,32 +10,59 @@ Rules:
       brake or smoke. Brake effects are pause_human, stop_no_progress or add_review only, and a
       choice brake names options that exist. No question may carry a threshold.
   L2  goal: id, objective, a situation A01 to A12, one of the four profiles, an option name, at
-      least one acceptance check given as an argv list with a timeout, and protected paths.
+      least one acceptance check given as an argv list with a timeout, and protected paths. A
+      check may not be a no-op (true, :, echo, exit 0) and may not read the worker's status
+      file or the omo config, which the tree hash leaves out.
   L3  caps: max_iterations 1 to 50, wall_clock_seconds 60 to 86400, no_progress_streak and
       fix_verify_cycles at least 1, per_call_seconds positive, and a positive budget_usd.
   L4  mode is shadow or advisory. There is no control mode.
-  L5  decision backend: rules, replay, http or dual. An http backend uses https, a path, a
-      pinned model ID (no latest or preview alias) and the name of an environment variable for
-      the key, never a key. dual needs a consequential question list.
-  L6  advisory mode needs a disclosed decision base family and at least one qualification record
-      for a brake or smoke question, made by learn-then-test on at least 100 labelled decisions,
-      with alpha and delta at most 0.1 and a model ID equal to the backend's pinned model.
-  L7  the ultimate profile admits a remote decision endpoint only when it is marked verified as
-      Hong Kong reachable and policy eligible.
-  L8  worker: an omo worker names a local binary and an agent, pins omo 4.19.4, and the
-      materialized config disables the goal, todo-continuation-enforcer and start-work hooks.
-  L9  reviewers: argv lists, never on opencode-omo, and each names a harness.
-  L10 reservations: worker_call above zero, every reservation non-negative. Missing usage is not
-      zero cost.
+  L5  decision backend: rules, replay, http or dual. An http backend uses https (plain http only
+      on a loopback host), a path, a model ID with a version number and no moving alias
+      (latest, preview, stable, default, current, beta, nightly, auto), and the name of an
+      environment variable for the key, never a key. dual needs a consequential question list.
+  L6  advisory mode needs a decision base family from the known family list and at least one
+      qualification entry for a brake or smoke question. Each entry points at a record file
+      written by scripts/superloop/qualify.py; the record must verify: the labelled dataset
+      still matches its hash, has at least 100 labels from people or ground truth, and
+      re-running learn-then-test gives the recorded threshold. The entry's model must be the
+      backend's pinned model.
+  L7  the ultimate profile admits only local (loopback) or offline decision backends, until a
+      reachability and data-policy check exists. A controller flag cannot override this.
+  L8  worker: kind omo, a local binary (no runtime package download), an agent, expect_agents,
+      omo pinned to 4.19.4, and disabled_hooks naming goal, todo-continuation-enforcer,
+      start-work, atlas and runtime-fallback. The driver adds them anyway.
+  L9  reviewers: kind command with a ref into the owner's reviewer registry and no argv or env
+      of their own, never on opencode-omo, and each names a harness.
+  L10 reservations: worker_call and review_call above zero, decision_call above zero when a
+      remote backend is used, every reservation non-negative. Missing usage is not zero cost.
+  L11 reviewer registry (examples/superloop/reviewers.example.json, or the owner's file):
+      each entry names a harness, an argv list and pins, a SHA-256 per pinned file, and the
+      pins cover the executable.
+
+Fake workers and reviewers pass only when the caller allows them, which only the offline
+self-test does.
 
 Usage:
   python scripts/validate-superloop.py                      check the committed examples
   python scripts/validate-superloop.py GOAL CONTROLLER      check one pair
   python scripts/validate-superloop.py --self-test
 """
-import copy, io, json, os, re, sys
+import copy, importlib.util, io, json, os, re, sys, tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def _mod(name, rel):
+    spec = importlib.util.spec_from_file_location(name, os.path.join(ROOT, rel))
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m
+
+
+_vo = _mod("_vo_sl", "scripts/validate-orchestration.py")
+_q = _mod("_q_sl", "scripts/superloop/qualify.py")
+KNOWN_FAMILIES = set(_vo.PREFIX_FAMILY.values()) | {"google"}
+REVIEWERS_EXAMPLE = os.path.join(ROOT, "examples", "superloop", "reviewers.example.json")
 QUESTIONS = os.path.join(ROOT, "examples", "superloop", "questions.json")
 EXAMPLES = [("examples/superloop/goal.example.json", "examples/superloop/controller.example.json"),
             ("examples/superloop/goal.example.json", "examples/superloop/controller.rules.example.json")]
@@ -44,8 +71,13 @@ RULE_NAMES = {"situation", "progress", "blocked", "needs_human", "goal_met", "ne
 BRAKE_EFFECTS = {"pause_human", "stop_no_progress", "add_review"}
 PROFILES = {"ultimate", "hybrid", "b4b", "global"}
 SITUATIONS = {f"A{i:02d}" for i in range(1, 13)}
-REQUIRED_HOOKS = {"goal", "todo-continuation-enforcer", "start-work"}
-ALIAS = re.compile(r"(latest|preview)", re.I)
+REQUIRED_HOOKS = {"goal", "todo-continuation-enforcer", "start-work", "atlas", "runtime-fallback"}
+ALIAS = re.compile(r"(latest|preview|stable|default|current|beta|nightly|auto)", re.I)
+VERSIONED = re.compile(r"\d+\.\d+")
+LOOPBACK = {"127.0.0.1", "localhost", "::1"}
+NOOP = {"true", ":", "echo", "printf"}
+HIDDEN = (".superloop/status.json", ".omo/")
+HEX64 = re.compile(r"^[0-9a-f]{64}$")
 ENV_NAME = re.compile(r"^[A-Z][A-Z0-9_]{2,}$")
 
 
@@ -118,6 +150,11 @@ def validate_goal(g):
                 e.append(f"L2 check {c.get('name')}: timeout_seconds required")
             if not isinstance(c.get("description"), str) or not c["description"].strip():
                 e.append(f"L2 check {c.get('name')}: description required")
+            argv = c.get("argv") if isinstance(c.get("argv"), list) else []
+            if argv and _noop(argv):
+                e.append(f"L2 check {c.get('name')}: a no-op command is not an acceptance check")
+            if any(h in str(a) for a in argv for h in HIDDEN):
+                e.append(f"L2 check {c.get('name')}: may not read the status file or the omo config")
     if not isinstance(g.get("protected_paths"), list):
         e.append("L2 goal.protected_paths must be a list (it may be empty)")
     for pl in g.get("prior_lineage", []):
@@ -126,7 +163,18 @@ def validate_goal(g):
     return e
 
 
-def validate_controller(c, g=None, catalog=None):
+def _noop(argv):
+    base = os.path.basename(argv[0])
+    if base in NOOP:
+        return True
+    if base in ("sh", "bash", "zsh", "dash") and len(argv) >= 3 and argv[1] == "-c" and \
+            argv[2].strip() in ("true", ":", "exit 0", "exit", ""):
+        return True
+    return base in ("python", "python3") and len(argv) >= 3 and argv[1] == "-c" and \
+        argv[2].strip() in ("pass", "", "import sys; sys.exit(0)", "raise SystemExit(0)")
+
+
+def validate_controller(c, g=None, catalog=None, allow_fake=False):
     e = []
     if c.get("mode") not in ("shadow", "advisory"):
         e.append("L4 mode must be shadow or advisory")
@@ -151,74 +199,115 @@ def validate_controller(c, g=None, catalog=None):
     qmap = {q.get("id"): q for q in catalog.get("questions", [])}
     if c.get("mode") == "advisory":
         fam = d.get("lineage", {}).get("base_family")
-        if not fam or fam in ("undisclosed", "unknown"):
-            e.append("L6 advisory mode needs decision.lineage.base_family")
+        if fam not in KNOWN_FAMILIES:
+            e.append("L6 advisory mode needs decision.lineage.base_family from the known family list")
         quals = c.get("qualifications", [])
         if not quals:
-            e.append("L6 advisory mode needs at least one qualification record")
+            e.append("L6 advisory mode needs at least one qualification entry")
         pinned = _models(b)
         for qr in quals:
             q = qmap.get(qr.get("question_id"), {})
             if q.get("authority") not in ("brake", "smoke"):
                 e.append(f"L6 qualification for {qr.get('question_id')}: not a brake or smoke question")
-            if qr.get("revision") != q.get("revision"):
-                e.append(f"L6 qualification for {qr.get('question_id')}: revision does not match the catalog")
-            if qr.get("method") != "learn-then-test-fixed-sequence":
-                e.append("L6 qualification method must be learn-then-test-fixed-sequence")
-            if not _num(qr.get("labelled")) or qr["labelled"] < 100:
-                e.append("L6 qualification needs at least 100 labelled decisions")
-            for k in ("alpha", "delta"):
-                if not _num(qr.get(k)) or not 0 < qr[k] <= 0.1:
-                    e.append(f"L6 qualification {k} must be in (0, 0.1]")
-            t = qr.get("threshold")
-            if not _num(t) or not 0 < t <= 1:
-                e.append("L6 qualification threshold must be in (0, 1]")
             if qr.get("model") not in pinned:
                 e.append(f"L6 qualification model {qr.get('model')} is not the backend's pinned model")
             if not isinstance(qr.get("locale"), str):
                 e.append("L6 qualification needs a locale")
-    if g and g.get("profile") == "ultimate" and b.get("kind") in ("http", "dual") \
-            and not d.get("egress", {}).get("hk_reachable_verified"):
-        e.append("L7 ultimate profile: decision endpoint not verified as Hong Kong reachable and policy eligible")
+            rec = qr.get("record")
+            if not isinstance(rec, str) or not os.path.isfile(rec):
+                e.append(f"L6 qualification for {qr.get('question_id')}: record file missing")
+                continue
+            _, err = _q.verify_record(rec, qr.get("model"), qr.get("question_id"), q.get("revision"), qr.get("locale"))
+            if err:
+                e.append(f"L6 qualification for {qr.get('question_id')}: {err}")
+    if g and g.get("profile") == "ultimate":
+        for hb in _http(b):
+            if _host(hb.get("base_url", "")) not in LOOPBACK:
+                e.append("L7 ultimate profile admits only local or offline decision backends")
     w = c.get("worker", {})
     if w.get("kind") == "omo":
-        if not isinstance(w.get("binary"), str) or w["binary"].startswith(("bunx", "npx")):
+        if not isinstance(w.get("binary"), str) or w["binary"].split()[0] in ("bunx", "npx", "pnpx", "yarn", "npm") \
+                or " " in w["binary"]:
             e.append("L8 omo worker needs a local pinned binary path, not a runtime package download")
         if w.get("pinned_version") != "4.19.4":
             e.append("L8 omo worker must pin 4.19.4")
         if not w.get("agent"):
             e.append("L8 omo worker needs an agent")
+        if not isinstance(w.get("expect_agents"), list) or not w["expect_agents"]:
+            e.append("L8 omo worker needs expect_agents")
+        if "export_argv" in w and (not isinstance(w["export_argv"], list) or not any("{session_id}" in a for a in w["export_argv"])):
+            e.append("L8 export_argv must be a list with a {session_id} placeholder")
         hooks = set(c.get("materialize", {}).get("disabled_hooks", []))
         if not REQUIRED_HOOKS <= hooks:
             e.append(f"L8 materialize.disabled_hooks must include {sorted(REQUIRED_HOOKS)}")
-    elif w.get("kind") not in ("command", "fake"):
-        e.append("L8 worker kind must be omo, command or fake")
+    elif not (allow_fake and w.get("kind") == "fake"):
+        e.append("L8 worker kind must be omo")
     for r in c.get("reviewers", []):
         if r.get("harness") in (None, "", "opencode-omo"):
             e.append("L9 reviewer needs a harness other than opencode-omo")
-        if r.get("kind") == "command" and (not isinstance(r.get("argv"), list) or not r["argv"]):
-            e.append(f"L9 reviewer {r.get('harness')}: argv must be a list")
-        if r.get("kind") not in ("command", "fake"):
-            e.append(f"L9 reviewer {r.get('harness')}: kind must be command or fake")
+        if r.get("kind") == "command":
+            if not isinstance(r.get("ref"), str) or not r["ref"]:
+                e.append(f"L9 reviewer {r.get('harness')}: needs a ref into the owner's reviewer registry")
+            if "argv" in r or "env" in r:
+                e.append(f"L9 reviewer {r.get('harness')}: argv and env belong in the owner's registry, not the controller")
+        elif not (allow_fake and r.get("kind") == "fake"):
+            e.append(f"L9 reviewer {r.get('harness')}: kind must be command")
     res = c.get("reservations_usd", {})
-    if not _num(res.get("worker_call")) or res["worker_call"] <= 0:
-        e.append("L10 reservations_usd.worker_call must be above zero")
+    for k in ("worker_call", "review_call") + (("decision_call",) if _http(b) else ()):
+        if not _num(res.get(k)) or res[k] <= 0:
+            e.append(f"L10 reservations_usd.{k} must be above zero")
     for k, v in res.items():
         if not _num(v) or v < 0:
             e.append(f"L10 reservations_usd.{k} must be non-negative")
     return e
 
 
+def validate_reviewer_registry(reg):
+    e = []
+    rs = reg.get("reviewers") if isinstance(reg, dict) else None
+    if not isinstance(rs, dict) or not rs:
+        return ["L11 reviewer registry needs a reviewers object"]
+    for name, r in rs.items():
+        if not r.get("harness") or r.get("harness") == "opencode-omo":
+            e.append(f"L11 {name}: needs a harness other than opencode-omo")
+        argv = r.get("argv")
+        if not isinstance(argv, list) or not argv or not all(isinstance(a, str) for a in argv):
+            e.append(f"L11 {name}: argv must be a non-empty list of strings")
+            continue
+        pins = r.get("pins")
+        if not isinstance(pins, dict) or not pins or not all(isinstance(v, str) and HEX64.match(v) for v in pins.values()):
+            e.append(f"L11 {name}: pins must map each pinned file to a SHA-256")
+        elif not any(os.path.basename(p) == os.path.basename(argv[0]) for p in pins):
+            e.append(f"L11 {name}: pins must cover the executable {argv[0]}")
+        if not any("{findings_out}" in a for a in argv) or not any("{diff_file}" in a for a in argv):
+            e.append(f"L11 {name}: argv must pass {{diff_file}} and {{findings_out}}")
+    return e
+
+
+def _host(url):
+    m = re.match(r"^[a-z]+://(\[[^\]]+\]|[^/:]+)", str(url))
+    return m.group(1).strip("[]") if m else ""
+
+
+def _http(b):
+    if b.get("kind") == "http":
+        return [b]
+    if b.get("kind") == "dual":
+        return _http(b.get("first", {})) + _http(b.get("second", {}))
+    return []
+
+
 def _backend(b):
     e = []
     k = b.get("kind")
     if k == "http":
-        if not str(b.get("base_url", "")).startswith("https://"):
-            e.append("L5 http backend needs an https base_url")
+        url = str(b.get("base_url", ""))
+        if not (url.startswith("https://") or (url.startswith("http://") and _host(url) in LOOPBACK)):
+            e.append("L5 http backend needs an https base_url (plain http only on a loopback host)")
         if not str(b.get("path", "")).startswith("/"):
             e.append("L5 http backend needs a path")
-        if not b.get("model") or ALIAS.search(str(b.get("model"))):
-            e.append("L5 http backend needs a pinned model ID, not an alias")
+        if not b.get("model") or ALIAS.search(str(b.get("model"))) or not VERSIONED.search(str(b.get("model"))):
+            e.append("L5 http backend needs a pinned, versioned model ID, not an alias")
         if not ENV_NAME.match(str(b.get("api_key_env", ""))):
             e.append("L5 api_key_env must name an environment variable")
         if b.get("state_encoding", "object") not in ("object", "text"):
@@ -246,17 +335,43 @@ def check_pair(gp, cp):
     return validate_goal(g) + validate_controller(c, g)
 
 
+def check_registry(path=REVIEWERS_EXAMPLE):
+    return validate_reviewer_registry(json.load(io.open(path, encoding="utf-8")))
+
+
+def _labelled(n, source="human"):
+    return [{"score": 0.99, "correct": True, "label_source": source}] * n
+
+
+def _record(tmp, model, n=150, source="human", question="blocked"):
+    ds = os.path.join(tmp, f"labels-{model}-{n}-{source}-{question}.json")
+    json.dump(_labelled(n, source), open(ds, "w"))
+    if source in _q.LABEL_SOURCES:
+        rec = _q.make_record(ds, 0.05, 0.05, [0.99, 0.95], model, question, 1, "en")
+    else:
+        rec = _q.qualify(_labelled(n), 0.05, 0.05, [0.99, 0.95])
+        rec.update(grid=[0.99, 0.95], dataset=ds, dataset_sha256=_q._sha(ds), model=model, question_id=question,
+                   revision=1, locale="en")
+    path = ds.replace("labels-", "record-")
+    json.dump(rec, open(path, "w"))
+    return path, ds
+
+
 def self_test():
     fails = 0
+    tmp = tempfile.mkdtemp()
     g0 = json.load(io.open(os.path.join(ROOT, EXAMPLES[0][0]), encoding="utf-8"))
     c0 = json.load(io.open(os.path.join(ROOT, EXAMPLES[0][1]), encoding="utf-8"))
     cat0 = json.load(io.open(QUESTIONS, encoding="utf-8"))
+    reg0 = json.load(io.open(REVIEWERS_EXAMPLE, encoding="utf-8"))
+    model = c0["decision"]["backend"]["model"]
+    good_rec, good_ds = _record(tmp, model)
 
-    def expect(label, mutate, rule, target="controller"):
+    def expect(label, mutate, rule):
         nonlocal fails
-        g, c, cat = copy.deepcopy(g0), copy.deepcopy(c0), copy.deepcopy(cat0)
-        mutate({"goal": g, "controller": c, "catalog": cat})
-        errs = validate_goal(g) + validate_controller(c, g, cat)
+        g, c, cat, reg = copy.deepcopy(g0), copy.deepcopy(c0), copy.deepcopy(cat0), copy.deepcopy(reg0)
+        mutate({"goal": g, "controller": c, "catalog": cat, "registry": reg})
+        errs = validate_goal(g) + validate_controller(c, g, cat) + validate_reviewer_registry(reg)
         hit = any(x.startswith(rule + " ") for x in errs)
         print(("  ok   " if hit else "  FAIL ") + f"{label} -> {rule}")
         fails += 0 if hit else 1
@@ -264,18 +379,37 @@ def self_test():
     def q(cat, i):
         return next(x for x in cat["questions"] if x["id"] == i)
 
-    def advisory(m, **over):
+    def advisory(m, record=None, **over):
         c = m["controller"]
         c["mode"] = "advisory"
-        c["decision"]["lineage"]["base_family"] = "example-family"
-        rec = {"question_id": "blocked", "revision": 1, "method": "learn-then-test-fixed-sequence", "labelled": 150,
-               "alpha": 0.05, "delta": 0.05, "threshold": 0.9, "model": c["decision"]["backend"]["model"], "locale": "en"}
-        rec.update(over)
-        c["qualifications"] = [rec]
+        c["decision"]["lineage"]["base_family"] = "meta"
+        ent = {"question_id": "blocked", "model": model, "locale": "en", "record": record or good_rec}
+        ent.update(over)
+        c["qualifications"] = [ent]
+
+    def edit_record(field, value):
+        path = os.path.join(tmp, f"edited-{field}.json")
+        rec = json.load(open(good_rec))
+        rec[field] = value
+        json.dump(rec, open(path, "w"))
+        return path
+
+    def tampered_dataset():
+        rec_path, ds = _record(tmp, model, n=151)
+        json.dump(_labelled(150) + [{"score": 0.99, "correct": False, "label_source": "human"}], open(ds, "w"))
+        return rec_path
 
     base = validate_goal(g0) + validate_controller(c0, g0, cat0)
     print(("  ok   " if not base else "  FAIL ") + "committed examples are valid " + str(base[:3]))
     fails += 1 if base else 0
+    regb = validate_reviewer_registry(reg0)
+    print(("  ok   " if not regb else "  FAIL ") + "reviewer registry example is valid " + str(regb[:3]))
+    fails += 1 if regb else 0
+    adv = copy.deepcopy(c0)
+    advisory({"controller": adv})
+    ab = validate_controller(adv, g0, cat0)
+    print(("  ok   " if not ab else "  FAIL ") + "a verified qualification record is accepted " + str(ab[:3]))
+    fails += 1 if ab else 0
     expect("missing required question", lambda m: m["catalog"]["questions"].pop(), "L1")
     expect("threshold in the catalog", lambda m: q(m["catalog"], "blocked").__setitem__("threshold", 0.8), "L1")
     expect("authority over success", lambda m: q(m["catalog"], "goal_met").__setitem__("authority", "done"), "L1")
@@ -285,24 +419,51 @@ def self_test():
     expect("shell string check", lambda m: m["goal"]["acceptance"][0].__setitem__("argv", "make test"), "L2")
     expect("bad situation", lambda m: m["goal"].__setitem__("situation", "A13"), "L2")
     expect("no acceptance", lambda m: m["goal"].__setitem__("acceptance", []), "L2")
+    expect("no-op check", lambda m: m["goal"]["acceptance"][0].__setitem__("argv", ["true"]), "L2")
+    expect("shell no-op check", lambda m: m["goal"]["acceptance"][0].__setitem__("argv", ["sh", "-c", "exit 0"]), "L2")
+    expect("check reads the status file", lambda m: m["goal"]["acceptance"][0].__setitem__(
+        "argv", ["grep", "done", ".superloop/status.json"]), "L2")
     expect("endless iterations", lambda m: m["controller"]["caps"].__setitem__("max_iterations", 10 ** 6), "L3")
     expect("no budget", lambda m: m["controller"]["caps"].pop("budget_usd"), "L3")
     expect("control mode", lambda m: m["controller"].__setitem__("mode", "control"), "L4")
     expect("alias model", lambda m: m["controller"]["decision"]["backend"].__setitem__("model", "jev-latest"), "L5")
+    expect("stable alias model", lambda m: m["controller"]["decision"]["backend"].__setitem__("model", "stable-model"), "L5")
+    expect("unversioned model", lambda m: m["controller"]["decision"]["backend"].__setitem__("model", "jev"), "L5")
     expect("literal key", lambda m: m["controller"]["decision"]["backend"].__setitem__("api_key_env", "sk-abc123"), "L5")
-    expect("plain http", lambda m: m["controller"]["decision"]["backend"].__setitem__("base_url", "http://x"), "L5")
+    expect("plain http to a remote host", lambda m: m["controller"]["decision"]["backend"].__setitem__("base_url", "http://x"), "L5")
     expect("advisory without lineage", lambda m: (advisory(m), m["controller"]["decision"]["lineage"].__setitem__("base_family", "undisclosed")), "L6")
+    expect("advisory with a made-up family", lambda m: (advisory(m), m["controller"]["decision"]["lineage"].__setitem__("base_family", "made-up-family")), "L6")
     expect("advisory without qualification", lambda m: (advisory(m), m["controller"].__setitem__("qualifications", [])), "L6")
-    expect("qualification on too few labels", lambda m: advisory(m, labelled=40), "L6")
+    expect("qualification without a record file", lambda m: advisory(m, record=os.path.join(tmp, "missing.json")), "L6")
+    expect("qualification on too few labels", lambda m: advisory(m, record=_record(tmp, model, n=40)[0]), "L6")
+    expect("qualification labelled by the model", lambda m: advisory(m, record=_record(tmp, model, source="model")[0]), "L6")
+    expect("qualification with an edited threshold", lambda m: advisory(m, record=edit_record("threshold", 0.01)), "L6")
+    expect("qualification on a changed dataset", lambda m: advisory(m, record=tampered_dataset()), "L6")
     expect("qualification for another model", lambda m: advisory(m, model="other-1.0"), "L6")
     expect("qualification for a shadow question", lambda m: advisory(m, question_id="next_action"), "L6")
-    expect("qualification on an old revision", lambda m: advisory(m, revision=9), "L6")
-    expect("ultimate with unverified endpoint", lambda m: m["goal"].__setitem__("profile", "ultimate"), "L7")
+    expect("ultimate with a remote endpoint", lambda m: m["goal"].__setitem__("profile", "ultimate"), "L7")
+    expect("ultimate with a reachability flag set", lambda m: (m["goal"].__setitem__("profile", "ultimate"),
+           m["controller"]["decision"]["egress"].__setitem__("hk_reachable_verified", True)), "L7")
     expect("runtime package download", lambda m: m["controller"]["worker"].__setitem__("binary", "bunx oh-my-openagent"), "L8")
     expect("omo continuation left on", lambda m: m["controller"]["materialize"]["disabled_hooks"].remove("todo-continuation-enforcer"), "L8")
+    expect("atlas left on", lambda m: m["controller"]["materialize"]["disabled_hooks"].remove("atlas"), "L8")
+    expect("runtime fallback left on", lambda m: m["controller"]["materialize"]["disabled_hooks"].remove("runtime-fallback"), "L8")
     expect("unpinned omo", lambda m: m["controller"]["worker"].__setitem__("pinned_version", "5.1.48"), "L8")
+    expect("no expected agents", lambda m: m["controller"]["worker"].pop("expect_agents"), "L8")
+    expect("command worker", lambda m: m["controller"].__setitem__("worker", {"kind": "command", "argv": ["x"]}), "L8")
+    expect("fake worker outside the self-test", lambda m: m["controller"].__setitem__("worker", {"kind": "fake", "name": "w"}), "L8")
     expect("reviewer on omo", lambda m: m["controller"]["reviewers"][0].__setitem__("harness", "opencode-omo"), "L9")
+    expect("reviewer argv in the controller", lambda m: m["controller"]["reviewers"][0].__setitem__("argv", ["sh", "-c", "echo []"]), "L9")
+    expect("reviewer without a registry ref", lambda m: m["controller"]["reviewers"][0].pop("ref"), "L9")
+    expect("fake reviewer outside the self-test", lambda m: m["controller"]["reviewers"][0].__setitem__("kind", "fake"), "L9")
     expect("zero worker reservation", lambda m: m["controller"]["reservations_usd"].__setitem__("worker_call", 0), "L10")
+    expect("missing review reservation", lambda m: m["controller"]["reservations_usd"].pop("review_call"), "L10")
+    expect("zero decision reservation with a remote backend", lambda m: m["controller"]["reservations_usd"].__setitem__("decision_call", 0), "L10")
+    first = next(iter(reg0["reviewers"]))
+    expect("registry entry without pins", lambda m: m["registry"]["reviewers"][first].pop("pins"), "L11")
+    expect("registry pins miss the executable", lambda m: m["registry"]["reviewers"][first].__setitem__(
+        "pins", {"/opt/other": "0" * 64}), "L11")
+    expect("registry argv without a findings file", lambda m: m["registry"]["reviewers"][first].__setitem__("argv", ["goose", "run"]), "L11")
     print("self-test " + ("passed" if not fails else f"FAILED ({fails})"))
     return 1 if fails else 0
 
@@ -314,6 +475,8 @@ def main(argv):
     errs = []
     for gp, cp in pairs:
         errs += [f"{cp}: {x}" for x in check_pair(gp, cp)]
+    if len(argv) < 2:
+        errs += [f"examples/superloop/reviewers.example.json: {x}" for x in check_registry()]
     for x in errs:
         print("  FAIL", x)
     print("superloop checks " + ("passed" if not errs else f"FAILED ({len(errs)})"))

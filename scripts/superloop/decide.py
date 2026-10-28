@@ -189,7 +189,7 @@ def _rule_next_action(state, q):
 
 def _rule_needs_human(state, q):
     f = state.get("facts", {})
-    return {"type": "noul", "p": 1.0 if f.get("touches_protected") or f.get("outward_action") else 0.0}
+    return {"type": "noul", "p": 1.0 if f.get("touches_protected") else 0.0}
 
 
 RULES = {"progress": _rule_progress, "blocked": _rule_blocked, "goal_met": _rule_goal_met,
@@ -250,10 +250,14 @@ class HttpBackend(Backend):
                                      headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"})
         timeout = float(self.cfg.get("timeout_seconds", 10))
         tries = int(self.cfg.get("retries", 2)) + 1
+        deadline = time.time() + float(context.get("time_left", timeout * tries + 30))
         last = None
         for i in range(tries):
+            left = deadline - time.time()
+            if left < 1:
+                raise TimeoutError("no wall-clock time left for a decision call")
             try:
-                with urllib.request.urlopen(req, timeout=timeout) as r:
+                with urllib.request.urlopen(req, timeout=min(timeout, left)) as r:
                     data = json.loads(r.read().decode())
                 return data.get("answers", {}), {"model": data.get("model", self.cfg["model"]), "usage": data.get("usage", {})}
             except urllib.error.HTTPError as ex:
@@ -262,7 +266,8 @@ class HttpBackend(Backend):
                     break
             except (urllib.error.URLError, TimeoutError, ValueError) as ex:
                 last = ex
-            time.sleep(min(2 ** i, 8))
+            if i + 1 < tries:
+                time.sleep(max(0.0, min(2 ** i, 8, deadline - time.time() - 1)))
         raise ConnectionError(f"decision endpoint failed: {last}")
 
 
@@ -315,6 +320,16 @@ def build_backend(spec, catalog, recordings=None):
         return DualBackend(build_backend(spec["first"], catalog, recordings),
                            build_backend(spec["second"], catalog, recordings), spec.get("consequential", []))
     raise ValueError(f"unknown backend kind {kind}")
+
+
+def remote_calls(spec):
+    """How many paid calls one ask makes with this backend spec."""
+    k = spec.get("kind")
+    if k == "http":
+        return 1
+    if k == "dual":
+        return remote_calls(spec.get("first", {})) + remote_calls(spec.get("second", {}))
+    return 0
 
 
 def ask(backend, catalog, ids, menus, state, context):

@@ -4,30 +4,45 @@ Code owns the loop. A typed decision model answers questions at fixed forks; in 
 answers are only logged, and in advisory mode a qualified answer may only brake: pause for a
 person, stop for no progress, or add a review. It can never end the loop as a success, skip a
 check, change the profile or approve an action. omo workers do the work in bounded batches.
-Cross-family reviewers and acceptance checks decide whether the work is done.
+Acceptance checks and a reviewer from a family that never authored in the run decide whether
+the work is done.
 
 One run:
-  admission   validate goal and controller, load the frozen matrix assignment, record the
-              orchestrator and author lineage, check the decision seat, hash protected paths,
-              materialize the omo config with omo's own continuation disabled.
-  iteration   interlocks (stop file, caps, budget) -> one worker batch -> acceptance checks ->
-              facts -> decision questions -> brake effects -> review when the checks are green
-              or on cadence -> stop rules -> log.
+  admission   refuse a reused output directory; validate goal and controller; load the frozen
+              matrix cell; record the orchestrator and author lineage, prior_lineage and every
+              earlier run on the same branch or goal from the lineage registry; check the
+              decision seat; verify qualification records; resolve reviewers from the owner's
+              registry and check their pins.
+  setup       materialize the omo config restricted to the cell's author and orchestrator
+              families, with omo's own continuation, runtime fallback and team mode off;
+              check the omo version; hash the protected paths and the baseline tree.
+  iteration   interlocks (stop file, caps, budget) -> rewrite the omo config -> one worker
+              batch -> config tamper check -> session agent and model check -> acceptance
+              checks -> facts -> decision questions -> brake effects -> stop rules -> review
+              when the checks are green, on a brake or on cadence -> recheck before success.
   terminal    verified_pending_owner, verified, cap_iterations, cap_wall_clock, cap_budget,
-              no_progress, fix_cycles_exhausted, blocked_human, escalation_requested,
-              review_unavailable, worker_failure, policy_denied, cancelled.
+              no_progress, fix_cycles_exhausted, blocked_human, review_unavailable,
+              worker_failure, policy_denied, cancelled.
 
-Only verified and verified_pending_owner are success, and both need every acceptance check to
-pass on the final tree and a cross-family review of that same tree with no blocker and no
-corroborated major finding.
+Only verified and verified_pending_owner are success. Both need: every acceptance check passing
+on the final tree, a review of that same tree by a reviewer independent of the whole lineage
+with no blocker and no major finding, an unchanged tree after the review, a second run of the
+checks on that tree, and wall-clock time left.
 """
-import hashlib, importlib.util, json, os, subprocess, sys, time
+import hashlib, importlib.util, json, os, re, shutil, subprocess, sys, time
+from urllib.parse import urlparse
 
-from . import assign, decide, ledger, state as statemod, workers
+from . import assign, decide, ledger, qualify, state as statemod, workers
 
 ROOT = assign.ROOT
 SUCCESS = {"verified", "verified_pending_owner"}
 BRAKE_EFFECTS = {"pause_human", "stop_no_progress", "add_review"}
+STATUS_FILE = os.path.join(".superloop", "status.json")
+OMO_CONFIG = os.path.join(".omo", "omo.jsonc")
+HASH_EXCLUDE = [":(exclude).superloop/status.json", ":(exclude).omo/omo.jsonc"]
+REQUIRED_HOOKS = ("goal", "todo-continuation-enforcer", "start-work", "atlas", "runtime-fallback")
+REQUIRED_COMMANDS = ("goal", "start-work")
+LOOPBACK = {"127.0.0.1", "localhost", "::1"}
 
 
 def _load(name, rel):
@@ -41,6 +56,10 @@ agg = _load("_agg", "scripts/aggregate-findings.py")
 vsl = _load("_vsl", "scripts/validate-superloop.py")
 
 
+class PolicyError(Exception):
+    pass
+
+
 def git(worktree, *args, env=None, check=True):
     e = dict(os.environ)
     e.update(env or {})
@@ -51,16 +70,19 @@ def git(worktree, *args, env=None, check=True):
 
 
 def tree_hash(worktree, scratch):
-    """Hash of the full working tree, untracked files included, via a private index."""
+    """Hash of the whole working tree through a private index: tracked, untracked and ignored
+    files. Only the worker's status file and the controller-written omo config are left out;
+    the config is checked separately against the hash the controller wrote."""
     env = {"GIT_INDEX_FILE": os.path.join(scratch, "superloop.index")}
-    git(worktree, "add", "-A", "--", ".", ":(exclude).superloop", ":(exclude).omo", env=env)
+    git(worktree, "add", "-A", "-f", "--", ".", *HASH_EXCLUDE, env=env)
     return git(worktree, "write-tree", env=env)
 
 
-def write_diff(worktree, scratch, base, path):
+def write_diff(worktree, scratch, base_tree, path):
+    """The change since admission, against the baseline tree hashed the same way."""
+    tree_hash(worktree, scratch)
     env = {"GIT_INDEX_FILE": os.path.join(scratch, "superloop.index")}
-    git(worktree, "add", "-A", "--", ".", ":(exclude).superloop", ":(exclude).omo", env=env)
-    open(path, "w", encoding="utf-8").write(git(worktree, "diff", "--cached", base, env=env, check=False))
+    open(path, "w", encoding="utf-8").write(git(worktree, "diff", "--cached", "--binary", base_tree, env=env, check=False))
 
 
 def protected_hashes(worktree, paths):
@@ -80,35 +102,95 @@ def protected_hashes(worktree, paths):
     return out
 
 
-def materialize(controller, goal, worktree):
-    """Write <worktree>/.omo/omo.jsonc from the profile fragment, with omo's continuation off."""
+def config_models(x, out=None):
+    out = [] if out is None else out
+    if isinstance(x, dict):
+        for k, v in x.items():
+            if k == "model" and isinstance(v, str):
+                out.append(v)
+            else:
+                config_models(v, out)
+    elif isinstance(x, list):
+        for v in x:
+            config_models(v, out)
+    return out
+
+
+def restrict(block, allowed, run_agent):
+    """Keep only models whose family is in the run's author and orchestrator families. An agent
+    with none left is disabled. A category with none left gets the run agent's model."""
+    rep = {"dropped": [], "disabled_agents": [], "filled_categories": []}
+
+    def ok(m):
+        return assign.family_of(m) in allowed
+    agents = block.get("agents", {})
+    for name in list(agents):
+        a = agents[name]
+        cands = []
+        if isinstance(a.get("model"), str):
+            cands.append({k: a[k] for k in ("model", "reasoning") if k in a})
+        cands += [f for f in a.get("fallback_models", []) if isinstance(f, dict) and isinstance(f.get("model"), str)]
+        keep = [c for c in cands if ok(c["model"])]
+        rep["dropped"] += [f"{name}:{c['model']}" for c in cands if not ok(c["model"])]
+        uw = a.get("ultrawork")
+        if isinstance(uw, dict) and isinstance(uw.get("model"), str) and not ok(uw["model"]):
+            rep["dropped"].append(f"{name}:ultrawork:{uw['model']}")
+            a.pop("ultrawork")
+        if not keep:
+            agents.pop(name)
+            rep["disabled_agents"].append(name)
+            continue
+        a["model"] = keep[0]["model"]
+        if "reasoning" in keep[0]:
+            a["reasoning"] = keep[0]["reasoning"]
+        else:
+            a.pop("reasoning", None)
+        if keep[1:]:
+            a["fallback_models"] = keep[1:]
+        else:
+            a.pop("fallback_models", None)
+    if run_agent not in agents:
+        raise PolicyError(f"the run agent {run_agent} has no model in the cell's families {sorted(allowed)}")
+    default = {"model": agents[run_agent]["model"]}
+    for cname, c in block.get("categories", {}).items():
+        ms = [m for m in c.get("models", []) if isinstance(m, dict) and ok(m.get("model", ""))]
+        rep["dropped"] += [f"category:{cname}:{m.get('model')}" for m in c.get("models", [])
+                           if isinstance(m, dict) and not ok(m.get("model", ""))]
+        if isinstance(c.get("model"), str) and not ok(c["model"]):
+            rep["dropped"].append(f"category:{cname}:{c['model']}")
+            c.pop("model")
+        if not ms:
+            ms = [dict(default)]
+            rep["filled_categories"].append(cname)
+        c["models"] = ms
+    block["disabled_agents"] = sorted(set(block.get("disabled_agents", [])) | set(rep["disabled_agents"]))
+    return rep
+
+
+def materialize(controller, goal, worktree, scratch, allowed, run_agent):
+    """Build the omo config for this run. Returns (text, report)."""
     m = controller.get("materialize", {})
     frag = os.path.join(ROOT, m.get("fragment", f"profiles/{goal['profile']}.example.json"))
     # example profiles carry // comment lines that materialize.py does not strip
-    clean = os.path.join(worktree, ".superloop", "fragment.json")
-    os.makedirs(os.path.dirname(clean), exist_ok=True)
+    clean = os.path.join(scratch, "fragment.json")
     open(clean, "w", encoding="utf-8").write("\n".join(
         l for l in open(frag, encoding="utf-8").read().splitlines() if not l.lstrip().startswith("//")))
     out = subprocess.run([sys.executable, os.path.join(ROOT, "scripts", "materialize.py"), clean, goal["profile"]],
                          capture_output=True, text=True, check=True).stdout
     cfg = json.loads("\n".join(l for l in out.splitlines() if not l.lstrip().startswith("//")))
     block = cfg["[opencode]"]
-    block["disabled_hooks"] = sorted(set(block.get("disabled_hooks", [])) | set(m.get("disabled_hooks", [])))
+    rep = restrict(block, allowed, run_agent)
+    block["disabled_hooks"] = sorted(set(block.get("disabled_hooks", [])) | set(REQUIRED_HOOKS) | set(m.get("disabled_hooks", [])))
+    block["disabled_commands"] = sorted(set(block.get("disabled_commands", [])) | set(REQUIRED_COMMANDS))
     block["goal"] = {"enabled": False}
-    os.makedirs(os.path.join(worktree, ".omo"), exist_ok=True)
-    text = json.dumps(cfg, indent=2) + "\n"
-    open(os.path.join(worktree, ".omo", "omo.jsonc"), "w").write(text)
-    return hashlib.sha256(text.encode()).hexdigest()[:16], block["disabled_hooks"]
-
-
-def run_checks(goal, worktree, out_dir, iteration, remaining):
-    res = []
-    for c in goal["acceptance"]:
-        r = workers.run_bounded(c["argv"], worktree, dict(os.environ), min(c.get("timeout_seconds", 300), remaining),
-                                out_dir, f"check-{iteration:03d}-{c['name']}")
-        res.append({"name": c["name"], "passed": r["exit_code"] == 0 and not r["timed_out"],
-                    "exit_code": r["exit_code"], "timed_out": r["timed_out"]})
-    return res
+    block["runtime_fallback"] = {"enabled": False}
+    block["team_mode"] = dict(block.get("team_mode", {}), enabled=False)
+    fams = {assign.family_of(x) for x in config_models(cfg)}
+    if not fams <= set(allowed):
+        raise PolicyError(f"materialized config still names families {sorted(fams - set(allowed))}")
+    rep["families"] = sorted(fams)
+    rep["disabled_hooks"] = block["disabled_hooks"]
+    return json.dumps(cfg, indent=2) + "\n", rep
 
 
 def compose_prompt(goal, iteration, checks, open_findings):
@@ -119,17 +201,19 @@ def compose_prompt(goal, iteration, checks, open_findings):
         lines += ["", "Failing checks from the last batch: " + (", ".join(failing) if failing else "none")]
     if open_findings:
         lines += ["", "Open review findings to address:"]
-        lines += [f"- {c['severity']} {c['path']}:{c['line_start'] or ''} {c['claims'][0]}" for c in open_findings[:20]]
+        lines += [f"- {c['severity']} {c['path']}:{c.get('line_start') or ''} {c['claim']}" for c in open_findings[:20]]
     lines += ["", f"This is batch {iteration}. Work on the next unmet criterion, then stop.",
               "Do not declare the goal complete: the controller runs the checks and an independent review.",
               "Do not edit protected paths: " + (", ".join(goal.get("protected_paths", [])) or "none") + ".",
-              "If you are blocked by something only a person can fix, write .superloop/status.json with "
-              "{\"status\": \"blocked\", \"reason\": \"<short code>\"} and stop."]
+              "Do not edit .omo/omo.jsonc. Do not send, publish, pay, change permissions or delete anything "
+              "outside this worktree.",
+              "If you are blocked by something only a person can fix, or the goal needs one of those actions, write "
+              ".superloop/status.json with {\"status\": \"blocked\", \"reason\": \"<short code>\"} and stop."]
     return "\n".join(lines)
 
 
 def read_claims(worktree):
-    p = os.path.join(worktree, ".superloop", "status.json")
+    p = os.path.join(worktree, STATUS_FILE)
     try:
         d = json.load(open(p, encoding="utf-8"))
         return {"status": d.get("status") if d.get("status") in ("blocked", "working", "done") else "unknown"}
@@ -137,20 +221,8 @@ def read_claims(worktree):
         return {"status": "none"}
 
 
-def qualified_threshold(controller, model, qid, revision, locale):
-    for q in controller.get("qualifications", []):
-        if (q.get("model"), q.get("question_id"), q.get("revision"), q.get("locale")) == (model, qid, revision, locale) \
-                and q.get("threshold") is not None:
-            return q["threshold"]
-    return None
-
-
-def gate_score(ans):
-    if ans["type"] == "noul":
-        return ans["p"]
-    if ans["type"] == "choice":
-        return ans["top"]
-    return None
+def _sha(text):
+    return hashlib.sha256(text.encode()).hexdigest()
 
 
 class Run:
@@ -159,18 +231,36 @@ class Run:
         self.goal, self.ctl, self.wt, self.out = goal, controller, os.path.abspath(worktree), os.path.abspath(out_dir)
         self.clock = deps.get("clock", time.time)
         self.fakes = deps.get("fakes", {})
+        self.allow_fakes = bool(deps.get("allow_fakes"))
         self.matrix = deps.get("matrix") or assign.load_matrix()
-        os.makedirs(self.out, exist_ok=True)
-        self.scratch = os.path.join(self.out, "scratch")
-        os.makedirs(self.scratch, exist_ok=True)
-        self.log = ledger.EventLog(os.path.join(self.out, "events.jsonl"), self.clock)
+        self.registry = ledger.Registry(deps.get("registry") or ledger.default_registry())
+        self.reviewer_registry_path = deps.get("reviewer_registry") or os.environ.get("MM_SUPERLOOP_REVIEWERS") or \
+            os.path.join(os.path.expanduser("~"), ".config", "model-mesh", "reviewers.json")
         self.prov = ledger.Provenance()
         self.spent = 0.0
         self.disagreements = 0
         self.decisions = 0
+        self.admitted = False
+        self.thresholds = {}
+        self.log = None
+        self.reused = os.path.exists(os.path.join(self.out, "events.jsonl")) or \
+            os.path.exists(os.path.join(self.out, "final.json"))
+        if self.reused:
+            return
+        os.makedirs(self.out, exist_ok=True)
+        self.scratch = os.path.join(self.out, "scratch")
+        os.makedirs(self.scratch, exist_ok=True)
+        self.log = ledger.EventLog(os.path.join(self.out, "events.jsonl"), self.clock)
 
-    def reserve(self, kind):
-        cost = float(self.ctl.get("reservations_usd", {}).get(kind, 0.0))
+    # -- helpers -------------------------------------------------------------------
+    def remaining(self):
+        return self.ctl["caps"]["wall_clock_seconds"] - (self.clock() - self.t0)
+
+    def reserve(self, kind, n=1):
+        res = self.ctl.get("reservations_usd", {})
+        if kind not in res:
+            return False  # missing usage is not zero cost
+        cost = float(res[kind]) * n
         cap = self.ctl["caps"].get("budget_usd")
         if cap is not None and self.spent + cost > cap + 1e-9:
             return False
@@ -178,80 +268,185 @@ class Run:
         return True
 
     def finish(self, status, detail, **extra):
-        out = {"status": status, "success": status in SUCCESS, "detail": detail, "goal": self.goal["id"],
-               "profile": self.goal["profile"], "situation": self.goal["situation"], "option": self.goal["option"],
-               "mode": self.ctl["mode"], "reserved_usd": round(self.spent, 4), "decisions": self.decisions,
-               "disagreements": self.disagreements, "provenance": self.prov.snapshot()}
+        out = {"status": status, "success": status in SUCCESS, "detail": detail, "goal": self.goal.get("id"),
+               "profile": self.goal.get("profile"), "situation": self.goal.get("situation"),
+               "option": self.goal.get("option"), "mode": self.ctl.get("mode"), "reserved_usd": round(self.spent, 4),
+               "decisions": self.decisions, "disagreements": self.disagreements, "provenance": self.prov.snapshot()}
         out.update(extra)
+        if self.log is None:
+            return out
         self.log.write("terminal", **out)
         json.dump(out, open(os.path.join(self.out, "final.json"), "w"), indent=2)
+        if self.admitted:
+            self.registry.append({"repo_key": self.repo_key, "goal": self.goal["id"], "run": self.out,
+                                  "status": status, "harnesses": sorted(self.prov.harnesses),
+                                  "families": sorted(self.prov.families)})
         return out
 
     # -- admission ---------------------------------------------------------------
     def admit(self):
-        errs = vsl.validate_goal(self.goal) + vsl.validate_controller(self.ctl, self.goal)
+        errs = vsl.validate_goal(self.goal) + vsl.validate_controller(self.ctl, self.goal, allow_fake=self.allow_fakes)
         if errs:
             return errs
         try:
             self.a = assign.assignment(self.matrix, self.goal["situation"], self.goal["profile"], self.goal["option"])
         except KeyError as ex:
             return [f"assignment: {ex}"]
-        if self.ctl["worker"]["kind"] == "omo" and {s["harness"] for s in self.a["authors"]} != {"opencode-omo"}:
+        if {s["harness"] for s in self.a["authors"]} != {"opencode-omo"}:
             return [f"{self.goal['situation']}/{self.goal['profile']}/{self.goal['option']} authors do not run on opencode-omo"]
+        self.allowed = set().union(*[set(s["families"]) for s in self.a["authors"]])
         if self.a["orchestrator"]:
+            self.allowed |= set(self.a["orchestrator"]["families"])
             self.prov.record(0, "orchestrator", self.a["orchestrator"]["harness"], self.a["orchestrator"]["families"])
         for s in self.a["authors"]:
             self.prov.record(0, "author:" + str(s["role"]), s["harness"], s["families"])
         for s in self.goal.get("prior_lineage", []):
             self.prov.record(-1, "prior:" + str(s.get("note", "")), s["harness"], s["families"])
+        try:
+            common = os.path.realpath(os.path.join(self.wt, git(self.wt, "rev-parse", "--git-common-dir")))
+            branch = git(self.wt, "rev-parse", "--abbrev-ref", "HEAD")
+        except RuntimeError as ex:
+            return [f"worktree: {ex}"]
+        self.repo_key = f"{common}#{branch}"
+        for e in self.registry.prior(self.repo_key, self.goal["id"]):
+            for h in e.get("harnesses", []) or ["unknown"]:
+                self.prov.record(-2, "registry:" + str(e.get("run")), h, e.get("families", []))
         d = self.ctl["decision"]
         lin = d.get("lineage", {})
         if self.ctl["mode"] != "shadow":
             fam = lin.get("base_family")
-            if not fam or fam in ("undisclosed", "unknown"):
-                return ["advisory mode needs a decision model with a disclosed base family"]
+            if fam not in vsl.KNOWN_FAMILIES:
+                return ["advisory mode needs a decision model with a disclosed, known base family"]
             rev_f = set().union(*[set(r["families"]) for r in self.a["reviewers"]]) if self.a["reviewers"] else set()
             if fam in self.prov.families | rev_f | set(self.a["aggregator"]["families"]):
                 return [f"decision family {fam} overlaps an author, orchestrator, reviewer or aggregator family"]
-        if self.goal["profile"] == "ultimate" and d["backend"]["kind"] in ("http", "dual") \
-                and not d.get("egress", {}).get("hk_reachable_verified"):
-            return ["ultimate profile: the decision endpoint is not verified as Hong Kong reachable and policy eligible"]
+            cat = json.load(open(os.path.join(ROOT, d["questions"]), encoding="utf-8"))
+            revs = {q["id"]: q["revision"] for q in cat["questions"]}
+            for q in self.ctl.get("qualifications", []):
+                t, err = qualify.verify_record(q["record"], q["model"], q["question_id"], revs.get(q["question_id"]),
+                                               q["locale"])
+                if err:
+                    return [f"qualification for {q['question_id']}: {err}"]
+                self.thresholds[(q["model"], q["question_id"], revs[q["question_id"]], q["locale"])] = t
+        if self.goal["profile"] == "ultimate":
+            for b in _http_backends(d["backend"]):
+                if (urlparse(b.get("base_url", "")).hostname or "") not in LOOPBACK:
+                    return ["ultimate profile: only local or offline decision backends are admitted until a "
+                            "reachability and data-policy check exists"]
+        # reviewers: the controller names them, the owner's registry defines and pins them
+        try:
+            reg = json.load(open(self.reviewer_registry_path, encoding="utf-8")) if any(
+                r["kind"] == "command" for r in self.ctl.get("reviewers", [])) else {}
+        except (OSError, ValueError) as ex:
+            return [f"reviewer registry {self.reviewer_registry_path}: {ex}"]
+        self.reviewers = []
+        for r in self.ctl.get("reviewers", []):
+            seatm = next((s for s in self.a["reviewers"] if s["harness"] == r["harness"]), None)
+            if not seatm:
+                continue
+            if r["kind"] == "command":
+                cfg, err = workers.resolve_reviewer(r, reg)
+                if err:
+                    return [err]
+                self.reviewers.append((seatm, workers.CommandAdapter(cfg)))
+            else:
+                self.reviewers.append((seatm, workers.build(r, self.fakes, self.allow_fakes)))
         return []
 
     def setup(self):
         self.base = git(self.wt, "rev-parse", "HEAD")
+        self.worker = workers.build(self.ctl["worker"], self.fakes, self.allow_fakes)
+        self.cfg_text, self.mat = materialize(self.ctl, self.goal, self.wt, self.scratch, self.allowed,
+                                              self.ctl["worker"].get("agent", "sisyphus"))
+        self.cfg_sha = _sha(self.cfg_text)
+        self.write_config()
+        ver = self.worker.version(self.wt, self.out)
+        pin = self.ctl["worker"].get("pinned_version", "4.19.4")
+        if not re.search(r"(?<![\d.])v?" + re.escape(pin) + r"(?![\d.])", ver):
+            raise PolicyError(f"omo reports version {ver!r}, expected {pin}")
+        for f in self.mat["families"]:
+            self.prov.record(0, "config", "opencode-omo", [f])
         self.protected0 = protected_hashes(self.wt, self.goal.get("protected_paths", []))
-        if self.ctl["worker"]["kind"] == "omo" or self.ctl.get("materialize", {}).get("always"):
-            self.cfg_hash, hooks = materialize(self.ctl, self.goal, self.wt)
-        else:
-            self.cfg_hash, hooks = None, []
+        self.base_tree = tree_hash(self.wt, self.scratch)
         cat = json.load(open(os.path.join(ROOT, self.ctl["decision"]["questions"]), encoding="utf-8"))
         self.catalog = {q["id"]: q for q in cat["questions"]}
         self.locale = self.ctl["decision"].get("locale", "en")
         self.rules = decide.RulesBackend(self.catalog)
         self.backend = decide.build_backend(self.ctl["decision"]["backend"], self.catalog)
-        self.worker = workers.build(self.ctl["worker"], self.fakes)
-        self.reviewers = []
-        for r in self.ctl.get("reviewers", []):
-            seatm = next((s for s in self.a["reviewers"] if s["harness"] == r["harness"]), None)
-            if seatm:
-                self.reviewers.append((seatm, workers.build(r, self.fakes)))
+        self.remote_calls = decide.remote_calls(self.ctl["decision"]["backend"])
         self.log.write("admitted", assignment={k: self.a[k] for k in ("situation", "profile", "option", "pattern")},
-                       base=self.base, config_hash=self.cfg_hash, disabled_hooks=hooks,
-                       provenance=self.prov.snapshot(), reviewers=[s["harness"] for s, _ in self.reviewers])
+                       base=self.base, base_tree=self.base_tree, config_sha256=self.cfg_sha, materialized=self.mat,
+                       omo_version=ver, provenance=self.prov.snapshot(), reviewers=[s["harness"] for s, _ in self.reviewers])
+
+    def write_config(self):
+        os.makedirs(os.path.join(self.wt, ".omo"), exist_ok=True)
+        open(os.path.join(self.wt, OMO_CONFIG), "w", encoding="utf-8").write(self.cfg_text)
+
+    def config_intact(self):
+        try:
+            return _sha(open(os.path.join(self.wt, OMO_CONFIG), encoding="utf-8").read()) == self.cfg_sha
+        except OSError:
+            return False
+
+    # -- checks ------------------------------------------------------------------
+    def run_checks(self, iteration, tag="check"):
+        """Run every acceptance check with a shrinking share of the wall clock. Returns None when
+        the clock runs out before every check has run."""
+        res = []
+        for c in self.goal["acceptance"]:
+            left = self.remaining()
+            if left <= 0:
+                return None
+            r = workers.run_bounded(c["argv"], self.wt, dict(os.environ), min(c.get("timeout_seconds", 300), left),
+                                    self.out, f"{tag}-{iteration:03d}-{c['name']}")
+            res.append({"name": c["name"], "passed": r["exit_code"] == 0 and not r["timed_out"],
+                        "exit_code": r["exit_code"], "timed_out": r["timed_out"]})
+        if self.remaining() <= 0:
+            return None
+        return res
+
+    def verify_reported(self, res, iteration):
+        """Refuse a batch whose session agent or model cannot be read or is outside the cell."""
+        w = self.ctl["worker"]
+        expect = w.get("expect_agents")
+        rep = res.get("reported") or {}
+        agents, models = rep.get("agents") or [], rep.get("models") or []
+        for mid in models:
+            self.prov.record(iteration, "reported", "opencode-omo", [assign.family_of(mid)])
+        if not expect:
+            return None
+        if not agents:
+            return "the worker's agent could not be read from its session"
+        if not models:
+            return "the worker's model could not be read from its session"
+        wrong = sorted(set(agents) - set(expect))
+        if wrong:
+            return f"worker session ran as {wrong}, expected only {expect}"
+        outside = sorted({assign.family_of(m) for m in models} - self.allowed)
+        if outside:
+            return f"worker session used model families {outside} outside the cell's {sorted(self.allowed)}"
+        return None
 
     # -- decisions ---------------------------------------------------------------
-    def ask(self, ids, st, iteration, menus=None):
-        ctx = {"iteration": iteration}
+    def ask(self, ids, facts, claims, iteration, menus=None):
+        try:
+            st, _ = statemod.build(self.goal, facts, claims, root=self.wt,
+                                   budget_tokens=self.ctl["decision"].get("budget_tokens", 30000))
+        except ValueError as ex:
+            self.log.write("decision_skipped", iteration=iteration, reason=str(ex))
+            return {}, {}
+        ctx = {"iteration": iteration, "time_left": max(0.0, self.remaining())}
         ra, rrec = decide.ask(self.rules, self.catalog, ids, menus or {}, st, ctx)
         if self.backend.name == "rules":
             ma, mrec = ra, rrec
+        elif self.remaining() < 2:
+            ma = {q: {"type": "abstain", "reason": "wall clock"} for q in ids}
+            mrec = {"backend": self.backend.name, "error": "wall clock", "answers": ma}
+        elif self.remote_calls and not self.reserve("decision_call", self.remote_calls):
+            ma = {q: {"type": "abstain", "reason": "budget"} for q in ids}
+            mrec = {"backend": self.backend.name, "error": "budget", "answers": ma}
         else:
-            if not self.reserve("decision_call"):
-                ma = {q: {"type": "abstain", "reason": "budget"} for q in ids}
-                mrec = {"backend": self.backend.name, "error": "budget", "answers": ma}
-            else:
-                ma, mrec = decide.ask(self.backend, self.catalog, ids, menus or {}, st, ctx)
+            ma, mrec = decide.ask(self.backend, self.catalog, ids, menus or {}, st, ctx)
         for q in ids:
             self.decisions += 1
             a, b = ra[q], ma[q]
@@ -263,7 +458,7 @@ class Run:
         return ma, mrec
 
     def brakes(self, answers, rec):
-        """Advisory mode only: return the brake effects that qualified answers trigger."""
+        """Advisory mode only: the brake effects that answers above a verified threshold trigger."""
         if self.ctl["mode"] != "advisory":
             return []
         out = []
@@ -271,7 +466,7 @@ class Run:
             q = self.catalog[qid]
             if q.get("authority") != "brake" or ans["type"] == "abstain":
                 continue
-            t = qualified_threshold(self.ctl, rec.get("model"), qid, q["revision"], self.locale)
+            t = self.thresholds.get((rec.get("model"), qid, q["revision"], self.locale))
             if t is None:
                 continue
             eff = q["effect"]
@@ -280,6 +475,10 @@ class Run:
             if hit:
                 out.append((qid, eff["effect"]))
         return out
+
+    def smoke_qualified(self, rec):
+        q = self.catalog.get("goal_met", {})
+        return (rec.get("model"), "goal_met", q.get("revision"), self.locale) in self.thresholds
 
     # -- review ------------------------------------------------------------------
     def review(self, iteration, tree, all_seats=False):
@@ -294,84 +493,110 @@ class Run:
             return None
         if not all_seats:
             usable = usable[:1]
-        findings = []
-        diff = os.path.join(self.out, f"diff-{iteration:03d}.patch")
-        write_diff(self.wt, self.scratch, self.base, diff)
-        ran = []
+        rdir = os.path.join(self.scratch, f"review-{iteration:03d}")
+        shutil.rmtree(rdir, ignore_errors=True)
+        os.makedirs(rdir)
+        diff = os.path.join(rdir, "change.patch")
+        write_diff(self.wt, self.scratch, self.base_tree, diff)
+        findings, ran = [], []
         for seatm, adapter in usable:
+            left = self.remaining()
+            if left <= 0:
+                return {"stop": "cap_wall_clock", "detail": "wall clock ran out before the review"}
             if not self.reserve("review_call"):
-                return {"error": "budget"}
-            fo = os.path.join(self.out, f"findings-{iteration:03d}-{seatm['harness']}.json")
+                return {"stop": "cap_budget", "detail": "review reservation would exceed the budget"}
+            fo = os.path.join(rdir, f"findings-{seatm['harness']}.json")
+            if os.path.exists(fo):
+                os.remove(fo)
             prompt = ("Review the change in the diff file against the lenses " + ", ".join(seatm["lenses"]) +
                       ". You have no other context. Write findings as a JSON list in the finding schema to the "
                       "findings file. Write [] if there are none.")
-            res = adapter.run(self.wt, prompt, iteration, self.ctl["caps"]["per_call_seconds"], self.out,
+            started = time.time()
+            res = adapter.run(rdir, prompt, iteration, min(self.ctl["caps"]["per_call_seconds"], left), self.out,
                               {"findings_out": fo, "diff_file": diff, "lenses": ",".join(seatm["lenses"])})
             ran.append(seatm["harness"])
+            if res["exit_code"] != 0 or res["timed_out"]:
+                return {"stop": "review_unavailable", "ran": ran,
+                        "detail": f"reviewer {seatm['harness']} exited {res['exit_code']} (timed out: {res['timed_out']})"}
+            if not os.path.isfile(fo) or os.path.getmtime(fo) < started - 1:
+                return {"stop": "review_unavailable", "ran": ran,
+                        "detail": f"reviewer {seatm['harness']} did not write its findings file during the call"}
             try:
                 items = json.load(open(fo, encoding="utf-8"))
-            except (OSError, ValueError):
-                return {"error": f"reviewer {seatm['harness']} wrote no valid findings file", "ran": ran}
+            except ValueError:
+                return {"stop": "review_unavailable", "ran": ran, "detail": f"reviewer {seatm['harness']} wrote invalid JSON"}
             errs = agg.check(items)
             if errs:
-                return {"error": f"reviewer {seatm['harness']} findings invalid: {errs[:3]}", "ran": ran}
+                sev = {x.get("severity") for x in items if isinstance(x, dict)} if isinstance(items, list) else set()
+                return {"stop": "review_unavailable", "ran": ran,
+                        "detail": f"reviewer {seatm['harness']} findings invalid{' (a blocker was among them)' if 'blocker' in sev else ''}: {errs[:3]}"}
             findings += [dict(x, id=f"{seatm['harness']}:{x['id']}") for x in items]
+        if self.remaining() <= 0:
+            return {"stop": "cap_wall_clock", "detail": "wall clock ran out during the review"}
+        if tree_hash(self.wt, self.scratch) != tree or not self.config_intact():
+            return {"stop": "policy_denied", "ran": ran, "detail": "the worktree changed during the review"}
         clusters = agg.cluster(findings)
         blockers = [c for c in clusters if c["severity"] == "blocker"]
-        corr_majors = [c for c in clusters if c["severity"] == "major" and c["corroborated"]]
         majors = [c for c in clusters if c["severity"] == "major"]
-        return {"tree": tree, "ran": ran, "clusters": len(clusters), "blockers": len(blockers),
-                "corroborated_majors": len(corr_majors), "open": blockers + majors}
+        open_ = [{"severity": c["severity"], "category": c["category"], "path": c["path"],
+                  "line_start": c.get("line_start"), "claim": c["claims"][0], "corroborated": c["corroborated"]}
+                 for c in blockers + majors]
+        return {"tree": tree, "ran": ran, "clusters": len(clusters), "blockers": len(blockers), "majors": len(majors),
+                "corroborated_majors": sum(1 for c in majors if c["corroborated"]), "open": open_}
 
     # -- main loop ---------------------------------------------------------------
     def run(self):
-        t0 = self.clock()
+        if self.reused:
+            return self.finish("policy_denied", "the output directory already holds a run; use a new one")
+        self.t0 = self.clock()
         errs = self.admit()
         if errs:
             return self.finish("policy_denied", errs)
-        self.setup()
+        self.admitted = True
+        try:
+            self.setup()
+        except (PolicyError, PermissionError) as ex:
+            return self.finish("policy_denied", str(ex))
         caps = self.ctl["caps"]
-        prev_passing, prev_fp, streak = set(), None, 0
-        cycles, checks, open_findings, last_review = {}, [], [], None
-        reviews_invalid = 0
-        tree = tree_hash(self.wt, self.scratch)
-        for it in range(1, 10 ** 6):
+        prev_passing, prev_failing, idle = set(), None, 0
+        cycles, checks, open_findings, last_review, review_rounds = {}, [], [], None, 0
+        tree = self.base_tree
+        self.ask(["situation"], {"iteration": 0}, None, 0)
+        for it in range(1, caps["max_iterations"] + 2):
             if os.path.exists(os.path.join(self.out, "STOP")):
                 return self.finish("cancelled", "stop file present", iterations=it - 1)
             if it > caps["max_iterations"]:
                 return self.finish("cap_iterations", f"{caps['max_iterations']} iterations", iterations=it - 1)
-            remaining = caps["wall_clock_seconds"] - (self.clock() - t0)
-            if remaining <= 0:
+            if self.remaining() <= 0:
                 return self.finish("cap_wall_clock", f"{caps['wall_clock_seconds']} s", iterations=it - 1)
             if not self.reserve("worker_call"):
                 return self.finish("cap_budget", f"reservation would exceed {caps.get('budget_usd')} USD", iterations=it - 1)
-            if it == 1:
-                st0, _ = statemod.build(self.goal, {"iteration": 0}, root=self.wt,
-                                        budget_tokens=self.ctl["decision"].get("budget_tokens", 30000))
-                self.ask(["situation"], st0, 0)
+            self.write_config()
             prompt = compose_prompt(self.goal, it, checks, open_findings)
-            res = self.worker.run(self.wt, prompt, it, min(caps["per_call_seconds"], remaining), self.out)
+            res = self.worker.run(self.wt, prompt, it, min(caps["per_call_seconds"], self.remaining()), self.out)
             for s in self.a["authors"]:
                 self.prov.record(it, "author:" + str(s["role"]), s["harness"], s["families"])
-            rep = res.get("reported", {})
-            expect = self.ctl["worker"].get("expect_agents")
             self.log.write("worker", iteration=it, exit_code=res["exit_code"], timed_out=res["timed_out"],
-                           duration=res["duration"], reported=rep, error=res.get("error"))
+                           duration=res["duration"], reported=res.get("reported"), error=res.get("error"))
             if res["exit_code"] is None and not res["timed_out"]:
                 return self.finish("worker_failure", res.get("error"), iterations=it)
-            if expect and rep.get("agent") and rep["agent"] not in expect:
-                return self.finish("policy_denied", f"worker ran as {rep['agent']}, expected one of {expect}", iterations=it)
+            if not self.config_intact():
+                return self.finish("policy_denied", "the worker changed .omo/omo.jsonc", iterations=it)
+            bad = self.verify_reported(res, it)
+            if bad:
+                return self.finish("policy_denied", bad, iterations=it)
             claims = read_claims(self.wt)
-            remaining = caps["wall_clock_seconds"] - (self.clock() - t0)
-            checks = run_checks(self.goal, self.wt, self.out, it, max(1.0, remaining))
+            checks = self.run_checks(it)
+            if checks is None:
+                return self.finish("cap_wall_clock", "wall clock ran out during the checks", iterations=it)
             passing = {c["name"] for c in checks if c["passed"]}
             failing = sorted(c["name"] for c in checks if not c["passed"])
             tree_prev, tree = tree, tree_hash(self.wt, self.scratch)
             prot = protected_hashes(self.wt, self.goal.get("protected_paths", []))
             touched = sorted(k for k in set(prot) | set(self.protected0) if prot.get(k) != self.protected0.get(k))
-            fp = (tree, tuple(failing))
-            streak = streak + 1 if fp == prev_fp else 0
-            prev_fp = fp
+            # a batch is idle when it left the tree as it found it and the failing checks unchanged
+            idle = idle + 1 if tree == tree_prev and (prev_failing is None or failing == prev_failing) else 0
+            prev_failing = failing
             regressed = sorted(prev_passing - passing)
             prev_passing = passing
             if failing:
@@ -379,20 +604,13 @@ class Run:
                 cycles[key] = cycles.get(key, 0) + 1
             facts = {"iteration": it, "max_iterations": caps["max_iterations"], "checks_run": len(checks),
                      "checks_failed": len(failing), "failing_checks": failing, "tree_changed": tree != tree_prev,
-                     "unchanged_streak": streak, "regressed": bool(regressed), "regressed_checks": regressed,
+                     "unchanged_streak": idle, "regressed": bool(regressed), "regressed_checks": regressed,
                      "touches_protected": bool(touched), "worker_exit": res["exit_code"],
                      "worker_timed_out": res["timed_out"], "worker_reported_blocked": claims["status"] == "blocked",
-                     "remaining_fraction": round(max(0.0, remaining) / caps["wall_clock_seconds"], 3),
-                     "review": {k: last_review.get(k) for k in ("blockers", "corroborated_majors", "clusters")}
-                     if last_review and "error" not in last_review else None}
+                     "remaining_fraction": round(max(0.0, self.remaining()) / caps["wall_clock_seconds"], 3),
+                     "review": {k: last_review.get(k) for k in ("blockers", "majors", "clusters")} if last_review else None}
             self.log.write("facts", **facts)
-            try:
-                st, srep = statemod.build(self.goal, facts, claims, root=self.wt,
-                                          budget_tokens=self.ctl["decision"].get("budget_tokens", 30000))
-                answers, rec = self.ask(["progress", "blocked", "needs_human", "goal_met", "next_action"], st, it)
-            except ValueError as ex:
-                self.log.write("decision_skipped", iteration=it, reason=str(ex))
-                answers, rec = {}, {}
+            answers, rec = self.ask(["progress", "blocked", "needs_human", "goal_met", "next_action"], facts, claims, it)
             effects = self.brakes(answers, rec)
             if effects:
                 self.log.write("brake", iteration=it, effects=effects)
@@ -403,8 +621,9 @@ class Run:
                 return self.finish("blocked_human", "worker reported blocked", iterations=it)
             if any(e == "pause_human" for _, e in effects):
                 return self.finish("blocked_human", f"decision brake: {effects}", iterations=it)
-            if streak >= caps["no_progress_streak"]:
-                return self.finish("no_progress", f"same tree and failing checks for {streak + 1} batches", iterations=it)
+            if idle >= caps["no_progress_streak"]:
+                return self.finish("no_progress", f"{idle} batches in a row left the tree and the failing checks unchanged",
+                                   iterations=it)
             if any(e == "stop_no_progress" for _, e in effects):
                 return self.finish("no_progress", f"decision brake: {effects}", iterations=it)
             worst = max(cycles.values()) if cycles else 0
@@ -414,29 +633,48 @@ class Run:
             cadence = self.ctl.get("review", {}).get("every_k_iterations")
             smoke = green and answers.get("goal_met", {}).get("type") == "noul" and \
                 answers["goal_met"]["p"] < self.ctl.get("review", {}).get("smoke_below", 0.5)
-            extra_review = any(e == "add_review" for _, e in effects) or (smoke and self.ctl["mode"] == "advisory")
+            extra_review = any(e == "add_review" for _, e in effects) or \
+                (smoke and self.ctl["mode"] == "advisory" and self.smoke_qualified(rec))
             if smoke:
                 self.log.write("smoke_detector", iteration=it, p=answers["goal_met"]["p"], acted=extra_review)
-            if green or extra_review or (cadence and it % cadence == 0):
-                rv = self.review(it, tree, all_seats=extra_review)
-                if rv is None:
-                    return self.finish("review_unavailable", "no reviewer is independent of this run's lineage", iterations=it)
-                if rv.get("error") == "budget":
-                    return self.finish("cap_budget", "review reservation would exceed the budget", iterations=it)
-                self.log.write("review", iteration=it, **{k: v for k, v in rv.items() if k != "open"})
-                if "error" in rv:
-                    reviews_invalid += 1
-                    cycles["review_invalid"] = reviews_invalid
-                    if reviews_invalid >= 2:
-                        return self.finish("review_unavailable", rv["error"], iterations=it)
-                    continue
-                last_review = rv
-                open_findings = rv["open"]
-                if green and rv["tree"] == tree and rv["blockers"] == 0 and rv["corroborated_majors"] == 0:
-                    status = "verified_pending_owner" if self.goal.get("owner_approval_required", True) else "verified"
-                    return self.finish(status, "checks pass and an independent review found no blocker",
-                                       iterations=it, tree=tree, review=rv["ran"])
-                for c in rv["open"]:
-                    k = f"finding:{c['path']}:{c['category']}"
-                    cycles[k] = cycles.get(k, 0) + 1
-        return self.finish("cap_iterations", "loop bound", iterations=0)
+            if not (green or extra_review or (cadence and it % cadence == 0)):
+                continue
+            rv = self.review(it, tree, all_seats=extra_review)
+            if rv is None:
+                return self.finish("review_unavailable", "no reviewer is independent of this run's lineage", iterations=it)
+            if "stop" in rv:
+                self.log.write("review", iteration=it, **rv)
+                return self.finish(rv["stop"], rv["detail"], iterations=it)
+            self.log.write("review", iteration=it, **rv)
+            last_review, open_findings = rv, rv["open"]
+            if rv["blockers"] or rv["majors"]:
+                review_rounds += 1
+                if review_rounds >= caps["fix_verify_cycles"]:
+                    return self.finish("fix_cycles_exhausted", f"{review_rounds} reviews in a row found a blocker or major",
+                                       iterations=it, open_findings=open_findings)
+                continue
+            review_rounds = 0
+            if not green:
+                continue
+            again = self.run_checks(it, tag="recheck")
+            if again is None:
+                return self.finish("cap_wall_clock", "wall clock ran out during the recheck", iterations=it)
+            if not all(c["passed"] for c in again) or tree_hash(self.wt, self.scratch) != rv["tree"] or not self.config_intact():
+                self.log.write("recheck_failed", iteration=it, checks=again)
+                checks = again
+                continue
+            if self.remaining() <= 0:
+                return self.finish("cap_wall_clock", "wall clock ran out before success", iterations=it)
+            status = "verified_pending_owner" if self.goal.get("owner_approval_required", True) else "verified"
+            return self.finish(status, "checks pass twice on the reviewed tree and an independent review found no "
+                                       "blocker and no major", iterations=it, tree=rv["tree"], review=rv["ran"],
+                               open_findings=[])
+        return self.finish("cap_iterations", "loop bound", iterations=caps["max_iterations"])
+
+
+def _http_backends(spec):
+    if spec.get("kind") == "http":
+        return [spec]
+    if spec.get("kind") == "dual":
+        return _http_backends(spec.get("first", {})) + _http_backends(spec.get("second", {}))
+    return []

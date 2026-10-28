@@ -5,10 +5,43 @@
   "profile": "hybrid",
   "option": "primary",
   "acceptance": [
-    {"name": "unit", "description": "The unit test suite passes, including new tests for the limiter", "argv": ["python3", "-m", "pytest", "-q", "tests/unit"], "timeout_seconds": 600},
-    {"name": "lint", "description": "The linter reports no errors", "argv": ["python3", "-m", "ruff", "check", "."], "timeout_seconds": 120},
-    {"name": "limit-429", "description": "The integration check sees a 429 with Retry-After after the configured burst", "argv": ["python3", "scripts/check_rate_limit.py"], "timeout_seconds": 300}
+    {
+      "name": "unit",
+      "description": "The unit test suite passes, including new tests for the limiter",
+      "argv": [
+        "python3",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/unit"
+      ],
+      "timeout_seconds": 600
+    },
+    {
+      "name": "lint",
+      "description": "The linter reports no errors",
+      "argv": [
+        "python3",
+        "-m",
+        "ruff",
+        "check",
+        "."
+      ],
+      "timeout_seconds": 120
+    },
+    {
+      "name": "limit-429",
+      "description": "The integration check sees a 429 with Retry-After after the configured burst",
+      "argv": [
+        "python3",
+        "scripts/check_rate_limit.py"
+      ],
+      "timeout_seconds": 300
+    }
   ],
-  "protected_paths": ["tests/integration", "scripts/check_rate_limit.py"],
+  "protected_paths": [
+    "tests",
+    "scripts/check_rate_limit.py"
+  ],
   "owner_approval_required": true
 }
