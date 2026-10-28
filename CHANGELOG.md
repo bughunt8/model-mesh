@@ -10,6 +10,7 @@
 - **`scripts/aggregate-findings.py`.** Validates findings, clusters them deterministically against the first finding's range, namespaces ids by file, normalizes paths and families, marks cross-family corroboration and lists possible duplicates for the model merge.
 - **`scripts/score-review.py`, `examples/orchestration/seeded/` and `docs/research/orchestration/SEEDED-DEFECTS.md`.** The scorer and protocol for testing whether more lenses or more families catch more. The fixture is invented and no result is claimed.
 - **`scripts/check-drift.py`.** Compares counts, IDs, links, versions, tier and gate tables and the test counts in the docs with the data and scripts (rules D1 to D9).
+- **`docs/research/orchestration/SYSTEM-ONE.md`.** Assessment note on System One decision models: why none is in the matrix, where one could fit, and the shadow-mode pilot criteria.
 - **`scripts/validate-scenarios.py`, `tests/scenarios/` and `TESTING.md`.** Skill front matter and size cap checks and static scenario patterns.
 
 ### Changed

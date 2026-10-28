@@ -106,6 +106,7 @@ A09 produces the spec that the A02 and A03 gate reads. It has no gate of its own
 
 ## Not adopted
 
+- A decision model that returns typed probabilities in place of text, as a router or finding triage seat. It was not assessed when the matrix was built. [SYSTEM-ONE.md](research/orchestration/SYSTEM-ONE.md) records why it is not in the matrix and what a pilot would have to show.
 - Unbounded reviewer swarms and nested spawning. The tier table is the limit.
 - Reviewers that inherit the author's model. The independence rule forbids it.
 - A human approval step inside every stage. The profiles run without one, and gates only stop on blockers.
