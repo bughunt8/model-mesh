@@ -13,9 +13,14 @@ found in the lineage registry. A reviewer is acceptable only if it shares no har
 family with anything in the ledger.
 
 The lineage registry is a JSON-lines file outside the worktree and the run directory
-(default ~/.local/state/model-mesh/superloop-lineage.jsonl, or MM_SUPERLOOP_REGISTRY). Each
-admitted run appends its lineage at the end, keyed by repository and branch and by goal id,
-so a new run on the same work inherits it even when the goal file leaves prior_lineage out.
+(default ~/.local/state/model-mesh/superloop-lineage.jsonl, or MM_SUPERLOOP_REGISTRY). The
+owner creates it once with `mm-superloop.py --init-registry`; a run refuses to start when it
+is missing, because a missing registry is not an empty history. Each admitted run appends its
+lineage, keyed by repository (the git common directory, so every branch and worktree of one
+clone shares it) and by goal id. A new run in the same repository or on the same goal inherits
+every earlier entry, whatever the goal file says. This is conservative: unrelated earlier work
+in the same clone also counts. A worker running as the owner's OS user can still delete and
+recreate the file; only isolation stops that.
 """
 import hashlib, json, os
 
@@ -80,6 +85,21 @@ def default_registry():
 class Registry:
     def __init__(self, path):
         self.path = path
+
+    def exists(self):
+        try:
+            with open(self.path, encoding="utf-8") as f:
+                return json.loads(f.readline() or "{}").get("kind") == "header"
+        except (OSError, ValueError):
+            return False
+
+    def init(self):
+        if self.exists():
+            return False
+        os.makedirs(os.path.dirname(os.path.abspath(self.path)), exist_ok=True)
+        with open(self.path, "x", encoding="utf-8") as f:
+            f.write(json.dumps({"kind": "header", "format": 1}) + "\n")
+        return True
 
     def prior(self, repo_key, goal_id):
         out = []

@@ -39,13 +39,13 @@
   "qualifications": [],
   "worker": {
     "kind": "omo",
-    "binary": "./node_modules/.bin/oh-my-openagent",
-    "pinned_version": "4.19.4",
+    "ref": "omo-4.19.4",
     "agent": "sisyphus",
     "expect_agents": [
       "sisyphus",
       "Sisyphus - ultraworker"
     ],
+    "isolation": "container",
     "env": {}
   },
   "materialize": {

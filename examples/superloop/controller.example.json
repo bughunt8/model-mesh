@@ -1,7 +1,7 @@
 {
   "version": 1,
   "mode": "shadow",
-  "note": "Shadow pilot. The decision model's answers are logged next to the rules baseline and change nothing. Real provider and model IDs appear only in this example file. The reviewer is a reference into the owner's reviewer registry (see reviewers.example.json), which holds its argv and pinned hashes outside the worktree.",
+  "note": "Shadow pilot. The decision model's answers are logged next to the rules baseline and change nothing. Real provider and model IDs appear only in this example file. The worker and the reviewer are references into the owner's tools registry (see tools.example.json), which holds their argv and pinned hashes outside the worktree. isolation states how the worker is kept from writing outside its worktree; the driver cannot check it and repeats it in final.json.",
   "caps": {
     "max_iterations": 10,
     "wall_clock_seconds": 1800,
@@ -46,13 +46,13 @@
   "qualifications": [],
   "worker": {
     "kind": "omo",
-    "binary": "./node_modules/.bin/oh-my-openagent",
-    "pinned_version": "4.19.4",
+    "ref": "omo-4.19.4",
     "agent": "sisyphus",
     "expect_agents": [
       "sisyphus",
       "Sisyphus - ultraworker"
     ],
+    "isolation": "container",
     "env": {}
   },
   "materialize": {

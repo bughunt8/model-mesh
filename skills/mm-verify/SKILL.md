@@ -33,7 +33,7 @@ Standing rules: judging changes nothing (read and run only; fixes happen only if
 
 ## Machine-readable verdict
 
-When a caller such as the `mm-superloop` driver names a findings file, write the findings there as a JSON list in the schema at `examples/orchestration/finding.schema.json`, one object per finding, and write `[]` when there are none. Judge only the diff file you are given, with the lenses you are given, and read nothing else about the run. The prose verdict still follows the format above; the file is what code reads, so a finding missing from the file does not count.
+When a caller such as the `mm-superloop` driver asks for machine-readable findings, print them as one JSON list in the schema at `examples/orchestration/finding.schema.json` on the last line of standard output, one object per finding, and print `[]` when there are none. Judge only the diff file you are given, with the lenses you are given, and read nothing else about the run. The prose verdict still follows the format above and may come first; the last line is what code reads, so a finding missing from it does not count.
 
 ## suite mode: judge a skill or a model
 

@@ -5,7 +5,13 @@ asks a typed decision model at fixed forks, and accepts work only on evidence.
 Usage:
   python scripts/mm-superloop.py --goal GOAL.json --controller CONTROLLER.json \
       --worktree PATH --out runs/RUN_ID
+  python scripts/mm-superloop.py --init-registry [PATH]
   python scripts/mm-superloop.py --self-test
+
+Before the first run, the owner creates the lineage registry once (--init-registry; default
+~/.local/state/model-mesh/superloop-lineage.jsonl or MM_SUPERLOOP_REGISTRY) and writes the tools
+registry (~/.config/model-mesh/superloop-tools.json or MM_SUPERLOOP_TOOLS; template in
+examples/superloop/tools.example.json). Both live outside every worktree.
 
 The worktree must be a git checkout with a clean HEAD; the run never commits, pushes or merges.
 Create runs/RUN_ID/STOP to stop a run at the next iteration boundary.
@@ -34,9 +40,15 @@ def main(argv):
     ap.add_argument("--worktree")
     ap.add_argument("--out")
     ap.add_argument("--self-test", action="store_true")
+    ap.add_argument("--init-registry", nargs="?", const="", default=None)
     a = ap.parse_args(argv)
     if a.self_test:
         return self_test()
+    if a.init_registry is not None:
+        reg = ledger.Registry(a.init_registry or ledger.default_registry())
+        made = reg.init()
+        print(("created " if made else "already exists: ") + reg.path)
+        return 0
     if not all([a.goal, a.controller, a.worktree, a.out]):
         ap.error("--goal, --controller, --worktree and --out are required")
     goal = json.load(open(a.goal, encoding="utf-8"))
@@ -93,7 +105,7 @@ def worker_model():
 def base_controller():
     first, _ = seat_harnesses()
     c = json.load(open(os.path.join(ROOT, "examples", "superloop", "controller.rules.example.json"), encoding="utf-8"))
-    c["worker"] = {"kind": "fake", "name": "worker", "agent": "sisyphus", "expect_agents": ["sisyphus"]}
+    c["worker"] = {"kind": "fake", "name": "worker", "agent": "sisyphus", "expect_agents": ["sisyphus"], "isolation": "container"}
     c["reviewers"] = [{"harness": first["harness"], "kind": "fake", "name": "reviewer"}]
     return c
 
@@ -141,8 +153,7 @@ def reviewer(findings_by_call, side=None):
             r = side(rdir, calls["n"], extra)
             if r is not None:
                 return r
-        json.dump(findings_by_call(calls["n"], it), open(extra["findings_out"], "w"))
-        return {"exit_code": 0}
+        return {"exit_code": 0, "stdout": "review done\n" + json.dumps(findings_by_call(calls["n"], it))}
     return fn
 
 
@@ -183,10 +194,14 @@ def self_test():
                 goal_mut(g)
             if ctl_mut:
                 ctl_mut(c) if ctl_mut.__code__.co_argcount == 1 else ctl_mut(c, ctx)
+            ledger.Registry(os.path.join(tmp, "lineage.jsonl")).init()
             deps = {"allow_fakes": True, "registry": os.path.join(tmp, "lineage.jsonl"),
                     "fakes": {"worker": writer(steps or {}, report),
                               "reviewer": rev(ctx) if rev.__code__.co_varnames[:1] == ("ctx",) else reviewer(rev),
                               "reviewer2": reviewer(rev2)}}
+            if ctx.get("tools_data") is not None:
+                json.dump(ctx["tools_data"], open(os.path.join(tmp, "tools.json"), "w"))
+                deps["tools"] = os.path.join(tmp, "tools.json")
             if deps_mut:
                 deps_mut(deps, ctx)
             if pre:
@@ -278,12 +293,16 @@ def self_test():
     scenario("reviewer fails and writes nothing", "review_unavailable", both, rev=exit2_reviewer)
 
     def silent_reviewer(ctx):
-        return reviewer(clean, lambda rdir, n, extra: {"exit_code": 0})
+        return reviewer(clean, lambda rdir, n, extra: {"exit_code": 0, "stdout": "looks fine to me\n"})
+    scenario("a reviewer that prints no findings list", "review_unavailable", both, rev=silent_reviewer)
 
-    scenario("planted findings file with a silent reviewer", "review_unavailable", both, rev=silent_reviewer,
-             pre=lambda g, c, d, x: (os.makedirs(os.path.join(x["out"], "scratch", "review-001"), exist_ok=True),
-                                     json.dump([], open(os.path.join(x["out"], "scratch", "review-001",
-                                                             f"findings-{seat_harnesses()[0]['harness']}.json"), "w"))))
+    def file_and_stdout(ctx):
+        def side(rdir, n, extra):
+            json.dump([], open(os.path.join(rdir, "findings.json"), "w"))
+            return {"exit_code": 0, "stdout": json.dumps([finding("blocker")])}
+        return reviewer(clean, side)
+    scenario("a findings file in the review folder is ignored; the output stream counts", "fix_cycles_exhausted",
+             {i: [(f"n{i}.txt", "x"), ("a.txt", "a\n"), ("b.txt", "b\n")] for i in range(1, 30)}, rev=file_and_stdout)
 
     def diff_has(text):
         def chk(r, o, w):
@@ -316,11 +335,15 @@ def self_test():
     def registry_entry(g, c, d, x):
         wt = x["wt"]
         common = os.path.realpath(os.path.join(wt, control.git(wt, "rev-parse", "--git-common-dir")))
-        branch = control.git(wt, "rev-parse", "--abbrev-ref", "HEAD")
-        ledger.Registry(d["registry"]).append({"repo_key": f"{common}#{branch}", "goal": "earlier", "run": "r0",
+        ledger.Registry(d["registry"]).append({"repo_key": common, "goal": "earlier", "run": "r0",
                                                "status": "no_progress", "harnesses": ["dsh"],
                                                "families": list(seat_harnesses()[0]["families"])})
-    scenario("an earlier run on the branch is inherited without prior_lineage", "review_unavailable", both, pre=registry_entry)
+    scenario("an earlier run in the repository is inherited without prior_lineage", "review_unavailable", both, pre=registry_entry)
+    scenario("renaming the branch and the goal does not drop the lineage", "review_unavailable", both,
+             goal_mut=lambda g: g.update(id="renamed-goal"),
+             pre=lambda g, c, d, x: (registry_entry(g, c, d, x), control.git(x["wt"], "branch", "-m", "hidden-branch")))
+    scenario("a deleted lineage registry stops the run", "policy_denied", both,
+             pre=lambda g, c, d, x: os.remove(d["registry"]))
     scenario("a lone major blocks success", "fix_cycles_exhausted", {i: [(f"n{i}.txt", "x"), ("a.txt", "a\n"), ("b.txt", "b\n")] for i in range(1, 30)},
              rev=lambda n, it: [finding("major")], ctl_mut=lambda c: c["caps"].update(fix_verify_cycles=3),
              check=lambda r, o, w: r["iterations"] == 3 and r["open_findings"])
@@ -340,50 +363,116 @@ def self_test():
     scenario("omo version mismatch is refused", "policy_denied", both,
              deps_mut=lambda d, x: d["fakes"].__setitem__("worker@version", "5.1.48"))
 
-    def command_reviewer(c, x, tamper=False):
-        script = os.path.join(x["tmp"], "review.py")
-        open(script, "w").write("import json,sys\njson.dump([], open(sys.argv[2], 'w'))\n")
-        exe = os.path.realpath(sys.executable)
-        pins = {exe: workers.sha256_file(exe), script: workers.sha256_file(script)}
-        if tamper:
-            pins[script] = "0" * 64
-        reg = {"reviewers": {"r1": {"harness": c["reviewers"][0]["harness"], "argv": [exe, script, "{diff_file}", "{findings_out}"],
-                                    "pins": pins}}}
-        path = os.path.join(x["tmp"], "reviewers.json")
-        json.dump(reg, open(path, "w"))
-        x["reviewer_registry"] = path
-        c["reviewers"] = [{"harness": c["reviewers"][0]["harness"], "kind": "command", "ref": "r1"}]
-    scenario("pinned command reviewer from the owner's registry", "verified_pending_owner", both,
-             ctl_mut=lambda c, x: command_reviewer(c, x), deps_mut=lambda d, x: d.__setitem__("reviewer_registry", x["reviewer_registry"]))
-    scenario("command reviewer whose pin does not match is refused", "policy_denied", both,
-             ctl_mut=lambda c, x: command_reviewer(c, x, tamper=True),
-             deps_mut=lambda d, x: d.__setitem__("reviewer_registry", x["reviewer_registry"]))
+    def tools(x, section, key, value):
+        x.setdefault("tools_data", {"reviewers": {}, "workers": {}, "qualifications": {}})[section][key] = value
 
-    def stub_omo(c, x, model=None):
+    def command_reviewer(c, x, tamper=False, pin_script=True, findings="[]"):
+        script = os.path.join(x["tmp"], "review.py")
+        open(script, "w").write(f"import sys\nprint('reviewed', sys.argv[1])\nprint({findings!r})\n")
+        exe = os.path.realpath(sys.executable)
+        pins = {exe: workers.sha256_file(exe)}
+        if pin_script:
+            pins[script] = "0" * 64 if tamper else workers.sha256_file(script)
+        x["review_script"] = script
+        tools(x, "reviewers", "r1", {"harness": c["reviewers"][0]["harness"], "argv": [exe, script, "{diff_file}"], "pins": pins})
+        c["reviewers"] = [{"harness": c["reviewers"][0]["harness"], "kind": "command", "ref": "r1"}]
+    scenario("pinned command reviewer from the owner's tools registry", "verified_pending_owner", both,
+             ctl_mut=lambda c, x: command_reviewer(c, x))
+    scenario("command reviewer whose pin does not match is refused", "policy_denied", both,
+             ctl_mut=lambda c, x: command_reviewer(c, x, tamper=True))
+    scenario("a reviewer with only its interpreter pinned is refused", "policy_denied", both,
+             ctl_mut=lambda c, x: command_reviewer(c, x, pin_script=False))
+
+    def swap_reviewer(d, x):
+        inner = d["fakes"]["worker"]
+
+        def fn(wt, prompt, it, extra):
+            open(x["review_script"], "w").write("print('[]')\n")
+            return inner(wt, prompt, it, extra)
+        d["fakes"]["worker"] = fn
+    scenario("a reviewer replaced after admission is refused at the call", "policy_denied", both,
+             ctl_mut=lambda c, x: command_reviewer(c, x, findings=json.dumps([finding("blocker")])), deps_mut=swap_reviewer)
+
+    # -- hidden bytes and vacuous checks ---------------------------------------------------------
+    def only_check(argv):
+        return lambda g: g.update(acceptance=[{"name": "w", "description": "win", "argv": argv, "timeout_seconds": 30}])
+    win_in = ["python3", "-c", "import sys,os; p=os.path.join(*sys.argv[1:]); "
+              "sys.exit(0 if os.path.exists(p) and 'WIN' in open(p).read() else 1)"]
+    scenario("a check that reads under .git cannot pass", "no_progress", {1: [(".git/superloop-win", "WIN\n")]},
+             goal_mut=only_check(win_in + [".git", "superloop-win"]))
+    scenario("a check that reads the status file through a split path cannot pass", "no_progress",
+             {1: [(".superloop/status.json", "WIN\n"), ("a.txt", "a\n")]},
+             goal_mut=only_check(win_in + [".superloop", "status.json"]))
+    scenario("a git filter in the worktree is refused", "policy_denied", both,
+             pre=lambda g, c, d, x: control.git(x["wt"], "config", "filter.benign.clean", "cat"))
+
+    def filter_later(d, x):
+        inner = d["fakes"]["worker"]
+
+        def fn(wt, prompt, it, extra):
+            control.git(wt, "config", "filter.benign.clean", "sed s/SECRET/ok/")
+            return inner(wt, prompt, it, extra)
+        d["fakes"]["worker"] = fn
+    scenario("a git filter added by a batch is refused", "policy_denied", both, deps_mut=filter_later)
+    scenario("checks that already pass on the baseline are refused", "policy_denied", both,
+             goal_mut=only_check(["test", "1", "-eq", "1"]))
+
+    def nested(committed):
+        def fn(wt, prompt, it, extra):
+            n = os.path.join(wt, "nested")
+            os.makedirs(n, exist_ok=True)
+            subprocess.run(["git", "-C", n, "init", "-q"], check=True, capture_output=True)
+            if committed:
+                open(os.path.join(n, "win.txt"), "w").write("WIN\n")
+                for a in (["-c", "user.email=t@x", "-c", "user.name=t", "add", "-A"],
+                          ["-c", "user.email=t@x", "-c", "user.name=t", "commit", "-q", "-m", "x"]):
+                    subprocess.run(["git", "-C", n] + a, check=True, capture_output=True)
+            for f in ("a.txt", "b.txt"):
+                open(os.path.join(wt, f), "w").write("x\n")
+            return {"exit_code": 0, "reported": {"agents": ["sisyphus"], "models": [worker_model()]}}
+        return fn
+    scenario("a committed nested repository is refused", "policy_denied", {},
+             deps_mut=lambda d, x: d["fakes"].__setitem__("worker", nested(True)))
+    scenario("an empty nested repository is refused, not a crash", "policy_denied", {},
+             deps_mut=lambda d, x: d["fakes"].__setitem__("worker", nested(False)))
+
+    def escaping_link(d, x):
+        inner = d["fakes"]["worker"]
+
+        def fn(wt, prompt, it, extra):
+            os.symlink("/etc/hostname", os.path.join(wt, "a.txt"))
+            open(os.path.join(wt, "b.txt"), "w").write("b\n")
+            return inner(wt, prompt, it, extra)
+        d["fakes"]["worker"] = fn
+    scenario("a symlink out of the tree is refused", "policy_denied", {}, deps_mut=escaping_link)
+
+    def stub_omo(c, x, model=None, swap_export=False):
         """Real omo adapter, no fakes: stub binaries stand in for oh-my-openagent and opencode export."""
         command_reviewer(c, x)
         prov, mid = (model or worker_model()).split("/", 1)
         omo = os.path.join(x["tmp"], "omo-stub")
+        exp = os.path.join(x["tmp"], "export-stub")
+        swap = f"open({exp!r},'w').write('#!{sys.executable}\\nprint(1)\\n')\n" if swap_export else ""
         open(omo, "w").write("#!" + sys.executable + "\n"
                              "import json,os,sys\n"
                              "a=sys.argv[1:]\n"
                              "if a==['--version']: print('oh-my-openagent 4.19.4'); sys.exit(0)\n"
                              "wt=a[a.index('--directory')+1]\n"
-                             "for f in ('a.txt','b.txt'): open(os.path.join(wt,f),'w').write('x\\n')\n"
+                             "for f in ('a.txt','b.txt'): open(os.path.join(wt,f),'w').write('x\\n')\n" + swap +
                              "print(json.dumps({'sessionId':'ses_stub','success':True,'durationMs':1,'messageCount':2,'summary':'done'}))\n")
-        exp = os.path.join(x["tmp"], "export-stub")
         open(exp, "w").write("#!" + sys.executable + "\n"
                              "import json\n"
                              f"print(json.dumps({{'info':{{'id':'ses_stub','agent':'sisyphus','providerID':{prov!r},'modelID':{mid!r}}}}}))\n")
         for f in (omo, exp):
             os.chmod(f, 0o755)
-        c["worker"] = {"kind": "omo", "binary": omo, "pinned_version": "4.19.4", "agent": "sisyphus",
-                       "expect_agents": ["sisyphus"], "export_argv": [exp, "{session_id}"], "env": {}}
+        tools(x, "workers", "stub", {"version": "4.19.4", "argv": [omo], "export_argv": [exp, "{session_id}"],
+                                     "pins": {omo: workers.sha256_file(omo), exp: workers.sha256_file(exp)}})
+        c["worker"] = {"kind": "omo", "ref": "stub", "agent": "sisyphus", "expect_agents": ["sisyphus"],
+                       "isolation": "container", "env": {}}
 
     def no_fakes(d, x):
         d["allow_fakes"] = False
         d["fakes"] = {}
-        d["reviewer_registry"] = x["reviewer_registry"]
     scenario("omo adapter end to end with stub binaries, no fakes", "verified_pending_owner", {},
              ctl_mut=lambda c, x: stub_omo(c, x), deps_mut=no_fakes,
              check=lambda r, o, w: os.path.exists(os.path.join(w, ".omo", "omo.jsonc")))
@@ -391,6 +480,8 @@ def self_test():
              ctl_mut=lambda c, x: stub_omo(c, x, model=next(v["id"] for v in control.assign.load_matrix()["models"]["hybrid"].values()
                                                             if control.assign.family_of(v["id"]) == "openai")),
              deps_mut=no_fakes)
+    scenario("omo adapter: an export program replaced during the batch is refused", "policy_denied", {},
+             ctl_mut=lambda c, x: stub_omo(c, x, swap_export=True), deps_mut=no_fakes)
 
     # -- decision-model scenarios ----------------------------------------------------------------
     shadow_rec = recording({"1": {"blocked": {"type": "noul", "noul": 0.99},
@@ -398,12 +489,14 @@ def self_test():
     scenario("shadow: a confident brake changes nothing", "verified_pending_owner", done2,
              ctl_mut=lambda c: c["decision"].update(backend=shadow_rec), check=lambda r, o, w: r["disagreements"] >= 2)
 
-    def advisory(c, x, qid="blocked", scores=0.99, grid=(0.99, 0.95)):
+    def advisory(c, x, qid="blocked", scores=0.99, grid=(0.99, 0.95), pin=True):
         c["decision"]["backend"] = shadow_rec
         c["mode"] = "advisory"
         c["decision"]["lineage"] = {"provider": "test", "model": "rec-1.0", "base_family": "meta"}
-        c["qualifications"] = [{"question_id": qid, "model": "rec-1.0", "locale": "en",
-                                "record": make_record(x["tmp"], qid, scores, list(grid))}]
+        rec = make_record(x["tmp"], qid, scores, list(grid))
+        c["qualifications"] = [{"question_id": qid, "model": "rec-1.0", "locale": "en", "record": rec}]
+        if pin:
+            tools(x, "qualifications", rec, workers.sha256_file(rec))
     scenario("advisory: a qualified brake pauses for a person", "blocked_human", done2, ctl_mut=lambda c, x: advisory(c, x))
     scenario("advisory: an unqualified question cannot act", "verified_pending_owner", done2,
              ctl_mut=lambda c, x: advisory(c, x, qid="needs_human"))
@@ -417,6 +510,8 @@ def self_test():
         r["threshold"] = 0.01
         json.dump(r, open(p, "w"))
     scenario("advisory: a hand-edited threshold is refused", "policy_denied", done2, ctl_mut=edited_record)
+    scenario("advisory: a record the owner did not pin is refused", "policy_denied", done2,
+             ctl_mut=lambda c, x: advisory(c, x, pin=False))
     done_rec = recording({}, default={"goal_met": {"type": "noul", "noul": 0.99}})
     scenario("decision says done while checks fail: no effect", "no_progress", {},
              ctl_mut=lambda c: c["decision"].update(backend=done_rec))
@@ -481,6 +576,9 @@ def self_test():
            and ps["models"] == [worker_model()])
         rr = os.path.join(tmp, "run.json")
         open(rr, "w").write('{"sessionId": "ses_1", "success": true, "durationMs": 5, "messageCount": 2, "summary": "done"}\n')
+        ok("a mode field is not read as an agent", workers.parse_session(json.dumps({"agent": "sisyphus", "mode": "build"}))["agents"] == ["sisyphus"])
+        ok("findings come from the last output line", workers.parse_findings("text\n[]\n") == [] and
+           workers.parse_findings("[]\nmore text") is None)
         ok("run result yields the session id and keeps success as a claim",
            workers.parse_run_result(rr) == {"session_id": "ses_1", "run_success_claim": True})
     finally:

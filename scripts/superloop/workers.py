@@ -3,17 +3,20 @@
 An adapter runs one bounded batch and returns what happened. It never decides success: exit 0
 means the process stopped, not that the goal was met.
 
-  omo       one call of the oh-my-openagent run command in the run's worktree, from a pinned
-            local install, with the agent named by config key. omo's own continuation hooks
-            are disabled in the materialized config, so this call is one batch and the
-            superloop owns continuation. In 4.19.4 the --json result carries only sessionId,
-            success, durationMs, messageCount and summary, so the adapter reads the agent and
-            model of the session from an export command (default `opencode export <id>`).
-            The driver refuses the batch when it cannot read them. Not run live.
-  command   a reviewer harness, from an argv template held in the owner's reviewer registry,
-            outside the worktree and outside the controller. Placeholders: {review_dir},
-            {prompt_file}, {findings_out}, {diff_file} and {lenses}. It runs in a fresh review
-            directory, never in the worktree.
+Tools come from the owner's tools registry, never from the controller. The registry holds the
+argv of each worker and reviewer and a SHA-256 for every file in it. Every pin is hashed again
+immediately before each call, and the resolved real path of the executable is what runs.
+
+  omo       one call of the oh-my-openagent run command in the run's worktree. omo's own
+            continuation hooks are disabled in the materialized config, so this call is one
+            batch and the superloop owns continuation. In 4.19.4 the --json result carries only
+            sessionId, success, durationMs, messageCount and summary, so the adapter reads the
+            agents and models of the session from the registry's pinned export command
+            (for example `opencode export <id>`). Not run live.
+  command   a reviewer. It runs in a fresh review folder, never in the worktree, and its
+            findings are the JSON list on the last non-empty line of its standard output, read
+            through a pipe, so no file the worker could reach is trusted. Placeholders:
+            {review_dir}, {prompt_file}, {diff_file} and {lenses}.
   fake      a Python callable. Offline tests only; the driver refuses it otherwise.
 
 Every process runs in its own process group with a hard timeout; on timeout the whole group
@@ -22,35 +25,51 @@ gets SIGTERM, then SIGKILL.
 import hashlib, json, os, shutil, signal, subprocess, time
 
 
-def run_bounded(argv, cwd, env, timeout, out_dir, tag):
+def _kill(p):
+    for sig in (signal.SIGTERM, signal.SIGKILL):
+        try:
+            os.killpg(p.pid, sig)
+        except ProcessLookupError:
+            return
+        try:
+            p.wait(timeout=10)
+            return
+        except subprocess.TimeoutExpired:
+            continue
+
+
+def run_bounded(argv, cwd, env, timeout, out_dir, tag, capture=False):
+    """Run argv with a hard timeout. With capture, stdout is read through a pipe and returned
+    as text instead of going to a file."""
     os.makedirs(out_dir, exist_ok=True)
     so, se = os.path.join(out_dir, tag + ".stdout"), os.path.join(out_dir, tag + ".stderr")
     t0 = time.time()
-    timed_out = False
-    with open(so, "wb") as fo, open(se, "wb") as fe:
+    timed_out, text = False, None
+    with open(se, "wb") as fe, (open(os.devnull, "wb") if capture else open(so, "wb")) as fo:
         try:
-            p = subprocess.Popen(argv, cwd=cwd, env=env, stdout=fo, stderr=fe, start_new_session=True)
+            p = subprocess.Popen(argv, cwd=cwd, env=env, stdout=subprocess.PIPE if capture else fo, stderr=fe,
+                                 start_new_session=True)
         except OSError as ex:
             fe.write(str(ex).encode())
-            return {"exit_code": None, "timed_out": False, "duration": 0.0, "stdout": so, "stderr": se,
-                    "error": f"could not start: {ex}"}
+            return {"exit_code": None, "timed_out": False, "duration": 0.0, "stdout": None, "stderr": se,
+                    "stdout_text": None, "error": f"could not start: {ex}"}
         try:
-            code = p.wait(timeout=max(0.5, timeout))
+            if capture:
+                out, _ = p.communicate(timeout=max(0.5, timeout))
+                text = out.decode("utf-8", errors="replace")
+            else:
+                p.wait(timeout=max(0.5, timeout))
         except subprocess.TimeoutExpired:
             timed_out = True
-            for sig in (signal.SIGTERM, signal.SIGKILL):
+            _kill(p)
+            if capture:
                 try:
-                    os.killpg(p.pid, sig)
-                except ProcessLookupError:
-                    break
-                try:
-                    p.wait(timeout=10)
-                    break
-                except subprocess.TimeoutExpired:
-                    continue
-            code = p.returncode
+                    p.communicate(timeout=5)
+                except (subprocess.TimeoutExpired, ValueError):
+                    pass
+        code = p.returncode
     return {"exit_code": code, "timed_out": timed_out, "duration": round(time.time() - t0, 3),
-            "stdout": so, "stderr": se, "error": None}
+            "stdout": None if capture else so, "stderr": se, "stdout_text": text, "error": None}
 
 
 def _json_docs(text):
@@ -72,7 +91,7 @@ def parse_run_result(path):
     """The RunResult of `oh-my-openagent run --json`: the last JSON object with a sessionId."""
     try:
         docs = _json_docs(open(path, encoding="utf-8", errors="replace").read())
-    except OSError:
+    except (OSError, TypeError):
         return {}
     for d in reversed(docs):
         if isinstance(d, dict) and isinstance(d.get("sessionId"), str):
@@ -87,7 +106,7 @@ def parse_session(text):
 
     def walk(x):
         if isinstance(x, dict):
-            for k in ("agent", "agentName", "mode"):
+            for k in ("agent", "agentName"):
                 if isinstance(x.get(k), str) and x[k]:
                     agents.add(x[k])
             prov, mid = x.get("providerID"), x.get("modelID")
@@ -105,6 +124,20 @@ def parse_session(text):
     return {"agents": sorted(agents), "models": sorted(models)}
 
 
+def parse_findings(text):
+    """The findings list: the last non-empty stdout line that parses as a JSON list."""
+    for line in reversed((text or "").splitlines()):
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            v = json.loads(line)
+        except ValueError:
+            return None
+        return v if isinstance(v, list) else None
+    return None
+
+
 def sha256_file(path):
     h = hashlib.sha256()
     with open(path, "rb") as f:
@@ -113,37 +146,75 @@ def sha256_file(path):
     return h.hexdigest()
 
 
+def path_like(a):
+    return "/" in a and "{" not in a
+
+
+def resolve_exec(a):
+    exe = shutil.which(a) if "/" not in a else (a if os.path.isfile(a) else None)
+    return os.path.realpath(exe) if exe else None
+
+
+def check_pins(argvs, pins):
+    """Return (resolved argvs, error). Every path in the argvs and every executable must be pinned,
+    and every pin must match now."""
+    real = {os.path.realpath(p): v for p, v in (pins or {}).items()}
+    out = []
+    for argv in argvs:
+        exe = resolve_exec(argv[0])
+        if not exe:
+            return None, f"{argv[0]} not found"
+        need = [exe] + [os.path.realpath(a) for a in argv[1:] if path_like(a)]
+        for n in need:
+            if n not in real:
+                return None, f"{n} has no pinned hash"
+        out.append([exe] + list(argv[1:]))
+    for p, want in real.items():
+        if not os.path.isfile(p) or sha256_file(p) != want:
+            return None, f"{p} does not match its pinned hash"
+    return out, None
+
+
 class OmoWorker:
     kind = "omo"
 
-    def __init__(self, cfg):
-        self.cfg = cfg
+    def __init__(self, cfg, tool):
+        self.cfg, self.tool = cfg, tool
 
-    def argv(self, worktree, prompt):
-        return [self.cfg["binary"], "run", "--agent", self.cfg.get("agent", "sisyphus"), "--json",
-                "--directory", worktree, prompt]
+    def _argvs(self):
+        argvs, err = check_pins([self.tool["argv"], self.tool["export_argv"]], self.tool["pins"])
+        if err:
+            raise PermissionError(f"omo tool: {err}")
+        return argvs
 
     def version(self, worktree, out_dir):
-        r = run_bounded([self.cfg["binary"], "--version"], worktree, dict(os.environ), 60, out_dir, "omo-version")
-        try:
-            return open(r["stdout"], encoding="utf-8", errors="replace").read().strip()
-        except OSError:
-            return ""
+        base, _ = self._argvs()
+        r = run_bounded(base + ["--version"], worktree, dict(os.environ), 60, out_dir, "omo-version", capture=True)
+        return (r["stdout_text"] or "").strip()
 
     def run(self, worktree, prompt, iteration, timeout, out_dir):
         env = dict(os.environ)
         env.update(self.cfg.get("env", {}))
         env["OMO_SEND_ANONYMOUS_TELEMETRY"] = "0"
         t0 = time.time()
-        res = run_bounded(self.argv(worktree, prompt), worktree, env, timeout, out_dir, f"worker-{iteration:03d}")
+        try:
+            base, _ = self._argvs()
+        except PermissionError as ex:
+            return {"exit_code": None, "timed_out": False, "duration": 0.0, "error": str(ex), "reported": {}}
+        argv = base + ["run", "--agent", self.cfg.get("agent", "sisyphus"), "--json", "--directory", worktree, prompt]
+        res = run_bounded(argv, worktree, env, timeout, out_dir, f"worker-{iteration:03d}")
         rep = parse_run_result(res["stdout"])
         if rep.get("session_id"):
-            left = max(5.0, timeout - (time.time() - t0))
-            argv = [a.format(session_id=rep["session_id"]) for a in
-                    self.cfg.get("export_argv", ["opencode", "export", "{session_id}"])]
-            ex = run_bounded(argv, worktree, env, min(60.0, left), out_dir, f"export-{iteration:03d}")
-            if ex["exit_code"] == 0 and not ex["timed_out"]:
-                rep.update(parse_session(open(ex["stdout"], encoding="utf-8", errors="replace").read()))
+            try:
+                _, export = self._argvs()  # pins again: the batch may have replaced the export program
+            except PermissionError as ex:
+                rep["export_error"] = str(ex)
+            else:
+                left = max(5.0, timeout - (time.time() - t0))
+                ex = run_bounded([a.format(session_id=rep["session_id"]) for a in export], worktree, env,
+                                 min(60.0, left), out_dir, f"export-{iteration:03d}", capture=True)
+                if ex["exit_code"] == 0 and not ex["timed_out"]:
+                    rep.update(parse_session(ex["stdout_text"]))
         res["reported"] = rep
         return res
 
@@ -151,31 +222,30 @@ class OmoWorker:
 class CommandAdapter:
     kind = "command"
 
-    def __init__(self, cfg):
-        self.cfg = cfg
+    def __init__(self, tool):
+        self.tool = tool
 
     def run(self, cwd, prompt, iteration, timeout, out_dir, extra=None):
-        os.makedirs(out_dir, exist_ok=True)
-        tag = f"{self.cfg.get('tag', 'review')}-{iteration:03d}"
+        argvs, err = check_pins([self.tool["argv"]], self.tool["pins"])
+        if err:
+            return {"exit_code": None, "timed_out": False, "stdout_text": None, "error": f"reviewer tool: {err}",
+                    "pin_error": True}
         pf = os.path.join(cwd, "prompt.txt")
         open(pf, "w", encoding="utf-8").write(prompt)
         subs = {"review_dir": cwd, "prompt_file": pf}
         subs.update(extra or {})
-        argv = [a.format(**subs) for a in self.cfg["argv"]]
+        argv = [a.format(**subs) for a in argvs[0]]
         env = dict(os.environ)
-        env.update(self.cfg.get("env", {}))
-        res = run_bounded(argv, cwd, env, timeout, out_dir, tag)
-        res["reported"] = {}
-        return res
+        env.update(self.tool.get("env", {}))
+        return run_bounded(argv, cwd, env, timeout, out_dir, f"{self.tool.get('tag', 'review')}-{iteration:03d}", capture=True)
 
 
 class FakeWorker:
     kind = "fake"
+    fake_version = "4.19.4"
 
     def __init__(self, fn):
         self.fn = fn
-
-    fake_version = "4.19.4"
 
     def version(self, worktree, out_dir):
         return self.fake_version
@@ -185,42 +255,12 @@ class FakeWorker:
         rep = self.fn(worktree, prompt, iteration, extra or {}) or {}
         return {"exit_code": rep.get("exit_code", 0), "timed_out": rep.get("timed_out", False),
                 "duration": round(time.time() - t0, 3), "stdout": None, "stderr": None, "error": None,
-                "reported": rep.get("reported", {})}
+                "stdout_text": rep.get("stdout"), "reported": rep.get("reported", {})}
 
 
-def resolve_reviewer(entry, registry):
-    """Look a controller reviewer reference up in the owner's registry and check its pins.
-    Returns (cfg, error)."""
-    ref = entry.get("ref")
-    r = (registry or {}).get("reviewers", {}).get(ref)
-    if not r:
-        return None, f"reviewer {ref!r} is not in the owner's reviewer registry"
-    if r.get("harness") != entry.get("harness"):
-        return None, f"reviewer {ref!r} is registered for harness {r.get('harness')}, not {entry.get('harness')}"
-    argv = r.get("argv")
-    if not isinstance(argv, list) or not argv or not all(isinstance(a, str) for a in argv):
-        return None, f"reviewer {ref!r}: argv must be a non-empty list of strings"
-    exe = shutil.which(argv[0]) or (argv[0] if os.path.isfile(argv[0]) else None)
-    if not exe:
-        return None, f"reviewer {ref!r}: {argv[0]} not found"
-    pins = r.get("pins", {})
-    if os.path.realpath(exe) not in {os.path.realpath(p) for p in pins}:
-        return None, f"reviewer {ref!r}: the executable {exe} has no pinned hash"
-    for p, want in pins.items():
-        if not os.path.isfile(p) or sha256_file(p) != want:
-            return None, f"reviewer {ref!r}: {p} does not match its pinned hash"
-    return dict(r, tag="review-" + str(ref)), None
-
-
-def build(cfg, fakes=None, allow_fakes=False):
-    if cfg["kind"] == "omo":
-        return OmoWorker(cfg)
-    if cfg["kind"] == "command":
-        return CommandAdapter(cfg)
-    if cfg["kind"] == "fake":
-        if not allow_fakes:
-            raise PermissionError("fake adapters are for the offline self-test only")
-        fw = FakeWorker((fakes or {})[cfg["name"]])
-        fw.fake_version = (fakes or {}).get(cfg["name"] + "@version", "4.19.4")
-        return fw
-    raise ValueError(f"unknown adapter kind {cfg['kind']}")
+def build_fake(cfg, fakes, allow_fakes):
+    if not allow_fakes:
+        raise PermissionError("fake adapters are for the offline self-test only")
+    fw = FakeWorker((fakes or {})[cfg["name"]])
+    fw.fake_version = (fakes or {}).get(cfg["name"] + "@version", "4.19.4")
+    return fw

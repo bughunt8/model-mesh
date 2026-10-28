@@ -12,8 +12,8 @@ What runs, what it proves, and what it does not. All commands run from the repos
 | `python scripts/validate-scenarios.py` | Skill front matter, size cap, scenario patterns, rules S1 to S4 | `--self-test` |
 | `python scripts/aggregate-findings.py` | Merges review findings, rejects invalid ones | `--self-test` |
 | `python scripts/score-review.py` | Scores review runs against seeded defects | `--self-test` |
-| `python scripts/validate-superloop.py` | Superloop goal and controller examples, the reviewer registry template and the decision question catalog, rules L1 to L11 | `--self-test` plants 50 mutations and each must be caught |
-| `python scripts/mm-superloop.py --self-test` | The superloop driver: 48 end-to-end scenarios, including every success forgery the independent review reproduced and a run of the real omo adapter against stub binaries, and 19 unit checks of the state builder, session parsing, backends and qualification | built in |
+| `python scripts/validate-superloop.py` | Superloop goal and controller examples, the tools registry template and the decision question catalog, rules L1 to L11 | `--self-test` plants 59 mutations and each must be caught |
+| `python scripts/mm-superloop.py --self-test` | The superloop driver: 63 end-to-end scenarios, including every success forgery the two independent review rounds reproduced and runs of the real omo adapter against stub binaries, and 21 unit checks of the state builder, session parsing, backends and qualification | built in |
 | `python scripts/check-drift.py` | Docs against data and scripts, rules D1 to D9. It reads text with patterns and does not know what a sentence means | `--self-test` |
 | `python scripts/landscape/landscape_scan.py --self-test` | The landscape scorer | built in |
 | `python scripts/landscape/review_gate.py --self-test` | The landscape review-gate parser | built in |

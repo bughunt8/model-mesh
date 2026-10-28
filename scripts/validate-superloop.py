@@ -11,8 +11,10 @@ Rules:
       choice brake names options that exist. No question may carry a threshold.
   L2  goal: id, objective, a situation A01 to A12, one of the four profiles, an option name, at
       least one acceptance check given as an argv list with a timeout, and protected paths. A
-      check may not be a no-op (true, :, echo, exit 0) and may not read the worker's status
-      file or the omo config, which the tree hash leaves out.
+      check may not be an obvious no-op (true, :, echo, exit 0). This is a first filter only:
+      the driver also refuses a goal whose checks all pass on the baseline tree, and checks
+      always run on a copy of the hashed tree, so they cannot read the status file, the omo
+      config or anything under .git.
   L3  caps: max_iterations 1 to 50, wall_clock_seconds 60 to 86400, no_progress_streak and
       fix_verify_cycles at least 1, per_call_seconds positive, and a positive budget_usd.
   L4  mode is shadow or advisory. There is no control mode.
@@ -28,16 +30,20 @@ Rules:
       backend's pinned model.
   L7  the ultimate profile admits only local (loopback) or offline decision backends, until a
       reachability and data-policy check exists. A controller flag cannot override this.
-  L8  worker: kind omo, a local binary (no runtime package download), an agent, expect_agents,
-      omo pinned to 4.19.4, and disabled_hooks naming goal, todo-continuation-enforcer,
-      start-work, atlas and runtime-fallback. The driver adds them anyway.
-  L9  reviewers: kind command with a ref into the owner's reviewer registry and no argv or env
-      of their own, never on opencode-omo, and each names a harness.
+  L8  worker: kind omo with a ref into the owner's tools registry and no binary, version or
+      export command of its own, an agent, expect_agents, a stated isolation (separate_user,
+      container or none), and disabled_hooks naming goal, todo-continuation-enforcer,
+      start-work, atlas and runtime-fallback. The driver adds the hooks anyway.
+  L9  reviewers: kind command with a ref into the owner's tools registry and no argv or env of
+      their own, never on opencode-omo, and each names a harness.
   L10 reservations: worker_call and review_call above zero, decision_call above zero when a
       remote backend is used, every reservation non-negative. Missing usage is not zero cost.
-  L11 reviewer registry (examples/superloop/reviewers.example.json, or the owner's file):
-      each entry names a harness, an argv list and pins, a SHA-256 per pinned file, and the
-      pins cover the executable.
+  L11 tools registry (examples/superloop/tools.example.json, or the owner's file, checked again
+      at admission): a reviewer names a harness, an argv list that passes {diff_file}, and pins;
+      a worker names an argv list (no runtime package download), an export_argv with
+      {session_id}, version 4.19.4 and pins; every absolute path in an argv and the executable
+      itself must be pinned with a SHA-256; qualification record pins map a path to a SHA-256.
+      The driver hashes every pin again immediately before each call.
 
 Fake workers and reviewers pass only when the caller allows them, which only the offline
 self-test does.
@@ -62,7 +68,9 @@ def _mod(name, rel):
 _vo = _mod("_vo_sl", "scripts/validate-orchestration.py")
 _q = _mod("_q_sl", "scripts/superloop/qualify.py")
 KNOWN_FAMILIES = set(_vo.PREFIX_FAMILY.values()) | {"google"}
-REVIEWERS_EXAMPLE = os.path.join(ROOT, "examples", "superloop", "reviewers.example.json")
+TOOLS_EXAMPLE = os.path.join(ROOT, "examples", "superloop", "tools.example.json")
+ISOLATION = {"separate_user", "container", "none"}
+DOWNLOADERS = {"bunx", "npx", "pnpx", "yarn", "npm", "pnpm", "uvx", "pipx"}
 QUESTIONS = os.path.join(ROOT, "examples", "superloop", "questions.json")
 EXAMPLES = [("examples/superloop/goal.example.json", "examples/superloop/controller.example.json"),
             ("examples/superloop/goal.example.json", "examples/superloop/controller.rules.example.json")]
@@ -226,30 +234,30 @@ def validate_controller(c, g=None, catalog=None, allow_fake=False):
                 e.append("L7 ultimate profile admits only local or offline decision backends")
     w = c.get("worker", {})
     if w.get("kind") == "omo":
-        if not isinstance(w.get("binary"), str) or w["binary"].split()[0] in ("bunx", "npx", "pnpx", "yarn", "npm") \
-                or " " in w["binary"]:
-            e.append("L8 omo worker needs a local pinned binary path, not a runtime package download")
-        if w.get("pinned_version") != "4.19.4":
-            e.append("L8 omo worker must pin 4.19.4")
+        if not isinstance(w.get("ref"), str) or not w["ref"]:
+            e.append("L8 omo worker needs a ref into the owner's tools registry")
+        for k in ("binary", "pinned_version", "export_argv", "argv"):
+            if k in w:
+                e.append(f"L8 worker.{k} belongs in the owner's tools registry, not the controller")
         if not w.get("agent"):
             e.append("L8 omo worker needs an agent")
         if not isinstance(w.get("expect_agents"), list) or not w["expect_agents"]:
             e.append("L8 omo worker needs expect_agents")
-        if "export_argv" in w and (not isinstance(w["export_argv"], list) or not any("{session_id}" in a for a in w["export_argv"])):
-            e.append("L8 export_argv must be a list with a {session_id} placeholder")
         hooks = set(c.get("materialize", {}).get("disabled_hooks", []))
         if not REQUIRED_HOOKS <= hooks:
             e.append(f"L8 materialize.disabled_hooks must include {sorted(REQUIRED_HOOKS)}")
     elif not (allow_fake and w.get("kind") == "fake"):
         e.append("L8 worker kind must be omo")
+    if w.get("isolation") not in ISOLATION:
+        e.append(f"L8 worker.isolation must be one of {sorted(ISOLATION)}")
     for r in c.get("reviewers", []):
         if r.get("harness") in (None, "", "opencode-omo"):
             e.append("L9 reviewer needs a harness other than opencode-omo")
         if r.get("kind") == "command":
             if not isinstance(r.get("ref"), str) or not r["ref"]:
-                e.append(f"L9 reviewer {r.get('harness')}: needs a ref into the owner's reviewer registry")
+                e.append(f"L9 reviewer {r.get('harness')}: needs a ref into the owner's tools registry")
             if "argv" in r or "env" in r:
-                e.append(f"L9 reviewer {r.get('harness')}: argv and env belong in the owner's registry, not the controller")
+                e.append(f"L9 reviewer {r.get('harness')}: argv and env belong in the owner's tools registry, not the controller")
         elif not (allow_fake and r.get("kind") == "fake"):
             e.append(f"L9 reviewer {r.get('harness')}: kind must be command")
     res = c.get("reservations_usd", {})
@@ -262,25 +270,65 @@ def validate_controller(c, g=None, catalog=None, allow_fake=False):
     return e
 
 
-def validate_reviewer_registry(reg):
+def _pins_cover(name, argv, pins, e, rule="L11"):
+    names = {os.path.basename(p) for p in pins}
+    paths = set(pins)
+    if "/" in argv[0]:
+        if argv[0] not in paths:
+            e.append(f"{rule} {name}: the executable {argv[0]} must be pinned")
+    elif argv[0] not in names:
+        e.append(f"{rule} {name}: pins must cover the executable {argv[0]}")
+    for a in argv[1:]:
+        if "/" in a and "{" not in a:
+            if not os.path.isabs(a):
+                e.append(f"{rule} {name}: path {a} must be absolute")
+            elif a not in paths:
+                e.append(f"{rule} {name}: path {a} must be pinned")
+
+
+def _pins_ok(name, pins, e):
+    if not isinstance(pins, dict) or not pins or not all(isinstance(v, str) and HEX64.match(v) for v in pins.values()):
+        e.append(f"L11 {name}: pins must map each pinned file to a SHA-256")
+        return False
+    return True
+
+
+def validate_tools(reg):
     e = []
-    rs = reg.get("reviewers") if isinstance(reg, dict) else None
-    if not isinstance(rs, dict) or not rs:
-        return ["L11 reviewer registry needs a reviewers object"]
-    for name, r in rs.items():
+    if not isinstance(reg, dict):
+        return ["L11 tools registry must be an object"]
+    for name, r in (reg.get("reviewers") or {}).items():
         if not r.get("harness") or r.get("harness") == "opencode-omo":
             e.append(f"L11 {name}: needs a harness other than opencode-omo")
         argv = r.get("argv")
         if not isinstance(argv, list) or not argv or not all(isinstance(a, str) for a in argv):
             e.append(f"L11 {name}: argv must be a non-empty list of strings")
             continue
-        pins = r.get("pins")
-        if not isinstance(pins, dict) or not pins or not all(isinstance(v, str) and HEX64.match(v) for v in pins.values()):
-            e.append(f"L11 {name}: pins must map each pinned file to a SHA-256")
-        elif not any(os.path.basename(p) == os.path.basename(argv[0]) for p in pins):
-            e.append(f"L11 {name}: pins must cover the executable {argv[0]}")
-        if not any("{findings_out}" in a for a in argv) or not any("{diff_file}" in a for a in argv):
-            e.append(f"L11 {name}: argv must pass {{diff_file}} and {{findings_out}}")
+        if _pins_ok(name, r.get("pins"), e):
+            _pins_cover(name, argv, r["pins"], e)
+        if not any("{diff_file}" in a for a in argv):
+            e.append(f"L11 {name}: argv must pass {{diff_file}}")
+    for name, w in (reg.get("workers") or {}).items():
+        argv, exp = w.get("argv"), w.get("export_argv")
+        ok = True
+        for k, v in (("argv", argv), ("export_argv", exp)):
+            if not isinstance(v, list) or not v or not all(isinstance(a, str) for a in v):
+                e.append(f"L11 {name}: {k} must be a non-empty list of strings")
+                ok = False
+        if not ok:
+            continue
+        if os.path.basename(argv[0]) in DOWNLOADERS:
+            e.append(f"L11 {name}: a runtime package download is not a pinned install")
+        if not any("{session_id}" in a for a in exp):
+            e.append(f"L11 {name}: export_argv needs a {{session_id}} placeholder")
+        if w.get("version") != "4.19.4":
+            e.append(f"L11 {name}: omo must be pinned to 4.19.4")
+        if _pins_ok(name, w.get("pins"), e):
+            _pins_cover(name, argv, w["pins"], e)
+            _pins_cover(name + " export", exp, w["pins"], e)
+    q = reg.get("qualifications", {})
+    if not isinstance(q, dict) or not all(isinstance(v, str) and HEX64.match(v) for v in q.values()):
+        e.append("L11 qualifications must map record paths to SHA-256 values")
     return e
 
 
@@ -335,8 +383,8 @@ def check_pair(gp, cp):
     return validate_goal(g) + validate_controller(c, g)
 
 
-def check_registry(path=REVIEWERS_EXAMPLE):
-    return validate_reviewer_registry(json.load(io.open(path, encoding="utf-8")))
+def check_tools(path=TOOLS_EXAMPLE):
+    return validate_tools(json.load(io.open(path, encoding="utf-8")))
 
 
 def _labelled(n, source="human"):
@@ -363,7 +411,7 @@ def self_test():
     g0 = json.load(io.open(os.path.join(ROOT, EXAMPLES[0][0]), encoding="utf-8"))
     c0 = json.load(io.open(os.path.join(ROOT, EXAMPLES[0][1]), encoding="utf-8"))
     cat0 = json.load(io.open(QUESTIONS, encoding="utf-8"))
-    reg0 = json.load(io.open(REVIEWERS_EXAMPLE, encoding="utf-8"))
+    reg0 = json.load(io.open(TOOLS_EXAMPLE, encoding="utf-8"))
     model = c0["decision"]["backend"]["model"]
     good_rec, good_ds = _record(tmp, model)
 
@@ -371,7 +419,7 @@ def self_test():
         nonlocal fails
         g, c, cat, reg = copy.deepcopy(g0), copy.deepcopy(c0), copy.deepcopy(cat0), copy.deepcopy(reg0)
         mutate({"goal": g, "controller": c, "catalog": cat, "registry": reg})
-        errs = validate_goal(g) + validate_controller(c, g, cat) + validate_reviewer_registry(reg)
+        errs = validate_goal(g) + validate_controller(c, g, cat) + validate_tools(reg)
         hit = any(x.startswith(rule + " ") for x in errs)
         print(("  ok   " if hit else "  FAIL ") + f"{label} -> {rule}")
         fails += 0 if hit else 1
@@ -402,8 +450,8 @@ def self_test():
     base = validate_goal(g0) + validate_controller(c0, g0, cat0)
     print(("  ok   " if not base else "  FAIL ") + "committed examples are valid " + str(base[:3]))
     fails += 1 if base else 0
-    regb = validate_reviewer_registry(reg0)
-    print(("  ok   " if not regb else "  FAIL ") + "reviewer registry example is valid " + str(regb[:3]))
+    regb = validate_tools(reg0)
+    print(("  ok   " if not regb else "  FAIL ") + "tools registry example is valid " + str(regb[:3]))
     fails += 1 if regb else 0
     adv = copy.deepcopy(c0)
     advisory({"controller": adv})
@@ -444,11 +492,13 @@ def self_test():
     expect("ultimate with a remote endpoint", lambda m: m["goal"].__setitem__("profile", "ultimate"), "L7")
     expect("ultimate with a reachability flag set", lambda m: (m["goal"].__setitem__("profile", "ultimate"),
            m["controller"]["decision"]["egress"].__setitem__("hk_reachable_verified", True)), "L7")
-    expect("runtime package download", lambda m: m["controller"]["worker"].__setitem__("binary", "bunx oh-my-openagent"), "L8")
+    expect("worker binary in the controller", lambda m: m["controller"]["worker"].__setitem__("binary", "./x"), "L8")
+    expect("export command in the controller", lambda m: m["controller"]["worker"].__setitem__("export_argv", ["x", "{session_id}"]), "L8")
+    expect("no stated isolation", lambda m: m["controller"]["worker"].pop("isolation"), "L8")
     expect("omo continuation left on", lambda m: m["controller"]["materialize"]["disabled_hooks"].remove("todo-continuation-enforcer"), "L8")
     expect("atlas left on", lambda m: m["controller"]["materialize"]["disabled_hooks"].remove("atlas"), "L8")
     expect("runtime fallback left on", lambda m: m["controller"]["materialize"]["disabled_hooks"].remove("runtime-fallback"), "L8")
-    expect("unpinned omo", lambda m: m["controller"]["worker"].__setitem__("pinned_version", "5.1.48"), "L8")
+    expect("worker without a tools ref", lambda m: m["controller"]["worker"].pop("ref"), "L8")
     expect("no expected agents", lambda m: m["controller"]["worker"].pop("expect_agents"), "L8")
     expect("command worker", lambda m: m["controller"].__setitem__("worker", {"kind": "command", "argv": ["x"]}), "L8")
     expect("fake worker outside the self-test", lambda m: m["controller"].__setitem__("worker", {"kind": "fake", "name": "w"}), "L8")
@@ -460,10 +510,23 @@ def self_test():
     expect("missing review reservation", lambda m: m["controller"]["reservations_usd"].pop("review_call"), "L10")
     expect("zero decision reservation with a remote backend", lambda m: m["controller"]["reservations_usd"].__setitem__("decision_call", 0), "L10")
     first = next(iter(reg0["reviewers"]))
-    expect("registry entry without pins", lambda m: m["registry"]["reviewers"][first].pop("pins"), "L11")
-    expect("registry pins miss the executable", lambda m: m["registry"]["reviewers"][first].__setitem__(
+    wk = next(iter(reg0["workers"]))
+    expect("reviewer entry without pins", lambda m: m["registry"]["reviewers"][first].pop("pins"), "L11")
+    expect("reviewer pins miss the executable", lambda m: m["registry"]["reviewers"][first].__setitem__(
         "pins", {"/opt/other": "0" * 64}), "L11")
-    expect("registry argv without a findings file", lambda m: m["registry"]["reviewers"][first].__setitem__("argv", ["goose", "run"]), "L11")
+    expect("interpreter pinned, script not", lambda m: m["registry"]["reviewers"][first].update(
+        argv=["python3", "/opt/review.py", "{diff_file}"], pins={"/usr/bin/python3": "0" * 64}), "L11")
+    expect("relative script path", lambda m: m["registry"]["reviewers"][first].update(
+        argv=["python3", "tools/review.py", "{diff_file}"], pins={"/usr/bin/python3": "0" * 64}), "L11")
+    expect("reviewer argv without the diff", lambda m: m["registry"]["reviewers"][first].__setitem__("argv", ["goose", "run"]), "L11")
+    expect("worker as a runtime package download", lambda m: m["registry"]["workers"][wk].__setitem__(
+        "argv", ["bunx", "oh-my-openagent"]), "L11")
+    expect("worker on another omo version", lambda m: m["registry"]["workers"][wk].__setitem__("version", "5.1.48"), "L11")
+    expect("export without a session placeholder", lambda m: m["registry"]["workers"][wk].__setitem__(
+        "export_argv", ["opencode", "export"]), "L11")
+    expect("export program not pinned", lambda m: m["registry"]["workers"][wk].__setitem__(
+        "export_argv", ["/opt/export", "{session_id}"]), "L11")
+    expect("qualification pin that is not a hash", lambda m: m["registry"].__setitem__("qualifications", {"/x": "abc"}), "L11")
     print("self-test " + ("passed" if not fails else f"FAILED ({fails})"))
     return 1 if fails else 0
 
@@ -476,7 +539,7 @@ def main(argv):
     for gp, cp in pairs:
         errs += [f"{cp}: {x}" for x in check_pair(gp, cp)]
     if len(argv) < 2:
-        errs += [f"examples/superloop/reviewers.example.json: {x}" for x in check_registry()]
+        errs += [f"examples/superloop/tools.example.json: {x}" for x in check_tools()]
     for x in errs:
         print("  FAIL", x)
     print("superloop checks " + ("passed" if not errs else f"FAILED ({len(errs)})"))

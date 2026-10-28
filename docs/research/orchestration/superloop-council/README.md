@@ -8,4 +8,4 @@ Five independent reports gathered on 2026-10-28 and 2026-10-29 HKT, in two round
 - Claude Opus 5.5, the Explainer: [round 1](round1-claude-opus-5-5.md), [round 2](round2-claude-opus-5-5.md)
 - GLM 5.3, the Practical: [round 1](round1-glm-5-3.md), [CDM addendum](round1-addendum-glm-5-3.md), [round 2](round2-glm-5-3.md)
 - Kimi K3, the Researcher: [round 1](round1-kimi-k3.md), [round 2](round2-kimi-k3.md)
-- Independent review of the driver, Grok 4.7: [round 1](review-round1-grok-4-7.md)
+- Independent review of the driver, Grok 4.7: [round 1](review-round1-grok-4-7.md), [round 2](review-round2-grok-4-7.md)

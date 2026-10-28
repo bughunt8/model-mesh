@@ -72,11 +72,11 @@
     },
     {
       "id": "owner-approves-checks-and-registries",
-      "description": "The owner approves acceptance checks and owns the reviewer registry; the agent never edits the omo config or the registries.",
+      "description": "The owner approves acceptance checks and owns the tools registry; the agent never edits the omo config or the registries.",
       "required": [
         "the owner approves them, because the loop trusts them",
         "Do not write or edit that registry yourself",
-        "Never edit `.omo/omo.jsonc`, the reviewer registry or the lineage registry\\."
+        "Never edit `.omo/omo.jsonc`, the tools registry or the lineage registry\\."
       ],
       "forbidden": []
     },

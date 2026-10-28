@@ -75,7 +75,9 @@ The recommendation is to ship the superloop as a control plane in code with the 
 
 ## Independent review
 
-Grok 4.7 reviewed the driver after the council. It is on the xai family, sat outside the council, and differs from the author (Claude Opus 5.5). It was told to break the success path and wrote probes against the code. Round 1 verdict: REQUEST CHANGES. Its report is [review-round1-grok-4-7.md](superloop-council/review-round1-grok-4-7.md). Every reproduced finding now has a regression scenario in `scripts/mm-superloop.py --self-test` or a mutation in `scripts/validate-superloop.py --self-test`.
+Grok 4.7 reviewed the driver after the council. It is on the xai family, sat outside the council, and differs from the author (Claude Opus 5.5). It was told to break the success path and wrote probes against the code. Both rounds ended REQUEST CHANGES. The reports are [round 1](superloop-council/review-round1-grok-4-7.md) and [round 2](superloop-council/review-round2-grok-4-7.md). Every reproduction from both rounds now has a regression scenario in `scripts/mm-superloop.py --self-test` or a mutation in `scripts/validate-superloop.py --self-test`. A self-test that passes shows these attacks fail; it does not show no other attack works.
+
+### Round 1
 
 | Finding (severity) | Change |
 |---|---|
@@ -88,10 +90,31 @@ Grok 4.7 reviewed the driver after the council. It is on the xai family, sat out
 | Dropping `prior_lineage` or reusing an output directory reset the lineage (blocker) | A lineage registry outside the worktree, keyed by branch and goal, and a refusal to reuse an output directory |
 | The no-progress stop came one batch late, and a defect that moved path dodged the cycle count (major) | The stop fires after exactly 2 idle batches. Three review rounds in a row with a blocker or major stop the run, whatever the paths |
 | A lone major did not block success (major) | Any major blocks success, and open findings go into `final.json` |
-| The reviewer conflict set missed the profile config's other families and runtime fallback (major) | The config is restricted to the cell's families with runtime fallback and team mode off, and every reported model family enters the ledger. Aggregation is code, so the aggregator seat is not used, and the docs say so |
+| The reviewer conflict set missed the profile config's other families and runtime fallback (major) | The config is restricted to the cell's families with runtime fallback and team mode off, and every reported model family enters the ledger. Aggregation is code, so the aggregator seat is not used. The reviewer pointed out, correctly, that this is a decision to let the aggregator's family review, not a fix for independence |
 | A missing agent report was accepted (major) | omo 4.19.4's run result does not name the agent, so the driver reads the session through an export and refuses a batch it cannot verify. The omo version is checked |
 | Qualification records and the Hong Kong flag were controller fields (major) | Records are files from `qualify.py`, re-verified at admission. Ultimate admits only local or offline backends, with no flag |
 | The catalog promised an approval ledger that did not exist (major) | The sentence now says there is no approval path, and the worker prompt forbids outward actions |
 | An invalid findings file with a blocker was skipped (major) | An invalid findings file stops the run |
 | atlas was not required, and command workers skipped the hook rules (major) | atlas and runtime-fallback are required, and the worker must be omo |
 | Redaction missed common key shapes, the first decision state could crash, and the example goal left its unit tests unprotected (minor) | Wider patterns, the first state handled like the rest, and the example protects `tests` |
+
+### Round 2
+
+Round 2 closed most of round 1 and found new holes. Most rely on a worker running as the driver's own OS user. That led to a stated trust boundary as well as code changes.
+
+| Finding (severity) | Change |
+|---|---|
+| A worker overwrote the reviewer's findings file while the reviewer ran (blocker) | Findings are the JSON list on the reviewer's last output line, read through a pipe. No file counts |
+| A pinned reviewer was replaced after admission (blocker) | Every pin is hashed again right before each call, and the resolved real path runs |
+| A check passed on a file under `.git`, and the diff was empty (blocker) | Checks run on a fresh copy of the hashed tree, written from the stored blobs, never in the live worktree |
+| A check read the status file through a split path (blocker) | Same copy: the status file is not in it |
+| A clean filter showed the reviewer different bytes (blocker) | Checks and review both use the stored blobs. A filter or diff driver in the repository's own config is refused, because git would run it as the driver |
+| `test 1 -eq 1` and other tautologies passed as checks (blocker) | The checks run once on the admission tree, and the run is refused if every one already passes |
+| A nested repository passed on unseen bytes, and an empty one crashed the driver (major) | Nested repositories and escaping symlinks are refused, and git errors end as `policy_denied` |
+| Renaming the branch and the goal dropped the lineage (major) | The registry is keyed by repository only |
+| Deleting the lineage registry gave an empty history (major) | The registry must exist; the owner creates it once, and a missing one stops the run. A same-user worker can still recreate it, which the docs now say |
+| The agent check trusted an export command from the controller (major) | The omo command and the export command come from the tools registry with pins, re-hashed before each call |
+| A pin on the interpreter alone was accepted (major) | Every absolute path in an argv must be pinned, and admission validates the registry |
+| `mode` was read as an agent name, an agent-written `human` label verified, and the mtime check had slack (minor and nit) | `mode` is dropped, the owner pins qualification records and must read the dataset, and no findings file is used |
+
+Not changed, and stated in the docs: a worker that runs as the owner's OS user can defeat any file-based record, rotating failing checks can dodge the fix-verify count until the iteration cap, and a small window remains between hashing a pin and starting the process.

@@ -25,9 +25,14 @@ One run:
               worker_failure, policy_denied, cancelled.
 
 Only verified and verified_pending_owner are success. Both need: every acceptance check passing
-on the final tree, a review of that same tree by a reviewer independent of the whole lineage
-with no blocker and no major finding, an unchanged tree after the review, a second run of the
-checks on that tree, and wall-clock time left.
+on a fresh copy of the hashed tree, a review of the diff to that same tree by a reviewer
+independent of the whole lineage with no blocker and no major finding, an unchanged tree after
+the review, a second run of the checks on a new copy, and wall-clock time left.
+
+Trust boundary: these rules hold against a worker that cannot write outside its worktree. A
+worker running as the driver's own OS user can edit the driver, the registries and the run
+folder, and no check in this file can stop that. The controller states the worker's isolation,
+and final.json repeats it.
 """
 import hashlib, importlib.util, json, os, re, shutil, subprocess, sys, time
 from urllib.parse import urlparse
@@ -60,29 +65,84 @@ class PolicyError(Exception):
     pass
 
 
+GIT_SAFE = ["-c", "core.fsmonitor=false", "-c", "core.untrackedCache=false", "-c", "core.splitIndex=false",
+            "-c", "core.autocrlf=false", "-c", "core.safecrlf=false"]
+
+
 def git(worktree, *args, env=None, check=True):
     e = dict(os.environ)
     e.update(env or {})
-    r = subprocess.run(["git", "-C", worktree] + list(args), capture_output=True, text=True, env=e)
+    r = subprocess.run(["git", "-C", worktree] + GIT_SAFE + list(args), capture_output=True, text=True, env=e)
     if check and r.returncode != 0:
         raise RuntimeError(f"git {' '.join(args)} failed: {r.stderr.strip()}")
     return r.stdout.strip()
 
 
 def tree_hash(worktree, scratch):
-    """Hash of the whole working tree through a private index: tracked, untracked and ignored
-    files. Only the worker's status file and the controller-written omo config are left out;
-    the config is checked separately against the hash the controller wrote."""
-    env = {"GIT_INDEX_FILE": os.path.join(scratch, "superloop.index")}
+    """Hash of the working tree through a fresh private index: tracked, untracked and ignored
+    files. Left out: .git, the worker's status file and the controller-written omo config (that
+    one is checked on its own). Checks never read the live worktree; they run on a copy of this
+    tree (extract_tree), so bytes outside it cannot make a check pass. A filter set in the
+    repository's own config is refused: git add would run its command as the driver, which is a
+    way out of any worker sandbox. Filters from the owner's global config (git-lfs, for example)
+    are allowed; checks and review both see the stored blobs, never the filtered worktree."""
+    for scope in ("--local", "--worktree"):
+        if git(worktree, "config", scope, "--includes", "--get-regexp", r"^(filter|diff)\..*\.(clean|smudge|process|command|textconv)$",
+               check=False).strip():
+            raise PolicyError("a git filter or diff driver is set in the repository config; it would run as the driver")
+    idx = os.path.join(scratch, "superloop.index")
+    if os.path.exists(idx):
+        os.remove(idx)
+    env = {"GIT_INDEX_FILE": idx}
     git(worktree, "add", "-A", "-f", "--", ".", *HASH_EXCLUDE, env=env)
     return git(worktree, "write-tree", env=env)
 
 
-def write_diff(worktree, scratch, base_tree, path):
-    """The change since admission, against the baseline tree hashed the same way."""
-    tree_hash(worktree, scratch)
-    env = {"GIT_INDEX_FILE": os.path.join(scratch, "superloop.index")}
-    open(path, "w", encoding="utf-8").write(git(worktree, "diff", "--cached", "--binary", base_tree, env=env, check=False))
+def extract_tree(worktree, tree, dest):
+    """Write the exact blobs of a tree object into dest. No filters, no checkout. A nested
+    repository (gitlink) or a symlink that leaves the tree is refused."""
+    os.makedirs(dest)
+    listing = subprocess.run(["git", "-C", worktree] + GIT_SAFE + ["ls-tree", "-r", "-z", "--full-tree", tree],
+                             capture_output=True, check=True).stdout
+    entries = []
+    for e in listing.split(b"\0"):
+        if not e:
+            continue
+        meta, path = e.split(b"\t", 1)
+        mode, typ, sha = meta.split(b" ")
+        if typ != b"blob":
+            raise PolicyError(f"{path.decode(errors='replace')} is a nested repository; its content cannot be reviewed")
+        entries.append((mode.decode(), sha.decode(), path.decode("utf-8", errors="surrogateescape")))
+    if not entries:
+        return
+    p = subprocess.Popen(["git", "-C", worktree] + GIT_SAFE + ["cat-file", "--batch"], stdin=subprocess.PIPE,
+                         stdout=subprocess.PIPE)
+    data, _ = p.communicate(("\n".join(sha for _, sha, _ in entries) + "\n").encode())
+    pos = 0
+    root = os.path.realpath(dest)
+    for mode, sha, path in entries:
+        nl = data.index(b"\n", pos)
+        size = int(data[pos:nl].split(b" ")[2])
+        body = data[nl + 1:nl + 1 + size]
+        pos = nl + 1 + size + 1
+        full = os.path.join(dest, path)
+        os.makedirs(os.path.dirname(full), exist_ok=True)
+        if mode == "120000":
+            target = body.decode("utf-8", errors="surrogateescape")
+            if os.path.isabs(target) or not os.path.realpath(os.path.join(os.path.dirname(full), target)).startswith(root + os.sep):
+                raise PolicyError(f"symlink {path} points outside the tree")
+            os.symlink(target, full)
+            continue
+        with open(full, "wb") as f:
+            f.write(body)
+        if mode == "100755":
+            os.chmod(full, 0o755)
+
+
+def write_diff(worktree, base_tree, tree, path):
+    """The change since admission: baseline tree object to current tree object."""
+    open(path, "w", encoding="utf-8").write(git(worktree, "diff", "--binary", "--no-ext-diff", "--no-textconv",
+                                                base_tree, tree, check=False))
 
 
 def protected_hashes(worktree, paths):
@@ -234,8 +294,8 @@ class Run:
         self.allow_fakes = bool(deps.get("allow_fakes"))
         self.matrix = deps.get("matrix") or assign.load_matrix()
         self.registry = ledger.Registry(deps.get("registry") or ledger.default_registry())
-        self.reviewer_registry_path = deps.get("reviewer_registry") or os.environ.get("MM_SUPERLOOP_REVIEWERS") or \
-            os.path.join(os.path.expanduser("~"), ".config", "model-mesh", "reviewers.json")
+        self.tools_path = deps.get("tools") or os.environ.get("MM_SUPERLOOP_TOOLS") or \
+            os.path.join(os.path.expanduser("~"), ".config", "model-mesh", "superloop-tools.json")
         self.prov = ledger.Provenance()
         self.spent = 0.0
         self.disagreements = 0
@@ -271,7 +331,8 @@ class Run:
         out = {"status": status, "success": status in SUCCESS, "detail": detail, "goal": self.goal.get("id"),
                "profile": self.goal.get("profile"), "situation": self.goal.get("situation"),
                "option": self.goal.get("option"), "mode": self.ctl.get("mode"), "reserved_usd": round(self.spent, 4),
-               "decisions": self.decisions, "disagreements": self.disagreements, "provenance": self.prov.snapshot()}
+               "decisions": self.decisions, "disagreements": self.disagreements, "provenance": self.prov.snapshot(),
+               "isolation": self.ctl.get("worker", {}).get("isolation")}
         out.update(extra)
         if self.log is None:
             return out
@@ -304,10 +365,12 @@ class Run:
             self.prov.record(-1, "prior:" + str(s.get("note", "")), s["harness"], s["families"])
         try:
             common = os.path.realpath(os.path.join(self.wt, git(self.wt, "rev-parse", "--git-common-dir")))
-            branch = git(self.wt, "rev-parse", "--abbrev-ref", "HEAD")
         except RuntimeError as ex:
             return [f"worktree: {ex}"]
-        self.repo_key = f"{common}#{branch}"
+        if not self.registry.exists():
+            return [f"lineage registry {self.registry.path} is missing; create it once with --init-registry. "
+                    "A missing registry is not an empty history"]
+        self.repo_key = common
         for e in self.registry.prior(self.repo_key, self.goal["id"]):
             for h in e.get("harnesses", []) or ["unknown"]:
                 self.prov.record(-2, "registry:" + str(e.get("run")), h, e.get("families", []))
@@ -333,41 +396,70 @@ class Run:
                 if (urlparse(b.get("base_url", "")).hostname or "") not in LOOPBACK:
                     return ["ultimate profile: only local or offline decision backends are admitted until a "
                             "reachability and data-policy check exists"]
-        # reviewers: the controller names them, the owner's registry defines and pins them
+        # tools: the controller names them, the owner's registry defines and pins them
+        need_tools = self.ctl["worker"]["kind"] == "omo" or any(r["kind"] == "command" for r in self.ctl.get("reviewers", [])) \
+            or self.ctl.get("qualifications")
         try:
-            reg = json.load(open(self.reviewer_registry_path, encoding="utf-8")) if any(
-                r["kind"] == "command" for r in self.ctl.get("reviewers", [])) else {}
+            self.tools = json.load(open(self.tools_path, encoding="utf-8")) if need_tools else {}
         except (OSError, ValueError) as ex:
-            return [f"reviewer registry {self.reviewer_registry_path}: {ex}"]
+            return [f"tools registry {self.tools_path}: {ex}"]
+        if need_tools:
+            errs = vsl.validate_tools(self.tools)
+            if errs:
+                return [f"tools registry: {x}" for x in errs]
+        for q in self.ctl.get("qualifications", []):
+            rp = os.path.realpath(q["record"])
+            pins = {os.path.realpath(k): v for k, v in self.tools.get("qualifications", {}).items()}
+            if pins.get(rp) != workers.sha256_file(rp):
+                return [f"qualification record {q['record']} is not pinned in the owner's tools registry"]
         self.reviewers = []
         for r in self.ctl.get("reviewers", []):
             seatm = next((s for s in self.a["reviewers"] if s["harness"] == r["harness"]), None)
             if not seatm:
                 continue
             if r["kind"] == "command":
-                cfg, err = workers.resolve_reviewer(r, reg)
+                t = self.tools.get("reviewers", {}).get(r["ref"])
+                if not t or t.get("harness") != r["harness"]:
+                    return [f"reviewer {r['ref']!r} for {r['harness']} is not in the owner's tools registry"]
+                _, err = workers.check_pins([t["argv"]], t["pins"])
                 if err:
-                    return [err]
-                self.reviewers.append((seatm, workers.CommandAdapter(cfg)))
+                    return [f"reviewer {r['ref']!r}: {err}"]
+                self.reviewers.append((seatm, workers.CommandAdapter(dict(t, tag="review-" + r["ref"]))))
             else:
-                self.reviewers.append((seatm, workers.build(r, self.fakes, self.allow_fakes)))
+                self.reviewers.append((seatm, workers.build_fake(r, self.fakes, self.allow_fakes)))
+        w = self.ctl["worker"]
+        if w["kind"] == "omo":
+            t = self.tools.get("workers", {}).get(w["ref"])
+            if not t:
+                return [f"worker {w['ref']!r} is not in the owner's tools registry"]
+            _, err = workers.check_pins([t["argv"], t["export_argv"]], t["pins"])
+            if err:
+                return [f"worker {w['ref']!r}: {err}"]
+            self.worker = workers.OmoWorker(w, t)
+            self.pin_version = t["version"]
+        else:
+            self.worker = workers.build_fake(w, self.fakes, self.allow_fakes)
+            self.pin_version = "4.19.4"
         return []
 
     def setup(self):
         self.base = git(self.wt, "rev-parse", "HEAD")
-        self.worker = workers.build(self.ctl["worker"], self.fakes, self.allow_fakes)
         self.cfg_text, self.mat = materialize(self.ctl, self.goal, self.wt, self.scratch, self.allowed,
                                               self.ctl["worker"].get("agent", "sisyphus"))
         self.cfg_sha = _sha(self.cfg_text)
         self.write_config()
         ver = self.worker.version(self.wt, self.out)
-        pin = self.ctl["worker"].get("pinned_version", "4.19.4")
+        pin = self.pin_version
         if not re.search(r"(?<![\d.])v?" + re.escape(pin) + r"(?![\d.])", ver):
             raise PolicyError(f"omo reports version {ver!r}, expected {pin}")
         for f in self.mat["families"]:
             self.prov.record(0, "config", "opencode-omo", [f])
         self.protected0 = protected_hashes(self.wt, self.goal.get("protected_paths", []))
         self.base_tree = tree_hash(self.wt, self.scratch)
+        base_checks = self.run_checks(0, self.base_tree, tag="baseline")
+        if base_checks is not None and all(c["passed"] for c in base_checks):
+            raise PolicyError("every acceptance check already passes on the baseline tree; at least one must fail "
+                              "before the work, or the checks cannot show it was done")
         cat = json.load(open(os.path.join(ROOT, self.ctl["decision"]["questions"]), encoding="utf-8"))
         self.catalog = {q["id"]: q for q in cat["questions"]}
         self.locale = self.ctl["decision"].get("locale", "en")
@@ -389,18 +481,24 @@ class Run:
             return False
 
     # -- checks ------------------------------------------------------------------
-    def run_checks(self, iteration, tag="check"):
-        """Run every acceptance check with a shrinking share of the wall clock. Returns None when
-        the clock runs out before every check has run."""
+    def run_checks(self, iteration, tree, tag="check"):
+        """Run every acceptance check on a fresh copy of the tree object, each with a shrinking
+        share of the wall clock. Returns None when the clock runs out before every check has run."""
+        snap = os.path.join(self.scratch, f"snap-{tag}-{iteration:03d}")
+        shutil.rmtree(snap, ignore_errors=True)
+        extract_tree(self.wt, tree, snap)
         res = []
-        for c in self.goal["acceptance"]:
-            left = self.remaining()
-            if left <= 0:
-                return None
-            r = workers.run_bounded(c["argv"], self.wt, dict(os.environ), min(c.get("timeout_seconds", 300), left),
-                                    self.out, f"{tag}-{iteration:03d}-{c['name']}")
-            res.append({"name": c["name"], "passed": r["exit_code"] == 0 and not r["timed_out"],
-                        "exit_code": r["exit_code"], "timed_out": r["timed_out"]})
+        try:
+            for c in self.goal["acceptance"]:
+                left = self.remaining()
+                if left <= 0:
+                    return None
+                r = workers.run_bounded(c["argv"], snap, dict(os.environ), min(c.get("timeout_seconds", 300), left),
+                                        self.out, f"{tag}-{iteration:03d}-{c['name']}")
+                res.append({"name": c["name"], "passed": r["exit_code"] == 0 and not r["timed_out"],
+                            "exit_code": r["exit_code"], "timed_out": r["timed_out"]})
+        finally:
+            shutil.rmtree(snap, ignore_errors=True)
         if self.remaining() <= 0:
             return None
         return res
@@ -497,7 +595,7 @@ class Run:
         shutil.rmtree(rdir, ignore_errors=True)
         os.makedirs(rdir)
         diff = os.path.join(rdir, "change.patch")
-        write_diff(self.wt, self.scratch, self.base_tree, diff)
+        write_diff(self.wt, self.base_tree, tree, diff)
         findings, ran = [], []
         for seatm, adapter in usable:
             left = self.remaining()
@@ -505,29 +603,24 @@ class Run:
                 return {"stop": "cap_wall_clock", "detail": "wall clock ran out before the review"}
             if not self.reserve("review_call"):
                 return {"stop": "cap_budget", "detail": "review reservation would exceed the budget"}
-            fo = os.path.join(rdir, f"findings-{seatm['harness']}.json")
-            if os.path.exists(fo):
-                os.remove(fo)
             prompt = ("Review the change in the diff file against the lenses " + ", ".join(seatm["lenses"]) +
-                      ". You have no other context. Write findings as a JSON list in the finding schema to the "
-                      "findings file. Write [] if there are none.")
-            started = time.time()
+                      ". You have no other context. Print the findings as one JSON list in the finding schema on the "
+                      "last line of standard output. Print [] if there are none.")
             res = adapter.run(rdir, prompt, iteration, min(self.ctl["caps"]["per_call_seconds"], left), self.out,
-                              {"findings_out": fo, "diff_file": diff, "lenses": ",".join(seatm["lenses"])})
+                              {"diff_file": diff, "lenses": ",".join(seatm["lenses"])})
             ran.append(seatm["harness"])
+            if res.get("pin_error"):
+                return {"stop": "policy_denied", "ran": ran, "detail": res["error"]}
             if res["exit_code"] != 0 or res["timed_out"]:
                 return {"stop": "review_unavailable", "ran": ran,
                         "detail": f"reviewer {seatm['harness']} exited {res['exit_code']} (timed out: {res['timed_out']})"}
-            if not os.path.isfile(fo) or os.path.getmtime(fo) < started - 1:
+            items = workers.parse_findings(res.get("stdout_text"))
+            if items is None:
                 return {"stop": "review_unavailable", "ran": ran,
-                        "detail": f"reviewer {seatm['harness']} did not write its findings file during the call"}
-            try:
-                items = json.load(open(fo, encoding="utf-8"))
-            except ValueError:
-                return {"stop": "review_unavailable", "ran": ran, "detail": f"reviewer {seatm['harness']} wrote invalid JSON"}
+                        "detail": f"reviewer {seatm['harness']} printed no findings list on its last output line"}
             errs = agg.check(items)
             if errs:
-                sev = {x.get("severity") for x in items if isinstance(x, dict)} if isinstance(items, list) else set()
+                sev = {x.get("severity") for x in items if isinstance(x, dict)}
                 return {"stop": "review_unavailable", "ran": ran,
                         "detail": f"reviewer {seatm['harness']} findings invalid{' (a blocker was among them)' if 'blocker' in sev else ''}: {errs[:3]}"}
             findings += [dict(x, id=f"{seatm['harness']}:{x['id']}") for x in items]
@@ -546,6 +639,12 @@ class Run:
 
     # -- main loop ---------------------------------------------------------------
     def run(self):
+        try:
+            return self._run()
+        except (PolicyError, PermissionError, RuntimeError, subprocess.CalledProcessError) as ex:
+            return self.finish("policy_denied", f"{type(ex).__name__}: {ex}")
+
+    def _run(self):
         if self.reused:
             return self.finish("policy_denied", "the output directory already holds a run; use a new one")
         self.t0 = self.clock()
@@ -555,7 +654,7 @@ class Run:
         self.admitted = True
         try:
             self.setup()
-        except (PolicyError, PermissionError) as ex:
+        except (PolicyError, PermissionError, RuntimeError) as ex:
             return self.finish("policy_denied", str(ex))
         caps = self.ctl["caps"]
         prev_passing, prev_failing, idle = set(), None, 0
@@ -586,12 +685,12 @@ class Run:
             if bad:
                 return self.finish("policy_denied", bad, iterations=it)
             claims = read_claims(self.wt)
-            checks = self.run_checks(it)
+            tree_prev, tree = tree, tree_hash(self.wt, self.scratch)
+            checks = self.run_checks(it, tree)
             if checks is None:
                 return self.finish("cap_wall_clock", "wall clock ran out during the checks", iterations=it)
             passing = {c["name"] for c in checks if c["passed"]}
             failing = sorted(c["name"] for c in checks if not c["passed"])
-            tree_prev, tree = tree, tree_hash(self.wt, self.scratch)
             prot = protected_hashes(self.wt, self.goal.get("protected_paths", []))
             touched = sorted(k for k in set(prot) | set(self.protected0) if prot.get(k) != self.protected0.get(k))
             # a batch is idle when it left the tree as it found it and the failing checks unchanged
@@ -656,7 +755,7 @@ class Run:
             review_rounds = 0
             if not green:
                 continue
-            again = self.run_checks(it, tag="recheck")
+            again = self.run_checks(it, rv["tree"], tag="recheck")
             if again is None:
                 return self.finish("cap_wall_clock", "wall clock ran out during the recheck", iterations=it)
             if not all(c["passed"] for c in again) or tree_hash(self.wt, self.scratch) != rv["tree"] or not self.config_intact():
