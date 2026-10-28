@@ -12,6 +12,8 @@ What runs, what it proves, and what it does not. All commands run from the repos
 | `python scripts/validate-scenarios.py` | Skill front matter, size cap, scenario patterns, rules S1 to S4 | `--self-test` |
 | `python scripts/aggregate-findings.py` | Merges review findings, rejects invalid ones | `--self-test` |
 | `python scripts/score-review.py` | Scores review runs against seeded defects | `--self-test` |
+| `python scripts/validate-superloop.py` | Superloop goal and controller examples and the decision question catalog, rules L1 to L10 | `--self-test` plants 27 mutations and each must be caught |
+| `python scripts/mm-superloop.py --self-test` | The superloop driver: 26 end-to-end scenarios with fake workers and reviewers, and 16 unit checks of the state builder, ledger, backends and qualification | built in |
 | `python scripts/check-drift.py` | Docs against data and scripts, rules D1 to D9. It reads text with patterns and does not know what a sentence means | `--self-test` |
 | `python scripts/landscape/landscape_scan.py --self-test` | The landscape scorer | built in |
 | `python scripts/landscape/review_gate.py --self-test` | The landscape review-gate parser | built in |
@@ -24,6 +26,7 @@ The generated matrix table is rebuilt with `python scripts/validate-orchestratio
 - A skill scenario is a static pattern test. It shows a rule is still written in the skill. It does not show an agent follows the rule.
 - The orchestration matrix is checked for structure and policy. No row has been run.
 - The seeded-defect scorer runs on an invented fixture. It measures nothing about any model, harness or lens.
+- The superloop driver is tested with fake workers, fake reviewers and replayed decision answers. No omo install, live decision endpoint or live reviewer has been run. The HTTP backend is tested only for its offline guard and its answer parsing.
 
 ## Live runs
 

@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.4.0
+
+### Added
+- **Superloop.** `docs/SUPERLOOP.md` defines an outer loop for long goals: code owns continuation and the caps, omo workers run one batch per call under a frozen profile, a typed decision model answers logged questions, and success needs passing checks plus a cross-family review of the same tree. The decision model may brake and never accelerate. Shadow mode is the default and there is no control mode. Design plus an offline-tested driver; no live run.
+- **`scripts/mm-superloop.py` and `scripts/superloop/`.** The driver: admission against the matrix, materialization of the omo config with the continuation hooks disabled, a hash-chained event log, a cumulative lineage ledger, a fact-only state builder with offset-verified spans and redaction, decision backends (rules, replay, HTTP, dual), learn-then-test qualification, and the stop rules. `--self-test` runs 26 scenarios and 16 unit checks offline.
+- **`scripts/validate-superloop.py`.** Rules L1 to L10 for goals, controllers and the question catalog, with 27 mutation cases.
+- **`examples/superloop/`.** The question catalog, a goal template, a shadow pilot controller and an offline rules controller.
+- **`skills/mm-superloop/`** with scenarios in `tests/scenarios/mm-superloop.json`.
+- **`docs/research/orchestration/SUPERLOOP-COUNCIL.md` and `superloop-council/`.** A five-family council on whether a decision model fits the six agentic patterns and the omo superloop, with the raw reports.
+
+### Changed
+- `docs/research/orchestration/SYSTEM-ONE.md` corrects two errors (the retention terms, and an integration guide wrongly called the vendor's) and adds model limits, confidence definitions, other decision models, constrained decoding and the council outcome. Still no decision seat in the matrix.
+- `mm-loop` points long goals to the superloop and gains a BLOCKED outcome. `mm-verify` gains a machine-readable findings file.
+- The OpenCode with omo harness example now invokes the omo run wrapper from a pinned local install.
+
 ## 1.3.0
 
 ### Added

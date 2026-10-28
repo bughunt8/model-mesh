@@ -1,0 +1,74 @@
+{
+  "skill": "mm-superloop",
+  "note": "Static checks on the skill text. They show the contract is still written down. They do not show an agent follows it. The driver itself is tested by scripts/mm-superloop.py --self-test.",
+  "scenarios": [
+    {
+      "id": "brake-never-accelerate",
+      "description": "The decision model may brake but never end the run as a success.",
+      "required": [
+        "The decision model may brake\\. It may never accelerate\\.",
+        "never end the run as a success"
+      ],
+      "forbidden": [
+        "control mode lets",
+        "decision model (may|can) (declare|mark) (the goal|the run) (done|complete)"
+      ]
+    },
+    {
+      "id": "worker-claim-untrusted",
+      "description": "A worker's done claim is untrusted and never evidence.",
+      "required": [
+        "A worker saying \"done\" is a claim, not a fact\\.",
+        "marked untrusted"
+      ],
+      "forbidden": []
+    },
+    {
+      "id": "success-is-checks-plus-review",
+      "description": "Success needs passing checks and a cross-family review of the same tree.",
+      "required": [
+        "Success is checks plus review, computed by code\\.",
+        "cross-family review of that tree"
+      ],
+      "forbidden": []
+    },
+    {
+      "id": "caps-and-honest-stops",
+      "description": "Default caps are stated, a cap is never success, and only the owner renews one.",
+      "required": [
+        "10 iterations, 30 minutes, a no-progress streak of 2 and 3 fix-verify cycles",
+        "A cap running out is never success\\.",
+        "Only the owner renews a cap"
+      ],
+      "forbidden": []
+    },
+    {
+      "id": "shadow-default-qualified-advisory",
+      "description": "Shadow is the default; advisory needs disclosed lineage and a qualification record; there is no control mode.",
+      "required": [
+        "`shadow` is the default\\.",
+        "a qualification record per acting question",
+        "There is no control mode\\."
+      ],
+      "forbidden": []
+    },
+    {
+      "id": "frozen-profile-and-lineage",
+      "description": "Profile is frozen at admission and reviewers are checked against the cumulative lineage.",
+      "required": [
+        "Never switch the profile or option mid-run\\.",
+        "including fallback rungs and earlier segments",
+        "`prior_lineage`"
+      ],
+      "forbidden": []
+    },
+    {
+      "id": "no-summaries-in-state",
+      "description": "Summaries and compressed context never enter the decision state.",
+      "required": [
+        "Never put a summary or compressed context into the decision state\\."
+      ],
+      "forbidden": []
+    }
+  ]
+}

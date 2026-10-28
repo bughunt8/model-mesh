@@ -82,6 +82,10 @@ Orca is the default when a cell has parallel worktrees. Emdash and Nimbalyst are
 
 Harnesses and the verification stack must be open source, as before. Inference models and hosting are outside that rule. omo itself is under the Sustainable Use License 1.0, which allows internal business or non-commercial use and restricts distribution. The owner accepted omo as an explicit exception. Every non-primary option therefore replaces omo orchestration with an open-source harness, and the validator rejects an alternate whose orchestrator is omo. Client or commercial use of omo needs its own licence check before it starts.
 
+## Superloop
+
+For a long goal, [SUPERLOOP.md](SUPERLOOP.md) runs omo workers in bounded batches from code against one frozen cell of the matrix. A typed decision model may answer logged questions at the forks of every pattern and may brake the loop, but it never writes plans and never declares success. It is not a seat in the matrix.
+
 ## Reading and using the matrix
 
 The generated table is [MATRIX.md](research/orchestration/MATRIX.md), built from [matrix.example.json](../examples/orchestration/matrix.example.json). Each option is a complete assignment, so do not mix seats between options. Worked cases are in [EXAMPLES.md](research/orchestration/EXAMPLES.md), and seven harness configuration examples are in [examples/orchestration/harnesses](../examples/orchestration/harnesses).

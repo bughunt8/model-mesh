@@ -141,6 +141,7 @@ The routing above sends roles to models inside one harness. [`docs/ORCHESTRATION
 - The generated table is [`docs/research/orchestration/MATRIX.md`](docs/research/orchestration/MATRIX.md). Worked cases are in [`EXAMPLES.md`](docs/research/orchestration/EXAMPLES.md), and seven harness configuration examples are in [`examples/orchestration/harnesses/`](examples/orchestration/harnesses).
 - Review panel: [`docs/REVIEW-PANEL.md`](docs/REVIEW-PANEL.md) adds zero-context reviewers, twelve review lenses, a two-family spread tier for security and change review, an aggregator seat, spec and drift gates, and a scorer for seeded-defect runs.
 - Study behind the review panel: [`docs/research/orchestration/EGM-ANALYSIS.md`](docs/research/orchestration/EGM-ANALYSIS.md) compares Google's Elephant-Goldfish Model with model-mesh and records what was adopted, adapted and left out.
+- Superloop: [`docs/SUPERLOOP.md`](docs/SUPERLOOP.md) drives omo workers in bounded batches from code, with a typed decision model in shadow mode that may brake and never declare success. [`SUPERLOOP-COUNCIL.md`](docs/research/orchestration/SUPERLOOP-COUNCIL.md) records the council behind it and [`SYSTEM-ONE.md`](docs/research/orchestration/SYSTEM-ONE.md) the decision-model research. The driver is tested offline only.
 - Status: documentation and schema checks only. Nothing was installed or run. The omo licence needs an owner decision for client work, and the `global` profile excludes the retired Google family.
 
 ---
@@ -157,7 +158,7 @@ examples/
   dsh-settings.example.yaml                   the harness plugin settings reference
   README.md                                  how the examples fit together
   orchestration/                             situation matrix, lenses, finding schema, review standards + seven harness config examples
-skills/  mm-method · mm-loop · mm-verify · mm-domain     the loop, installable
+skills/  mm-method · mm-loop · mm-verify · mm-domain · mm-superloop     the loop, installable
 scripts/landscape/                           the self-governing landscape engine + review gate
 install.sh · install.ps1                      copy the loop skills into place
 provider-map.local.example                   template for your git-ignored real-ID mapping

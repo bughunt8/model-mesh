@@ -135,6 +135,8 @@ If something cannot be verified (no runtime, needs credentials, needs human eyes
 
 When a task needs several agents or harnesses, read `docs/ORCHESTRATION.md` and pick the row of `docs/research/orchestration/MATRIX.md` that matches the situation and profile. Never review work with the harness and model family that produced it. Reviews follow `docs/REVIEW-PANEL.md` (background: `docs/research/orchestration/EGM-ANALYSIS.md`): zero-context reviewers, the lenses the situation names, findings in the schema, merged with `scripts/aggregate-findings.py`. Run `python scripts/validate-orchestration.py` after changing the matrix and `python scripts/check-drift.py` after changing method docs.
 
+For a long goal with machine-checkable acceptance checks, use the superloop: `docs/SUPERLOOP.md` and `skills/mm-superloop/SKILL.md` (background: `docs/research/orchestration/SUPERLOOP-COUNCIL.md` and `docs/research/orchestration/SYSTEM-ONE.md`). A decision model may brake the loop and never declare it done. Run `python scripts/validate-superloop.py` after changing a goal, controller or the question catalog.
+
 ## Compressed examples
 
 **Task: "Fix the failing date test."**

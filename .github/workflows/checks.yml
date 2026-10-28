@@ -40,6 +40,12 @@ jobs:
         run: python scripts/aggregate-findings.py --self-test
       - name: Seeded-defect scorer self-test
         run: python scripts/score-review.py --self-test
+      - name: Superloop goal, controller and question catalog checks
+        run: python scripts/validate-superloop.py
+      - name: Superloop validator self-test (mutations must be caught)
+        run: python scripts/validate-superloop.py --self-test
+      - name: Superloop driver self-test (offline scenarios with fake workers)
+        run: python scripts/mm-superloop.py --self-test
       - name: Documentation drift check
         run: python scripts/check-drift.py
       - name: Documentation drift check self-test

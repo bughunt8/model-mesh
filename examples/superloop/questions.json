@@ -1,0 +1,112 @@
+{
+  "version": 1,
+  "note": "Typed questions the superloop asks a decision model. Authority shadow means logged only. Authority brake means a qualified answer may pause the run, stop it for no progress or add a review, in advisory mode only. Authority smoke means it may only add review seats. No question can end a run as a success, skip a check, change the profile or approve an action. Thresholds live in qualification records, not here.",
+  "questions": [
+    {
+      "id": "situation",
+      "revision": 1,
+      "type": "choice",
+      "authority": "shadow",
+      "instructions": "Which situation in the model-mesh orchestration matrix best describes this goal?",
+      "criteria": {
+        "A01": "Regression bug repair",
+        "A02": "Bounded feature delivery",
+        "A03": "Behavior-preserving refactor",
+        "A04": "CI or deployment diagnosis",
+        "A05": "Security audit and remediation",
+        "A06": "Independent change review",
+        "A07": "Source-grounded research brief",
+        "A08": "Data reconciliation and analysis",
+        "A09": "Requirements and architecture planning",
+        "A10": "Policy-constrained business workflow",
+        "A11": "Browser administration",
+        "A12": "Cross-application office work",
+        "unknown": "None of the situations fits, or the goal is too unclear to place"
+      },
+      "rule": "situation",
+      "use": "Logged against the owner's declared situation. Never changes the assignment."
+    },
+    {
+      "id": "progress",
+      "revision": 1,
+      "type": "choice",
+      "authority": "brake",
+      "instructions": "What does the latest batch show about progress toward the acceptance criteria?",
+      "criteria": {
+        "stalled": "No new evidence that any acceptance criterion is closer to passing since the last batch",
+        "regressing": "A check that passed before now fails",
+        "drifting": "The work is moving away from the stated objective or outside its scope",
+        "progressing": "New evidence shows at least one acceptance criterion closer to passing"
+      },
+      "rule": "progress",
+      "effect": {
+        "effect": "stop_no_progress",
+        "on_options": [
+          "stalled",
+          "regressing",
+          "drifting"
+        ]
+      },
+      "use": "Brake only. The conservative options come first so that a bias toward the first option errs toward stopping."
+    },
+    {
+      "id": "blocked",
+      "revision": 1,
+      "type": "noul",
+      "authority": "brake",
+      "instructions": "Is the work blocked by something only a person can resolve, such as a missing credential, a contradictory requirement or a check that cannot pass as written?",
+      "criteria": {
+        "true": "A person must act before the work can continue",
+        "false": "The workers can keep going without a person"
+      },
+      "rule": "blocked",
+      "effect": {
+        "effect": "pause_human"
+      },
+      "use": "Brake only. A false yes costs one look from a person."
+    },
+    {
+      "id": "needs_human",
+      "revision": 1,
+      "type": "noul",
+      "authority": "brake",
+      "instructions": "Would the next step need an action outside the approved scope: an irreversible change, a disclosure of data, a payment or a permission change?",
+      "criteria": {
+        "true": "The next step needs approval that the goal does not give",
+        "false": "The next step stays inside the approved scope"
+      },
+      "rule": "needs_human",
+      "effect": {
+        "effect": "pause_human"
+      },
+      "use": "Brake only. Code still requires a recorded approval for these actions whatever the answer."
+    },
+    {
+      "id": "goal_met",
+      "revision": 1,
+      "type": "noul",
+      "authority": "smoke",
+      "instructions": "Do the facts show that every acceptance criterion is met?",
+      "criteria": {
+        "true": "Every acceptance criterion is met by the facts shown",
+        "false": "At least one acceptance criterion is not shown as met"
+      },
+      "rule": "goal_met",
+      "use": "Smoke detector. When the checks pass but this is low, every independent reviewer seat runs. It can never end the loop."
+    },
+    {
+      "id": "next_action",
+      "revision": 1,
+      "type": "choice",
+      "authority": "shadow",
+      "instructions": "Which step should come next?",
+      "criteria": {
+        "repair": "Fix the checks that fail now",
+        "continue": "Work on the next unmet acceptance criterion",
+        "request_review": "The change looks ready for an independent review"
+      },
+      "rule": "next_action",
+      "use": "Logged only, to compare with the controller's own choice."
+    }
+  ]
+}

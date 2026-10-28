@@ -31,6 +31,10 @@ Target: the most recent completed piece of work in this conversation, or whateve
 
 Standing rules: judging changes nothing (read and run only; fixes happen only if the user asks afterward). If the work touched nothing runnable, say plainly what a judge can and cannot check here. This is a gate, not a second implementation: minutes, not hours; if verification needs an environment you lack, hand that back rather than guessing.
 
+## Machine-readable verdict
+
+When a caller such as the `mm-superloop` driver names a findings file, write the findings there as a JSON list in the schema at `examples/orchestration/finding.schema.json`, one object per finding, and write `[]` when there are none. Judge only the diff file you are given, with the lenses you are given, and read nothing else about the run. The prose verdict still follows the format above; the file is what code reads, so a finding missing from the file does not count.
+
 ## suite mode: judge a skill or a model
 
 

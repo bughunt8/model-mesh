@@ -45,6 +45,11 @@ This skill orchestrates the mm-method: read its SKILL.md first; its rules govern
 - Trivial tasks (the gate handles them).
 - Pure questions with no multi-step work: plain mm-method covers the shape.
 - Inside an already-orchestrated GSD phase: GSD owns the stages there; apply mm-method rules within them instead of nesting loops.
+- A long goal that needs many worker batches against machine-checkable acceptance checks: use the outer superloop in the `mm-superloop` skill. Inside a superloop batch, do not run this loop's own fix-verify cycles to completion and do not declare the goal done; the superloop's code decides that.
+
+## BLOCKED outcome
+
+When the work cannot go on without a person (a missing credential, a decision only the user can make, an approval for an outward action), stop and say BLOCKED in the first line of the report, with exactly what is needed. When an outer superloop drives you, also write `.superloop/status.json` in the worktree as `{"status": "blocked", "reason": "<what is needed>"}`. A blocked report is an honest outcome, not a failure to hide.
 
 ## Model economy
 
