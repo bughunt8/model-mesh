@@ -52,7 +52,7 @@
       "sisyphus",
       "Sisyphus - ultraworker"
     ],
-    "isolation": "container",
+    "isolation": "bwrap",
     "env": {}
   },
   "repository": "model-mesh",

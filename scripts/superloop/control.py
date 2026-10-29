@@ -187,18 +187,43 @@ class Store:
             f.write(self.run("diff", "--binary", "--no-ext-diff", "--no-textconv", "--no-color", base_tree, tree))
 
 
-def jail_argv(argv, snap, hide):
-    """bubblewrap around one acceptance check: the whole filesystem read-only, the live
-    worktree, its git directory and the run folder replaced by empty folders, the snapshot
-    bound back read-write, a fresh /tmp, its own process, network and IPC namespaces, and an
-    environment built from nothing."""
-    j = ["bwrap", "--die-with-parent", "--new-session", "--unshare-all", "--clearenv",
+SYSTEM_ROOTS = ["/usr", "/bin", "/sbin", "/lib", "/lib32", "/lib64", "/etc"]
+
+
+def overlaps(a, b):
+    a, b = os.path.realpath(a), os.path.realpath(b)
+    return a == b or a.startswith(b.rstrip(os.sep) + os.sep) or b.startswith(a.rstrip(os.sep) + os.sep)
+
+
+def jail_argv(bwrap, argv, snap, hide, mounts=()):
+    """bubblewrap around one acceptance check. Nothing from the host is mounted except the system
+    folders (SYSTEM_ROOTS), the owner's extra read-only check_mounts and the snapshot, which is
+    bound read-write. The live worktree, its git directory and the run folder are covered with
+    empty folders in case a mount includes them. A fresh /tmp, its own process, network and IPC
+    namespaces, and an environment built from nothing."""
+    j = [bwrap, "--die-with-parent", "--new-session", "--unshare-all", "--clearenv",
          "--setenv", "PATH", os.environ.get("PATH", "/usr/bin:/bin"), "--setenv", "HOME", "/tmp",
-         "--setenv", "TMPDIR", "/tmp", "--setenv", "LANG", "C.UTF-8",
-         "--ro-bind", "/", "/", "--dev", "/dev", "--proc", "/proc", "--tmpfs", "/tmp"]
+         "--setenv", "TMPDIR", "/tmp", "--setenv", "LANG", "C.UTF-8"]
+    for r in SYSTEM_ROOTS + list(mounts):
+        j += ["--ro-bind-try", r, r]
+    j += ["--dev", "/dev", "--proc", "/proc", "--tmpfs", "/tmp"]
     for h in hide:
         j += ["--tmpfs", h]
     return j + ["--bind", snap, snap, "--chdir", snap, "--"] + list(argv)
+
+
+def worker_jail_argv(bwrap, argv, worktree, writable):
+    """bubblewrap around the omo worker: the host read-only, the pinned files in its argv bound
+    read-only, the worktree and the owner's listed writable folders bound read-write, a fresh /tmp, its own process and IPC namespaces, and the
+    network shared so the harness can reach its models."""
+    j = [bwrap, "--die-with-parent", "--new-session", "--unshare-all", "--share-net",
+         "--ro-bind", "/", "/", "--dev", "/dev", "--proc", "/proc", "--tmpfs", "/tmp"]
+    for a in argv:  # the pinned files stay visible even when they live under /tmp
+        if os.path.isabs(a) and os.path.isfile(a):
+            j += ["--ro-bind", a, a]
+    for w in [worktree] + list(writable):
+        j += ["--bind", w, w]
+    return j + ["--chdir", worktree, "--"] + list(argv)
 
 
 def protected_hashes(worktree, paths):
@@ -383,14 +408,30 @@ class Run:
         self.spent += cost
         return True
 
+    def boundary(self):
+        """What the driver enforced itself and what the controller only stated. Enforced means
+        the driver started that process under the pinned bubblewrap; nothing else counts."""
+        w = self.ctl.get("worker", {})
+        return {"worker_isolation": w.get("isolation"),
+                "worker_isolation_enforced": bool(getattr(self, "worker_ran_jailed", False)),
+                "check_jail": self.ctl.get("check_jail"),
+                "check_jail_enforced": bool(getattr(self, "checks_ran_jailed", False)),
+                "note": "a stated isolation (separate_user, container, none) was not checked by the driver"}
+
+    def bwrap(self):
+        """The pinned bubblewrap, hashed again before each use."""
+        path, sha = self.bwrap_pin
+        _, err = workers.check_pins([[path]], {path: sha})
+        if err:
+            raise PermissionError(f"bwrap: {err}")
+        return os.path.realpath(path)
+
     def finish(self, status, detail, **extra):
         out = {"status": status, "success": status in SUCCESS, "detail": detail, "goal": self.goal.get("id"),
                "profile": self.goal.get("profile"), "situation": self.goal.get("situation"),
                "option": self.goal.get("option"), "mode": self.ctl.get("mode"), "reserved_usd": round(self.spent, 4),
                "decisions": self.decisions, "disagreements": self.disagreements, "provenance": self.prov.snapshot(),
-               "isolation": self.ctl.get("worker", {}).get("isolation"), "check_jail": self.ctl.get("check_jail"),
-               "protected": self.ctl.get("worker", {}).get("isolation") in ("container", "separate_user")
-               and self.ctl.get("check_jail") == "bwrap"}
+               "boundary": self.boundary()}
         out.update(extra)
         if self.log is None:
             return out
@@ -440,12 +481,6 @@ class Run:
         elif bound != self.common:
             return [f"repository {self.repo_key!r} is bound to {bound}, but this worktree's git directory is "
                     f"{self.common}. A moved .git cannot reset the lineage; the owner must investigate"]
-        if self.ctl["check_jail"] == "bwrap":
-            exe = shutil.which("bwrap")
-            ok = exe and subprocess.run([exe, "--unshare-all", "--ro-bind", "/", "/", "--", "true"],
-                                        capture_output=True).returncode == 0
-            if not ok:
-                return ["check_jail bwrap: bubblewrap is missing or cannot create namespaces on this host"]
         for e in self.registry.prior(self.repo_key, self.goal["id"]):
             for h in e.get("harnesses", []) or ["unknown"]:
                 self.prov.record(-2, "registry:" + str(e.get("run")), h, e.get("families", []))
@@ -472,8 +507,9 @@ class Run:
                     return ["ultimate profile: only local or offline decision backends are admitted until a "
                             "reachability and data-policy check exists"]
         # tools: the controller names them, the owner's registry defines and pins them
+        jailed = self.ctl["check_jail"] == "bwrap" or self.ctl["worker"].get("isolation") == "bwrap"
         need_tools = self.ctl["worker"]["kind"] == "omo" or any(r["kind"] == "command" for r in self.ctl.get("reviewers", [])) \
-            or self.ctl.get("qualifications")
+            or self.ctl.get("qualifications") or jailed
         try:
             self.tools = json.load(open(self.tools_path, encoding="utf-8")) if need_tools else {}
         except (OSError, ValueError) as ex:
@@ -482,6 +518,24 @@ class Run:
             errs = vsl.validate_tools(self.tools)
             if errs:
                 return [f"tools registry: {x}" for x in errs]
+        self.bwrap_pin = None
+        if jailed:
+            b = self.tools.get("bwrap")
+            if not b:
+                return ["bwrap is asked for, but the owner's tools registry does not pin it"]
+            self.bwrap_pin = (b["path"], b["sha256"])
+            try:
+                exe = self.bwrap()
+            except PermissionError as ex:
+                return [str(ex)]
+            if subprocess.run([exe, "--unshare-all", "--ro-bind", "/", "/", "--", "true"], capture_output=True).returncode != 0:
+                return ["bwrap cannot create namespaces on this host"]
+        mounts = [os.path.realpath(m) for m in self.ctl.get("check_mounts", [])]
+        guarded = [self.wt, self.out, self.registry.path, self.tools_path, ROOT]
+        for m in mounts:
+            if any(overlaps(m, g) for g in guarded):
+                return [f"check mount {m} overlaps the worktree, the run folder, a registry or the driver"]
+        self.check_mounts = mounts
         for q in self.ctl.get("qualifications", []):
             rp = os.path.realpath(q["record"])
             pins = {os.path.realpath(k): v for k, v in self.tools.get("qualifications", {}).items()}
@@ -510,9 +564,18 @@ class Run:
             _, err = workers.check_pins([t["argv"], t["export_argv"]], t["pins"])
             if err:
                 return [f"worker {w['ref']!r}: {err}"]
-            self.worker = workers.OmoWorker(w, t)
+            jail = None
+            if w.get("isolation") == "bwrap":
+                writable = [os.path.realpath(x) for x in t.get("writable", [])]
+                for x in writable:
+                    if any(overlaps(x, g) for g in guarded) or any(overlaps(x, r) for r in SYSTEM_ROOTS + mounts):
+                        return [f"worker writable folder {x} overlaps the run folder, a registry, the driver, "
+                                "a system folder or a check mount"]
+                jail = {"bwrap": self.bwrap, "writable": writable}
+            self.worker = workers.OmoWorker(w, t, jail)
             self.pin_version = t["version"]
         else:
+            # a fake runs inside this process and cannot be jailed, so worker_isolation_enforced stays false
             self.worker = workers.build_fake(w, self.fakes, self.allow_fakes)
             self.pin_version = "4.19.4"
         return []
@@ -582,7 +645,8 @@ class Run:
                 left = self.remaining()
                 if left <= 0:
                     return None
-                argv = jail_argv(c["argv"], snap, self.hide) if jail else c["argv"]
+                argv = jail_argv(self.bwrap(), c["argv"], snap, self.hide, self.check_mounts) if jail else c["argv"]
+                self.checks_ran_jailed = jail and getattr(self, "checks_ran_jailed", True)
                 r = workers.run_bounded(argv, snap, clean_env(home), min(c.get("timeout_seconds", 300), left),
                                         self.out, f"{tag}-{iteration:03d}-{c['name']}")
                 res.append({"name": c["name"], "passed": r["exit_code"] == 0 and not r["timed_out"],
@@ -763,6 +827,7 @@ class Run:
             self.write_config()
             prompt = compose_prompt(self.goal, it, checks, open_findings)
             res = self.worker.run(self.wt, prompt, it, min(caps["per_call_seconds"], self.remaining()), self.out)
+            self.worker_ran_jailed = bool(getattr(self.worker, "jail", None)) and getattr(self, "worker_ran_jailed", True)
             for s in self.a["authors"]:
                 self.prov.record(it, "author:" + str(s["role"]), s["harness"], s["families"])
             self.log.write("worker", iteration=it, exit_code=res["exit_code"], timed_out=res["timed_out"],

@@ -178,8 +178,14 @@ def check_pins(argvs, pins):
 class OmoWorker:
     kind = "omo"
 
-    def __init__(self, cfg, tool):
-        self.cfg, self.tool = cfg, tool
+    def __init__(self, cfg, tool, jail=None):
+        self.cfg, self.tool, self.jail = cfg, tool, jail
+
+    def _wrap(self, argv, worktree):
+        if not self.jail:
+            return argv
+        from .control import worker_jail_argv  # late import: control imports this module
+        return worker_jail_argv(self.jail["bwrap"](), argv, worktree, self.jail["writable"])
 
     def _argvs(self):
         argvs, err = check_pins([self.tool["argv"], self.tool["export_argv"]], self.tool["pins"])
@@ -189,7 +195,8 @@ class OmoWorker:
 
     def version(self, worktree, out_dir):
         base, _ = self._argvs()
-        r = run_bounded(base + ["--version"], worktree, dict(os.environ), 60, out_dir, "omo-version", capture=True)
+        r = run_bounded(self._wrap(base + ["--version"], worktree), worktree, dict(os.environ), 60, out_dir,
+                        "omo-version", capture=True)
         return (r["stdout_text"] or "").strip()
 
     def run(self, worktree, prompt, iteration, timeout, out_dir):
@@ -202,6 +209,10 @@ class OmoWorker:
         except PermissionError as ex:
             return {"exit_code": None, "timed_out": False, "duration": 0.0, "error": str(ex), "reported": {}}
         argv = base + ["run", "--agent", self.cfg.get("agent", "sisyphus"), "--json", "--directory", worktree, prompt]
+        try:
+            argv = self._wrap(argv, worktree)
+        except PermissionError as ex:
+            return {"exit_code": None, "timed_out": False, "duration": 0.0, "error": str(ex), "reported": {}}
         res = run_bounded(argv, worktree, env, timeout, out_dir, f"worker-{iteration:03d}")
         rep = parse_run_result(res["stdout"])
         if rep.get("session_id"):

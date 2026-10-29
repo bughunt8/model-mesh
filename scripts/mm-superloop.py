@@ -491,8 +491,18 @@ def self_test():
              check=has_binary_diff)
 
     # -- the check jail ----------------------------------------------------------------------------
-    def jailed(c):
+    def pin_bwrap(x, sha=None):
+        exe = shutil.which("bwrap")
+        if exe:
+            x.setdefault("tools_data", {"reviewers": {}, "workers": {}, "qualifications": {}})["bwrap"] = {
+                "path": exe, "sha256": sha or workers.sha256_file(exe)}
+
+    def jailed(c, x):
         c["check_jail"] = "bwrap"
+        pin_bwrap(x)
+
+    def enforced(key, value=True):
+        return lambda r, o, w: r["boundary"][key] is value
 
     def live_check(g, c, d, x):
         g["acceptance"] = [{"name": "w", "description": "win", "timeout_seconds": 30, "argv": win_in + [x["wt"], ".git", "superloop-win"]}]
@@ -510,19 +520,46 @@ def self_test():
 
     if bwrap_works():
         scenario("jailed checks still pass on honest work", "verified_pending_owner", both, ctl_mut=jailed,
-                 check=lambda r, o, w: r.get("protected") is True)
+                 check=enforced("check_jail_enforced"))
         scenario("a jailed check cannot read the live worktree's .git", "no_progress", {1: [(".git/superloop-win", "WIN\n")]},
                  ctl_mut=jailed, pre=live_check)
-        scenario("without the jail the same check passes, and final.json says unprotected", "verified_pending_owner",
+        scenario("without the jail the same check passes, and final.json says the jail was not enforced", "verified_pending_owner",
                  {1: [(".git/superloop-win", "WIN\n"), ("a.txt", "a\n")]}, pre=live_check,
-                 check=lambda r, o, w: r.get("protected") is False and r.get("check_jail") == "none")
+                 check=lambda r, o, w: r["boundary"]["check_jail_enforced"] is False and r["boundary"]["check_jail"] == "none")
         scenario("a jailed check cannot write outside its snapshot", "no_progress", both, ctl_mut=jailed, pre=escape_check,
                  check=lambda r, o, w: not os.path.exists(escaped))
+        outside_dir = tempfile.mkdtemp(dir="/var/tmp" if os.access("/var/tmp", os.W_OK) else os.path.expanduser("~"))
+        outside = os.path.join(outside_dir, "superloop-win")
+
+        def outside_writer(d, x):
+            inner = d["fakes"]["worker"]
+
+            def fn(wt, prompt, it, extra):
+                open(outside, "w").write("WIN\n")
+                return inner(wt, prompt, it, extra)
+            d["fakes"]["worker"] = fn
+
+        def outside_check(g, c, d, x):
+            g["acceptance"] = [{"name": "w", "description": "win", "timeout_seconds": 30,
+                                "argv": win_in + [outside_dir, "superloop-win"]},
+                               check_for("a", "a.txt")]
+        scenario("a same-user worker's file outside every hidden folder does not reach a jailed check", "no_progress",
+                 {1: [("a.txt", "a\n")]}, ctl_mut=jailed, deps_mut=outside_writer, pre=outside_check,
+                 check=lambda r, o, w: r["boundary"]["worker_isolation_enforced"] is False)
+        scenario("bwrap asked for but not pinned is refused", "policy_denied", both,
+                 ctl_mut=lambda c, x: (c.__setitem__("check_jail", "bwrap"),
+                                       x.__setitem__("tools_data", {"reviewers": {}, "workers": {}, "qualifications": {}})),
+                 check=lambda r, o, w: "does not pin" in str(r["detail"]))
+        scenario("a bwrap that does not match its pin is refused", "policy_denied", both,
+                 ctl_mut=lambda c, x: (c.__setitem__("check_jail", "bwrap"), pin_bwrap(x, "0" * 64)))
+        jail_scenarios = 7
     elif os.environ.get("MM_SUPERLOOP_REQUIRE_JAIL") == "1":
         print("  FAIL MM_SUPERLOOP_REQUIRE_JAIL is set, but bubblewrap is missing or cannot create namespaces here")
         fails += 1
+        jail_scenarios = 0
     else:
-        print("  skip the four check-jail scenarios: bubblewrap is missing or cannot create namespaces here")
+        jail_scenarios = 0
+        print("  skip the check-jail scenarios: bubblewrap is missing or cannot create namespaces here")
 
     scenario("checks that already pass on the baseline are refused", "policy_denied", both,
              goal_mut=only_check(["test", "1", "-eq", "1"]))
@@ -556,13 +593,15 @@ def self_test():
         d["fakes"]["worker"] = fn
     scenario("a symlink out of the tree is refused", "policy_denied", {}, deps_mut=escaping_link)
 
-    def stub_omo(c, x, model=None, swap_export=False):
+    def stub_omo(c, x, model=None, swap_export=False, escape=None):
         """Real omo adapter, no fakes: stub binaries stand in for oh-my-openagent and opencode export."""
         command_reviewer(c, x)
         prov, mid = (model or worker_model()).split("/", 1)
         omo = os.path.join(x["tmp"], "omo-stub")
         exp = os.path.join(x["tmp"], "export-stub")
         swap = f"open({exp!r},'w').write('#!{sys.executable}\\nprint(1)\\n')\n" if swap_export else ""
+        if escape:
+            swap += f"try:\n    open({escape!r},'w').write('x')\nexcept OSError:\n    pass\n"
         open(omo, "w").write("#!" + sys.executable + "\n"
                              "import json,os,sys\n"
                              "a=sys.argv[1:]\n"
@@ -586,6 +625,22 @@ def self_test():
     scenario("omo adapter end to end with stub binaries, no fakes", "verified_pending_owner", {},
              ctl_mut=lambda c, x: stub_omo(c, x), deps_mut=no_fakes,
              check=lambda r, o, w: os.path.exists(os.path.join(w, ".omo", "omo.jsonc")))
+    if jail_scenarios:
+        def jailed_omo(c, x, escape=None):
+            stub_omo(c, x, escape=escape)
+            c["worker"]["isolation"] = "bwrap"
+            jailed(c, x)
+        scenario("omo under the driver's worker jail: both jails enforced", "verified_pending_owner", {},
+                 ctl_mut=lambda c, x: jailed_omo(c, x), deps_mut=no_fakes,
+                 check=lambda r, o, w: r["boundary"]["worker_isolation_enforced"] and r["boundary"]["check_jail_enforced"])
+        escape_to = os.path.join(outside_dir, "worker-escape")
+        scenario("a jailed omo worker cannot write outside the worktree", "verified_pending_owner", {},
+                 ctl_mut=lambda c, x: jailed_omo(c, x, escape=escape_to), deps_mut=no_fakes,
+                 check=lambda r, o, w: not os.path.exists(escape_to) and r["boundary"]["worker_isolation_enforced"])
+        scenario("a writable folder that holds the run folder is refused", "policy_denied", {},
+                 ctl_mut=lambda c, x: (jailed_omo(c, x), x["tools_data"]["workers"]["stub"].__setitem__("writable", [x["tmp"]])),
+                 deps_mut=no_fakes, check=lambda r, o, w: "overlaps" in str(r["detail"]))
+        shutil.rmtree(outside_dir, ignore_errors=True)
     scenario("omo adapter: an export naming a model outside the cell is refused", "policy_denied", {},
              ctl_mut=lambda c, x: stub_omo(c, x, model=next(v["id"] for v in control.assign.load_matrix()["models"]["hybrid"].values()
                                                             if control.assign.family_of(v["id"]) == "openai")),

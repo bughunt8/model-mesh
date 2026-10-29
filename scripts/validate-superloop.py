@@ -32,7 +32,7 @@ Rules:
       reachability and data-policy check exists. A controller flag cannot override this.
   L8  worker: kind omo with a ref into the owner's tools registry and no binary, version or
       export command of its own, an agent, expect_agents, a stated isolation (separate_user,
-      container or none), and disabled_hooks naming goal, todo-continuation-enforcer,
+      container or none; bwrap is the only one the driver enforces), and disabled_hooks naming goal, todo-continuation-enforcer,
       start-work, atlas and runtime-fallback. The driver adds the hooks anyway.
   L9  reviewers: kind command with a ref into the owner's tools registry and no argv or env of
       their own, never on opencode-omo, and each names a harness.
@@ -42,11 +42,14 @@ Rules:
       at admission): a reviewer names a harness, an argv list that passes {diff_file}, and pins;
       a worker names an argv list (no runtime package download), an export_argv with
       {session_id}, version 4.19.4 and pins; every absolute path in an argv and the executable
-      itself must be pinned with a SHA-256; qualification record pins map a path to a SHA-256.
+      itself must be pinned with a SHA-256; qualification record pins map a path to a SHA-256;
+      a worker's writable folders are absolute paths other than /; bwrap, when present, is an
+      absolute path with a SHA-256.
       The driver hashes every pin again immediately before each call.
   L12 controller.repository is the owner's name for the repository (letters, digits, dot, dash,
       underscore), which the lineage registry binds to one git directory; controller.check_jail
-      is bwrap (each acceptance check sees only the snapshot) or none (stated, not protected).
+      is bwrap (each acceptance check sees the snapshot and the system folders only) or none;
+      check_mounts, when present, are absolute paths other than /.
 
 Fake workers and reviewers pass only when the caller allows them, which only the offline
 self-test does.
@@ -72,7 +75,7 @@ _vo = _mod("_vo_sl", "scripts/validate-orchestration.py")
 _q = _mod("_q_sl", "scripts/superloop/qualify.py")
 KNOWN_FAMILIES = set(_vo.PREFIX_FAMILY.values()) | {"google"}
 TOOLS_EXAMPLE = os.path.join(ROOT, "examples", "superloop", "tools.example.json")
-ISOLATION = {"separate_user", "container", "none"}
+ISOLATION = {"bwrap", "separate_user", "container", "none"}
 CHECK_JAILS = {"bwrap", "none"}
 REPO_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$")
 DOWNLOADERS = {"bunx", "npx", "pnpx", "yarn", "npm", "pnpm", "uvx", "pipx"}
@@ -276,6 +279,9 @@ def validate_controller(c, g=None, catalog=None, allow_fake=False):
         e.append("L12 repository must be the owner's id for the repository: letters, digits, dot, dash, underscore")
     if c.get("check_jail") not in CHECK_JAILS:
         e.append(f"L12 check_jail must be one of {sorted(CHECK_JAILS)}")
+    cm = c.get("check_mounts", [])
+    if not isinstance(cm, list) or not all(isinstance(x, str) and os.path.isabs(x) and x.rstrip("/") for x in cm):
+        e.append("L12 check_mounts must be absolute paths other than /")
     return e
 
 
@@ -335,6 +341,13 @@ def validate_tools(reg):
         if _pins_ok(name, w.get("pins"), e):
             _pins_cover(name, argv, w["pins"], e)
             _pins_cover(name + " export", exp, w["pins"], e)
+        wr = w.get("writable", [])
+        if not isinstance(wr, list) or not all(isinstance(x, str) and os.path.isabs(x) and x.rstrip("/") for x in wr):
+            e.append(f"L11 {name}: writable must list absolute folders other than /")
+    b = reg.get("bwrap")
+    if b is not None and not (isinstance(b, dict) and isinstance(b.get("path"), str) and os.path.isabs(b["path"])
+                              and isinstance(b.get("sha256"), str) and HEX64.match(b["sha256"])):
+        e.append("L11 bwrap must be an absolute path with a SHA-256")
     q = reg.get("qualifications", {})
     if not isinstance(q, dict) or not all(isinstance(v, str) and HEX64.match(v) for v in q.values()):
         e.append("L11 qualifications must map record paths to SHA-256 values")
@@ -508,6 +521,7 @@ def self_test():
     expect("repository id that is a path", lambda m: m["controller"].__setitem__("repository", "../other"), "L12")
     expect("no check jail stated", lambda m: m["controller"].pop("check_jail"), "L12")
     expect("unknown check jail", lambda m: m["controller"].__setitem__("check_jail", "chroot"), "L12")
+    expect("check mount of the whole host", lambda m: m["controller"].__setitem__("check_mounts", ["/"]), "L12")
     expect("omo continuation left on", lambda m: m["controller"]["materialize"]["disabled_hooks"].remove("todo-continuation-enforcer"), "L8")
     expect("atlas left on", lambda m: m["controller"]["materialize"]["disabled_hooks"].remove("atlas"), "L8")
     expect("runtime fallback left on", lambda m: m["controller"]["materialize"]["disabled_hooks"].remove("runtime-fallback"), "L8")
@@ -539,6 +553,9 @@ def self_test():
         "export_argv", ["opencode", "export"]), "L11")
     expect("export program not pinned", lambda m: m["registry"]["workers"][wk].__setitem__(
         "export_argv", ["/opt/export", "{session_id}"]), "L11")
+    expect("worker writable folder that is relative", lambda m: m["registry"]["workers"][wk].__setitem__(
+        "writable", ["opencode-data"]), "L11")
+    expect("bwrap without a hash", lambda m: m["registry"].__setitem__("bwrap", {"path": "/usr/bin/bwrap"}), "L11")
     expect("qualification pin that is not a hash", lambda m: m["registry"].__setitem__("qualifications", {"/x": "abc"}), "L11")
     print("self-test " + ("passed" if not fails else f"FAILED ({fails})"))
     return 1 if fails else 0
