@@ -8,9 +8,9 @@
 
 _Works on any coding-agent harness. The shipped examples target two: [oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent) (OpenCode) and the DeepSeek Harness (DSH)._
 
-[Quickstart](#quickstart-60-seconds) · [How it works](#how-it-works) · [Profiles](#the-routing-one-role-one-family) · [Self-governing](#self-governing-the-landscape-engine) · [Validation](#validation-two-gates) · [Claims & limits](#claims--limits)
+[Quickstart](#quickstart) · [Repository map](docs/REPOSITORY-MAP.md) · [How it works](#how-it-works) · [Profiles](#the-routing-one-role-one-family) · [Self-governing](#self-governing-the-landscape-engine) · [Validation](#validation) · [Claims & limits](#claims--limits)
 
-`v1.3.0` · MIT · CI-gated on `main` and every PR
+`v1.4.0` · MIT · CI-gated on `main`, `staging` and every PR
 
 </div>
 
@@ -23,7 +23,7 @@ Most multi-model setups do one of two things: pin everything to a single "best" 
 model-mesh is that idea, made concrete and deployable:
 
 - **A loop** that makes a capable model work like a methodical senior engineer. Classify the ask, define "done," gather evidence, decide, act surgically, verify by observation, report outcome-first.
-- **A routing layer** that assigns each agent role (implementer, architect, reviewer, coders, orchestrator, explorers) to a model *family*, not a raw benchmark rank, across three ready profiles.
+- **A routing layer** that assigns each agent role (implementer, architect, reviewer, coders, orchestrator, explorers) to a model *family*, not a raw benchmark rank, across four ready profiles.
 - **A self-governing update engine**: a committed weekly **runbook** an agent cron executes on your side, scoring new releases against the repo's own rules, having an **independent model review the recommendation**, and opening a PR only when a change is actually warranted. (The scripts and gates ship here; the schedule and the reviewer credential are yours to wire up.)
 
 > **Honesty up front:** the routing rationale is a set of design heuristics, not measured benchmarks. Because you map placeholders to your own models, no fixed cost or quality number holds across all mappings. See [Claims & limits](#claims--limits). This is a design opinion you can deploy and measure, not a guarantee.
@@ -42,7 +42,7 @@ model-mesh is that idea, made concrete and deployable:
         ┌───────────────────────── THE ROUTING ────────────────────────┐
         │  each role → a model FAMILY (not a leaderboard rank)          │
         │  hephaestus  oracle  momus  atlas  prometheus  sisyphus  …    │
-        │  profiles:   ultimate   ·   hybrid (default)   ·   b4b        │
+        │  profiles: ultimate · hybrid (default) · b4b · global         │
         └───────────────────────────────┬───────────────────────────────┘
                                          │  kept current by
                                          ▼
@@ -62,7 +62,7 @@ Three layers, one principle at each: **method over improvisation, family-fit ove
 
 ```bash
 git clone https://github.com/bughunt8/model-mesh && cd model-mesh
-./setup-config.sh hybrid          # ultimate | hybrid (default) | b4b
+./setup-config.sh hybrid          # ultimate | hybrid (default) | b4b | global
 # → backs up any existing ~/.omo/omo.jsonc, writes the chosen profile
 ```
 
@@ -73,7 +73,7 @@ bunx oh-my-openagent doctor       # must report no issues
 bash install.sh                   # optional: install the loop skills
 ```
 
-Use it: `/mm-method <task>` runs the full loop · `/mm-loop <task>` orchestrates plan→execute→verify→audit · `/mm-verify` adversarially reviews finished work. Rollback anytime from the timestamped `.bak`.
+Use it: `/mm-method <task>` runs the full loop · `/mm-loop <task>` orchestrates plan→execute→verify→audit · `/mm-verify` adversarially reviews finished work. Rollback anytime from the timestamped `.bak`. For a bounded long goal, `/mm-superloop` follows [the superloop guide](docs/SUPERLOOP.md); keep the repository checkout because the installed skill calls its scripts and reads its templates.
 
 **LLM / agent:** follow [`AGENTS.md`](AGENTS.md). Read [`docs/ROUTING.md`](docs/ROUTING.md) + [`docs/PROVIDERS.md`](docs/PROVIDERS.md) first, default to `hybrid`, produce a placeholder→real-model mapping table and get approval **before** writing real IDs (never invent a model ID), then `./setup-config.sh` and validate to green.
 
@@ -110,7 +110,7 @@ The `ultimate` column shows `open-reason-xl` for the three flagship-native seats
 
 **Why hybrid is the default:** it spends the flagship budget only where it has the highest leverage, the read-only **architect** and the **flagship coding tier**, while holding the implementer and reviewer at the mid tier. `hephaestus` keeps a **flagship-native primary tier**, one documented open-weight **lifeline** rung (a different-provider model, so a flagship-proxy outage still reaches something that works), and, where set, a single cross-family `ultrawork` escape hatch. (`flagship-native-only` is the stricter rule the validator enforces on the deployable *example* config.)
 
-**Pick your profile:** `ultimate` = max capability, cost secondary · `hybrid` = best value + best-in-class coding/architecture · `b4b` = strict performance-per-dollar.
+**Pick your profile:** `ultimate` = max capability, cost secondary · `hybrid` = best value + best-in-class coding/architecture · `b4b` = strict performance-per-dollar · `global` = no region limit and no budget cap.
 
 > **`ultimate` is Hong Kong-native.** Its example mapping deliberately omits every model whose **developer API is not natively available in Hong Kong**, the US frontier vendors' proprietary flagships (US vendors self-restrict HK developer-API access; one such vendor shipped a consumer app in HK but its native developer API and studio still refuse HK, and an enterprise `asia-east2` region is that vendor's only compliant dev route). `ultimate` uses no geo-unlock proxy and routes only to the strongest HK-reachable models (open-weight reasoning, coding-specialist, communicator-class, generalist, and multimodal families). `hybrid` and `b4b` remain **global** and unchanged. The concrete excluded vendors, the placeholder→real-model table, and the availability citations are in [`docs/EXAMPLE-MAPPING.md`](docs/EXAMPLE-MAPPING.md) (denylist-exempt).
 
@@ -127,9 +127,22 @@ New models drop constantly. Instead of a human eyeballing leaderboards, model-me
 - **Provenance-enforced scoring.** A deterministic scorer reads a weekly "scan dataset" (models × benchmarks × scores × **provenance**) and ranks **only on cells whose provenance is marked independent**, the three sources listed as authoritative-independent in `sources.json` (Artificial Analysis, DeepSWE, Vals). It refuses to score vendor-reported cells; because a board like the DeepSWE leaderboard hosts both, rows are judged per-row, not by board. Mixed feeds (e.g. Vellum) are usable only per-row and only for positioning.
 - **Fail-closed hard gates.** Cap checks use the **durable** (post-promo) price; a retired vendor needs a *verified* reversal; a proprietary model can't fill an open-weight role; `hephaestus` stays flagship-native; and a region-locked profile (the Hong Kong-native `ultimate`) rejects any model whose owner is not on that region's allowlist, resolved from a trusted identity table rather than the scan's self-reported vendor. Missing, mislabeled, or ambiguous data fails **closed**, never open.
 - **An independent AI reviews the recommendation.** Before anything ships, a separate model (via `review_gate.py`) audits the framework's own output; the verdict must arrive as a **structured JSON field**. Prose verdicts, verdict tokens injected via the scan data, and malformed output all **fail closed to *revise***.
-- **Autonomous, but gated by a PR.** A committed weekly **runbook** ([`scripts/landscape/CRON_TASK.md`](scripts/landscape/CRON_TASK.md)) an agent cron executes on your side builds the dataset, runs the framework, passes it through the review gate, and opens a **Pull Request** only when a change is warranted, never a silent push. The scripts and gates ship here; the schedule and the reviewer credential are yours to wire up. A self-test (41 assertions) and a golden-file check run in CI.
+- **Autonomous, but gated by a PR.** A committed weekly **runbook** ([`scripts/landscape/CRON_TASK.md`](scripts/landscape/CRON_TASK.md)) an agent cron executes on your side builds the dataset, runs the framework, passes it through the review gate, and opens a **Pull Request** only when a change is warranted, never a silent push. The scripts and gates ship here; the schedule and the reviewer credential are yours to wire up. Regression tests and a golden-file check run in CI.
 
 > **First run in the wild (Sept 2026):** faced with two brand-new flagships, the engine's recommendation was **hold both**. One was prior-generation parity at ~2.5× the price. The other's clear wins were speed and a stronger vision tier, but no current role is bottlenecked on either. It was also proprietary, and adopting it would have reversed a deliberate earlier decision. Review caught one correction along the way: a leaderboard row that, on check, did not exist for that model. The full write-up lives under [`docs/research/`](docs/research/).
+
+---
+
+## Multi-agent orchestration (design proposal)
+
+The routing above sends roles to models inside one harness. [`docs/ORCHESTRATION.md`](docs/ORCHESTRATION.md) extends it to several agents across seven harnesses (OpenCode with omo, DSH, Codex CLI, Pi, Qwen Code, Aider, Goose), with Orca as the default coordinator when parallel worktrees exist. It maps twelve situations (A01 to A12) to a harness, a model chain with fallbacks and an independent reviewer, for all four profiles.
+
+- The reviewer always runs in a different harness and a different model family from every author rung. CI enforces it.
+- The generated table is [`docs/research/orchestration/MATRIX.md`](docs/research/orchestration/MATRIX.md). Worked cases are in [`EXAMPLES.md`](docs/research/orchestration/EXAMPLES.md), and seven harness configuration examples are in [`examples/orchestration/harnesses/`](examples/orchestration/harnesses).
+- Review panel: [`docs/REVIEW-PANEL.md`](docs/REVIEW-PANEL.md) adds zero-context reviewers, twelve review lenses, a two-family spread tier for security and change review, an aggregator seat, spec and drift gates, and a scorer for seeded-defect runs.
+- Study behind the review panel: [`docs/research/orchestration/EGM-ANALYSIS.md`](docs/research/orchestration/EGM-ANALYSIS.md) compares Google's Elephant-Goldfish Model with model-mesh and records what was adopted, adapted and left out.
+- Superloop: [`docs/SUPERLOOP.md`](docs/SUPERLOOP.md) drives omo workers in bounded batches from code, with a typed decision model in shadow mode that may brake and never declare success. [`SUPERLOOP-COUNCIL.md`](docs/research/orchestration/SUPERLOOP-COUNCIL.md) records the council behind it and [`SYSTEM-ONE.md`](docs/research/orchestration/SYSTEM-ONE.md) the decision-model research. The driver is tested offline only.
+- Status: the matrix and harness examples are design proposals with static checks. The superloop driver additionally has offline process and sandbox tests, but no live omo or model run. The omo licence needs an owner decision for client work, and the `global` profile excludes the retired Google family.
 
 ---
 
@@ -137,26 +150,34 @@ New models drop constantly. Instead of a human eyeballing leaderboards, model-me
 
 ```
 profiles/
-  ultimate.json · hybrid.json · b4b.json     genericized FRAGMENTS (agents + categories)
+  ultimate.json · hybrid.json · b4b.json · global.json     genericized FRAGMENTS (agents + categories)
   *.example.json                             same fragment with REAL provider/model IDs
 setup-config.sh · scripts/materialize.py     wrap a fragment into a deployable ~/.omo/omo.jsonc
 examples/
   omo.full.example.json                      complete deployable [opencode] config (real IDs)
   dsh-settings.example.yaml                   the harness plugin settings reference
   README.md                                  how the examples fit together
-skills/  mm-method · mm-loop · mm-verify · mm-domain     the loop, installable
+  orchestration/                             situation matrix, lenses, finding schema, review standards + seven harness config examples
+  superloop/                                 goals, controllers, question catalog and owner tools registry template
+skills/  mm-method · mm-loop · mm-verify · mm-domain · mm-superloop     the loop, installable
+scripts/mm-superloop.py · scripts/superloop/  bounded outer loop and worker adapters
 scripts/landscape/                           the self-governing landscape engine + review gate
+scripts/score.py · scripts/validate.sh        benchmark scoring and config checks
+configs/ · data/                             benchmark config, scores, weights and provenance
 install.sh · install.ps1                      copy the loop skills into place
 provider-map.local.example                   template for your git-ignored real-ID mapping
-docs/  ROUTING.md · PROVIDERS.md · EXAMPLE-MAPPING.md · research/
-AGENTS.md · CHANGELOG.md · CONTRIBUTING.md · DOC.md · THIRD_PARTY_NOTICES.md
+docs/  REPOSITORY-MAP.md · ROUTING.md · PROVIDERS.md · ORCHESTRATION.md
+       REVIEW-PANEL.md · SUPERLOOP.md · 01-methodology.md through 06-handover.md · research/
+AGENTS.md · BENCHMARK.md · TESTING.md · CHANGELOG.md · CONTRIBUTING.md · DOC.md · THIRD_PARTY_NOTICES.md
 ```
 
-The three `profiles/*.json` are **fragments** (agents + categories only); `setup-config.sh` wraps a chosen one in the required `[opencode]` structure. Each ships a `*.example.json` with real IDs as a concrete mapping reference (exempt from the vendor-name CI check by design). Newest at a glance is always in [`CHANGELOG.md`](CHANGELOG.md). `v1.1.5` reframed the cost cap as an enforced policy knob, added a native-vision fallback, and removed no-op fallback rungs at the mapping level.
+The four `profiles/*.json` are **fragments** (agents + categories only); `setup-config.sh` wraps a chosen one in the required `[opencode]` structure. Each ships a `*.example.json` with real IDs as a concrete mapping reference (exempt from the vendor-name CI check by design). Newest at a glance is always in [`CHANGELOG.md`](CHANGELOG.md). `v1.1.5` reframed the cost cap as an enforced policy knob, added a native-vision fallback, and removed no-op fallback rungs at the mapping level.
 
 ### OMO-Benchmark
 
-[`BENCHMARK.md`](BENCHMARK.md) is a profile-weighted evaluation framework for `omo.jsonc` chains: it scores the 11 agent profiles and 10 category lanes across eight benchmark dimensions and ships the recommended config, the scorecard, and the scorer. `configs/`, `data/`, `BENCHMARK.md`, and `docs/01`–`06` are deliberately exempt from the vendor-name gate by design, because real model IDs are the benchmark's product.
+[`BENCHMARK.md`](BENCHMARK.md) is a profile-weighted evaluation framework for `omo.jsonc` chains. It scores 11 agent seats and 10 category lanes across eight benchmark dimensions and ships a candidate config, the scorecard and the scorer. These agent seats are not the four routing profiles. `configs/`, `data/`, `BENCHMARK.md`, and `docs/01`–`06` are deliberately exempt from the vendor-name gate because real model IDs are the benchmark's product.
+
+The benchmark is research input, not the superloop's runtime config. The superloop reads `profiles/` and the orchestration matrix, not `configs/omo.recommended.jsonc` or benchmark ranks. A candidate still needs policy checks and runtime qualification before adoption; see [the repository map](docs/REPOSITORY-MAP.md).
 
 ---
 
@@ -169,14 +190,19 @@ The messaging is **open-source and harness-agnostic**. The loop and routing meth
 
 ---
 
-## Validation (two gates)
+## Validation
 
-Both run in CI on `main` and every PR, and both exit non-zero on any violation. Run them locally before committing:
+The release, orchestration, superloop, installer and benchmark checks run in CI on `main`, `staging` and every PR. Run the commands in [TESTING.md](TESTING.md) locally before committing; these are the entry points:
 
 ```bash
 python .github/checks.py                                      # repo-wide release gate
 python scripts/validate-full-config.py                        # the deployable example
 python scripts/landscape/landscape_scan.py --self-test        # the landscape engine
+python scripts/validate-orchestration.py                      # matrix policy and review contracts
+python scripts/validate-superloop.py                          # goals, controllers and tool templates
+python scripts/test-install.py --self-test --shell bash       # all five skills and backups
+bash scripts/validate.sh --layers 1,2                          # benchmark syntax and required keys
+python scripts/score.py --all                                 # recompute benchmark scores
 ```
 
 - **`.github/checks.py`**: vendor-name denylist, manifest / skill-presence / profile-schema-shape / local-link checks, duplicate-rung detection (incl. `*.example.*` and `ultrawork`), and the budget-cap placement rule.
@@ -196,7 +222,7 @@ Routing forwards work to a **fallback model on a different provider** when the p
 
 ## Claims & limits
 
-The routing rationale is a set of **design heuristics**, not measured results. You map placeholders to arbitrary real models, so no fixed cost or quality number holds across all mappings. This repo ships **no benchmark data** and makes no quantitative quality/cost guarantee. "Cost-preferenced" means the routing *prefers* cheaper tiers for most roles; it is not an enforced spend cap. **Measure blended cost-per-solved-task on your own mapping.** The landscape engine's job is to keep the *recommendations* honest and current; it is not a promise about your results.
+The routing rationale is a set of design heuristics, not measured results for your tasks. The bundled benchmark snapshot supports candidate comparisons; it does not establish model-mesh task success, reviewer effectiveness, Hong Kong reachability or live superloop compatibility. You map placeholders to your own models, so no fixed cost or quality number holds across all mappings. "Cost-preferenced" means the routing prefers cheaper tiers for most roles, not a hard spend cap. Measure blended cost per solved task on your own mapping, and read [the benchmark data caveats](docs/05-data-quality.md) before using its scores.
 
 ---
 

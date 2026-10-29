@@ -1,5 +1,6 @@
 ---
 name: mm-verify
+description: Judge a piece of finished work or a skill without believing its report. Treats every claim as unproven until observed, checks for weakened tests and silent scope growth, and returns a verdict with evidence.
 ---
 
 # mm-verify
@@ -29,6 +30,10 @@ Target: the most recent completed piece of work in this conversation, or whateve
    Format: the verdict is the first line; then a claims table (claim, what was observed); then frauds found, if any; then the recommended action. Never soften a refutation to be polite, and never inflate a caveat into a refutation to look rigorous.
 
 Standing rules: judging changes nothing (read and run only; fixes happen only if the user asks afterward). If the work touched nothing runnable, say plainly what a judge can and cannot check here. This is a gate, not a second implementation: minutes, not hours; if verification needs an environment you lack, hand that back rather than guessing.
+
+## Machine-readable verdict
+
+When a caller such as the `mm-superloop` driver asks for machine-readable findings, print them as one JSON list in the schema at `examples/orchestration/finding.schema.json` on the last line of standard output, one object per finding, and print `[]` when there are none. Judge only the diff file you are given, with the lenses you are given, and read nothing else about the run. The prose verdict still follows the format above and may come first; the last line is what code reads, so a finding missing from it does not count.
 
 ## suite mode: judge a skill or a model
 

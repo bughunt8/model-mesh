@@ -2,7 +2,7 @@
 
 Thanks for helping. Two ground rules keep this repo shippable:
 
-1. **No real model/provider names.** CI (`.github/checks.py`) fails the build if any real vendor/model name appears in file contents or paths. The messaging is **harness-agnostic**. The method targets any coding-agent harness, and the repo ships examples for two (**OpenCode** via oh-my-openagent, and the **DeepSeek Harness**). The names `oh-my-openagent` and `opencode` are allowed because they are the OpenCode example's required framework identifiers (not model names); the DeepSeek Harness example keeps its own required identifiers too. Use placeholders (`ProviderA`, `flagship-xl`, …) for everything else. (Real model IDs are permitted only in `docs/EXAMPLE-MAPPING.md`, `docs/research/`, and the benchmark surfaces listed below, which are denylist-exempt.)
+1. **Provider-neutral core.** CI rejects real model and provider names outside the explicit examples, research, benchmark and rule-implementation exceptions in `.github/checks.py`. Use placeholders such as `ProviderA` and `flagship-xl` in generic method and profile files. Required harness identifiers are not model choices. Read the gate's self-tested exact-path and prefix lists before adding a name; a benchmark import is not permission to add model IDs elsewhere.
 2. **Configs must validate.** Agents use `model` + `fallback_models` (never `models`); `ultrawork` uses a singular `model`; categories use `models[]`; use `reasoning` not `variant`. Run the checks below before opening a PR.
 
 ## Before you open a PR
@@ -17,14 +17,19 @@ Run the loop's own reviewer on your change: `/mm-verify`.
 
 ## What lives where
 
+Read [the repository map](docs/REPOSITORY-MAP.md) before a change that crosses the benchmark, routing, review panel or superloop. Benchmark candidates do not bypass runtime policy or live qualification.
+
 - `skills/`: the loop (adapted from fable-method, MIT; see `THIRD_PARTY_NOTICES.md`). Keep changes here in sync with the loop's intent.
 - `profiles/`: routing fragments. If you change a profile, update the README "Profile at a glance" table to match (CI checks profile validity; keep the prose honest).
 - `docs/`: methodology and mapping guides, plus the benchmark docs `docs/01-methodology.md` through `docs/06-handover.md`.
 - `configs/`: the recommended benchmark configuration and its change log.
 - `data/`: the benchmark scorecard, profile weights, and provenance.
 - `BENCHMARK.md`: the benchmark entry point.
+- `examples/orchestration/`: situation matrices, review lenses and harness examples.
+- `examples/superloop/` and `scripts/superloop/`: bounded run templates and the control plane.
+- `tests/scenarios/` and `TESTING.md`: static skill contracts, checks and their limits.
 
-`configs/`, `data/`, `BENCHMARK.md`, and `docs/01`–`06` are the deliberately denylist-exempt benchmark surfaces: real model IDs are the benchmark's product, so the release gate's exact-path and exact-prefix exemptions cover those files and nothing else. Do not carry benchmark model IDs into any other file.
+`configs/`, `data/`, `BENCHMARK.md`, and `docs/01` through `docs/06` are the benchmark-specific denylist exceptions because real model IDs are the benchmark's product. The gate also has existing mapping, research, validator and source-registry exceptions; its self-test defines the complete set. Do not carry benchmark model IDs into generic method files or assume a nearby path is exempt.
 
 ## OMO-Benchmark
 

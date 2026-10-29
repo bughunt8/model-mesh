@@ -11,7 +11,7 @@ Validated and hardened (Aug 2026): valid JSON (no trailing commas), the retired
 utility-vendor family replaced role-aware, `hephaestus` kept flagship-native-only,
 `runtime_fallback.retry_on_errors` excludes `400` (not a transient error),
 no duplicate/degenerate fallback rungs, unused `providerConcurrency` entries removed,
-`momus` uses `enabled` (not `disable`), single canonical `codegraph` per section,
+`momus` uses `disable` (not `enabled`), single canonical `codegraph` per section,
 schema pinned to `v4.19.4`.
 
 Model-ID validity (Aug 2026): this example routes through the `tokeness` relay
@@ -64,6 +64,12 @@ tiers/roles rather than literal model IDs.)
 Run `python scripts/validate-full-config.py` to check the JSON example against all of the
 rules above (JSON validity, reasoning enum, per-agent fallback presence, no
 duplicate/degenerate rungs, `hephaestus` flagship-native-only, `400` excluded from
-retries, no unused provider-concurrency entries, `momus.enabled`, no retired-vendor
+retries, no unused provider-concurrency entries, `momus.disable`, no retired-vendor
 names, pinned schema). It exits non-zero on any violation and runs automatically in
 CI. Pass a path argument to validate a different config file.
+
+## Orchestration and superloop
+
+[orchestration/](orchestration/) holds the situation matrix, review lenses, finding schema and harness examples. [superloop/](superloop/) holds goals, controllers, the question catalog and the owner's tools-registry template; read [the superloop guide](../docs/SUPERLOOP.md) before filling them in.
+
+The benchmark candidate config stays at [configs/omo.recommended.jsonc](../configs/omo.recommended.jsonc). It does not replace these examples or become the superloop config; [the repository map](../docs/REPOSITORY-MAP.md) explains which files control runtime decisions.

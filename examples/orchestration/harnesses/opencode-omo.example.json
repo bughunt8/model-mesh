@@ -1,0 +1,27 @@
+{
+  "harness": "opencode-omo",
+  "status": "docs-checked-runtime-deferred",
+  "native_path": "opencode.json (project root) for OpenCode; omo model routing stays in ~/.omo/omo.jsonc, materialized from profiles/<name>.json",
+  "native_format": "json",
+  "native_config": "{\n  \"$schema\": \"https://opencode.ai/config.json\",\n  \"plugin\": [\n    \"oh-my-openagent\"\n  ],\n  \"permission\": {\n    \"edit\": \"ask\",\n    \"bash\": \"ask\"\n  }\n}",
+  "invocation": "./node_modules/.bin/oh-my-openagent run --agent sisyphus --json --directory <worktree> \"<task>\" from a lockfile-pinned 4.19.4 install, after `oh-my-openagent doctor` reports no issues",
+  "sources": [
+    "https://opencode.ai/docs/config/",
+    "https://github.com/code-yeongyu/oh-my-openagent",
+    "https://github.com/code-yeongyu/oh-my-openagent/blob/dev/docs/reference/cli.md"
+  ],
+  "limitations": [
+    "The `plugin`, `permission` and `$schema` keys match the OpenCode config page. The MCP block shape was not retrievable in this session, so no MCP entry is shown.",
+    "omo is under the Sustainable Use License 1.0 (internal business or non-commercial use). The owner accepted it as an explicit exception. Client or commercial redistribution needs a separate licence check.",
+    "The `oh-my-openagent` plugin name is taken from this repository README. Pinned schema is v4.19.4; newer omo docs rename agents.",
+    "No install, load or dry-run was executed.",
+    "`opencode run --agent` looks the agent up by exact host key, and omo registers display names, so a bare config key can miss and fall back to the default agent. The omo run wrapper resolves config keys. It exits only when the session is idle and no todo is open, so exit 0 means quiet, not done. Check the agent the JSON output reports. Not run live."
+  ],
+  "role_binding": "The orchestrator seat is sisyphus. Author seats are atlas, prometheus, metis, explore, librarian, multimodal-looker (and hephaestus only on a flagship-native chain). Model chains come from the matrix option, written to omo.jsonc by scripts/materialize.py with the pruned per-situation pools.",
+  "profiles": {
+    "ultimate": "Use the model chain in the matrix row for the situation. Base profiles/ultimate.json stays the default for work outside a matrix row.",
+    "hybrid": "Use the model chain in the matrix row for the situation. Base profiles/hybrid.json stays the default for work outside a matrix row.",
+    "b4b": "Use the model chain in the matrix row for the situation. Base profiles/b4b.json stays the default for work outside a matrix row.",
+    "global": "Use the model chain in the matrix row for the situation. Base profiles/global.json stays the default for work outside a matrix row."
+  }
+}

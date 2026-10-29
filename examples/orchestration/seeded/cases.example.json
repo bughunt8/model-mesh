@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "status": "synthetic-fixture-no-measurement",
+  "note": "A fixture for scripts/score-review.py. The defects are invented and the findings are hand-written. Nothing here measures any model, harness or lens.",
+  "cases": [
+    {
+      "case": "synthetic-001",
+      "situation": "A06",
+      "defects": [
+        {"id": "D1", "path": "src/limits.py", "line_start": 20, "line_end": 22, "category": "correctness", "severity": "major"},
+        {"id": "D2", "path": "src/auth.py", "line_start": 55, "line_end": 58, "category": "security", "severity": "blocker"},
+        {"id": "D3", "path": "docs/plan.md", "line_start": 12, "line_end": 12, "category": "consistency", "severity": "nit"},
+        {"id": "D4", "path": "src/limits.py", "line_start": 90, "line_end": 95, "category": "regression", "severity": "major"}
+      ],
+      "runs": [
+        {
+          "run": "two-families-three-lenses",
+          "findings": [
+            {"id": "F1", "lens": "contract-fit", "harness": "h-a", "family": "fam-a", "severity": "major", "category": "correctness", "path": "src/limits.py", "line_start": 21, "line_end": 21, "claim": "limit is off by one", "evidence": "line 21"},
+            {"id": "F2", "lens": "security-abuse", "harness": "h-b", "family": "fam-b", "severity": "blocker", "category": "security", "path": "src/auth.py", "line_start": 56, "line_end": 57, "claim": "token not checked", "evidence": "line 56"},
+            {"id": "F3", "lens": "security-abuse", "harness": "h-a", "family": "fam-a", "severity": "major", "category": "security", "path": "src/auth.py", "line_start": 57, "line_end": 58, "claim": "same token gap", "evidence": "line 57"},
+            {"id": "F4", "lens": "simplicity", "harness": "h-a", "family": "fam-a", "severity": "nit", "category": "simplicity", "path": "src/limits.py", "line_start": 70, "line_end": 71, "claim": "unused helper", "evidence": "line 70"},
+            {"id": "F5", "lens": "regression-risk", "harness": "h-b", "family": "fam-b", "severity": "major", "category": "regression", "path": "src/limits.py", "line_start": 91, "line_end": 93, "claim": "caller breaks", "evidence": "line 92"}
+          ]
+        }
+      ]
+    }
+  ]
+}

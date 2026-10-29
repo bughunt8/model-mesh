@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "note": "Template for the owner's tools registry. Copy it to ~/.config/model-mesh/superloop-tools.json (or point MM_SUPERLOOP_TOOLS at it), outside every worktree and out of the worker's reach, and replace each pin with the SHA-256 of the installed file, for example sha256sum \"$(command -v goose)\". The driver hashes every pin again right before each call and refuses a mismatch. The reviewer prints its findings as a JSON list on the last line of standard output. The goose argv is a sketch: its recipe and --params flags were not checked against a goose install, and neither was the opencode export output. The omo entry path under node_modules is illustrative; find the real one in your install. OWNER is a placeholder. bwrap is the pinned bubblewrap used for the worker jail and the check jail. The worker's writable folders are where the harness keeps its state; the two shown are a guess, not checked against opencode.",
+  "bwrap": {
+    "path": "/usr/bin/bwrap",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "reviewers": {
+    "goose-review": {
+      "harness": "goose",
+      "argv": [
+        "goose",
+        "run",
+        "--recipe",
+        "/home/OWNER/.config/model-mesh/review.recipe.yaml",
+        "--params",
+        "diff={diff_file}",
+        "--params",
+        "lenses={lenses}"
+      ],
+      "env": {},
+      "pins": {
+        "/usr/local/bin/goose": "0000000000000000000000000000000000000000000000000000000000000000",
+        "/home/OWNER/.config/model-mesh/review.recipe.yaml": "0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    }
+  },
+  "workers": {
+    "omo-4.19.4": {
+      "version": "4.19.4",
+      "argv": [
+        "/usr/local/bin/node",
+        "/home/OWNER/omo/node_modules/oh-my-openagent/bin/oh-my-openagent.js"
+      ],
+      "export_argv": [
+        "/home/OWNER/.opencode/bin/opencode",
+        "export",
+        "{session_id}"
+      ],
+      "pins": {
+        "/usr/local/bin/node": "0000000000000000000000000000000000000000000000000000000000000000",
+        "/home/OWNER/omo/node_modules/oh-my-openagent/bin/oh-my-openagent.js": "0000000000000000000000000000000000000000000000000000000000000000",
+        "/home/OWNER/.opencode/bin/opencode": "0000000000000000000000000000000000000000000000000000000000000000",
+        "/home/OWNER/omo/bun.lock": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "writable": [
+        "/home/OWNER/.local/share/opencode",
+        "/home/OWNER/.cache/opencode"
+      ]
+    }
+  },
+  "qualifications": {}
+}

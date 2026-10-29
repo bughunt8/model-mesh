@@ -8,6 +8,8 @@
 
 Follow this exactly when asked to set up or modify the multi-model config. Do not free-style model choices.
 
+Read [the repository map](docs/REPOSITORY-MAP.md) when work crosses routing, benchmark research, multi-agent review or the superloop. The benchmark's agent-seat scores are candidate evidence, not authority to change the routing profiles or the superloop's frozen matrix cell.
+
 1. **Read the methodology first.** Open `docs/ROUTING.md` and `docs/PROVIDERS.md` in full before any edit. The routing rules are binding.
 2. **Pick the profile.** ultimate = max capability; hybrid = default (policy budget cap on generalist/utility/orchestration rungs, with the flagship coding tier `coder-xl`, the read-only architect `oracle`, and each agent's `ultrawork` escape hatch exempt); b4b = same cap applied more aggressively (fewer exempt slots; `coder-xl` survives only as the `deep` category's fallback). The cap is a preference for the cheap tiers, not a hard per-slot ceiling; see `docs/ROUTING.md` and the cap note in `docs/EXAMPLE-MAPPING.md`. If the user did not specify, use **hybrid**.
 3. **Map placeholders to real models.** Produce a table: each `ProviderX/role-name` -> a concrete provider/model you have confirmed exists. Never write a model ID from memory; confirm each resolves against the target provider (list its models or read its docs). Show the table to the user and get approval before writing real IDs.
@@ -130,6 +132,12 @@ If something cannot be verified (no runtime, needs credentials, needs human eyes
 - Offer only follow-ups that emerged from this task (a caveat you listed, a surprise you logged, scope you cut). If none emerged, end without follow-ups.
 - Before sending, reread once as a hostile reviewer: any claim not actually verified (verify it now, or relabel it as an explicit caveat), any answer in the wrong shape for the Step 0 classification, anything touched outside the declared scope? Fix, then send.
 - **Artifact gate, the last check before sending.** Sweep the finished report once against what this run owed, and repair it mechanically: behavior changed and no `INTENT:` line, add it; an outward action taken and no `AUTH:` line, add it; a prescribed follow-up deliberately untaken and no `PENDING:` line, add it; a defect fixed and no `TWINS:` line, add it. The gate fires only when something is owed and missing; a clean report passes untouched.
+
+## Multi-agent work
+
+When a task needs several agents or harnesses, read `docs/ORCHESTRATION.md` and pick the row of `docs/research/orchestration/MATRIX.md` that matches the situation and profile. Never review work with the harness and model family that produced it. Reviews follow `docs/REVIEW-PANEL.md` (background: `docs/research/orchestration/EGM-ANALYSIS.md`): zero-context reviewers, the lenses the situation names, findings in the schema, merged with `scripts/aggregate-findings.py`. Run `python scripts/validate-orchestration.py` after changing the matrix and `python scripts/check-drift.py` after changing method docs.
+
+For a long goal with machine-checkable acceptance checks, use the superloop: `docs/SUPERLOOP.md` and `skills/mm-superloop/SKILL.md` (background: `docs/research/orchestration/SUPERLOOP-COUNCIL.md` and `docs/research/orchestration/SYSTEM-ONE.md`). A decision model may brake the loop and never declare it done. Run `python scripts/validate-superloop.py` after changing a goal, controller or the question catalog.
 
 ## Compressed examples
 

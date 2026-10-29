@@ -1,7 +1,7 @@
 name: checks
 on:
   push:
-    branches: [main]
+    branches: [main, staging]
   pull_request:
 permissions:
   contents: read
@@ -17,6 +17,8 @@ jobs:
         run: python .github/checks.py
       - name: Validate full deployable config example
         run: python scripts/validate-full-config.py
+      - name: Standalone shell installer and backup self-test
+        run: python scripts/test-install.py --self-test --shell bash
       - name: Install YAML parser for landscape config drift check
         run: python -m pip install pyyaml
       - name: Validate landscape YAML and JSON mirror drift
@@ -28,6 +30,36 @@ jobs:
           assert yaml.safe_load((base / "sources.yaml").read_text()) == json.loads((base / "sources.json").read_text())
           print("landscape config mirrors match")
           PY
+      - name: Validate orchestration matrix and harness examples
+        run: python scripts/validate-orchestration.py
+      - name: Orchestration validator self-test (mutations must be caught)
+        run: python scripts/validate-orchestration.py --self-test
+      - name: Skill front matter, size cap and scenario checks
+        run: python scripts/validate-scenarios.py
+      - name: Skill scenario checker self-test
+        run: python scripts/validate-scenarios.py --self-test
+      - name: Review findings merge self-test
+        run: python scripts/aggregate-findings.py --self-test
+      - name: Seeded-defect scorer self-test
+        run: python scripts/score-review.py --self-test
+      - name: Superloop goal, controller and question catalog checks
+        run: python scripts/validate-superloop.py
+      - name: Superloop validator self-test (mutations must be caught)
+        run: python scripts/validate-superloop.py --self-test
+      - name: Install bubblewrap for the superloop check jail
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q bubblewrap
+          # Ubuntu 24.04 blocks unprivileged user namespaces through AppArmor by default
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - name: Superloop driver self-test (offline scenarios with fake workers)
+        env:
+          MM_SUPERLOOP_REQUIRE_JAIL: "1"
+        run: python scripts/mm-superloop.py --self-test
+      - name: Documentation drift check
+        run: python scripts/check-drift.py
+      - name: Documentation drift check self-test
+        run: python scripts/check-drift.py --self-test
       - name: Run landscape regression suite
         run: python scripts/landscape/landscape_scan.py --self-test
       - name: Check committed landscape golden result
@@ -37,3 +69,12 @@ jobs:
             --golden scripts/landscape/expected/scan-2026-09-04.expected.json
       - name: Run structured review-gate parser tests
         run: python scripts/landscape/review_gate.py --self-test
+  install-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Standalone PowerShell installer and backup self-test
+        run: python scripts/test-install.py --self-test --shell powershell

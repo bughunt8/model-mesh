@@ -1,24 +1,77 @@
 # Changelog
 
-## 1.3.0
+## 1.4.0
 
 ### Added
+- **Superloop.** `docs/SUPERLOOP.md` defines an outer loop for long goals: code owns continuation and the caps, omo workers run one batch per call under a frozen matrix cell, a typed decision model answers logged questions, and success needs passing checks on a copy of the hashed tree, a review with no blocker and no major by a reviewer independent of the whole lineage, an unchanged tree during the review and a second check run. The guarantees need a worker that cannot write outside its worktree and checks that read nothing a worker wrote except their snapshot. On Linux the driver enforces both with a pinned bubblewrap, and `final.json` records what it enforced and what was only stated. The decision model may brake and never accelerate. Shadow mode is the default and there is no control mode. Design plus an offline-tested driver; no live run.
+- **`scripts/mm-superloop.py` and `scripts/superloop/`.** The driver: admission against the matrix; an omo config restricted to the cell's author and orchestrator families, with continuation, runtime fallback and team mode off, rewritten before every batch and checked for tampering; session agent and model checks through a pinned session export; a driver-owned git store outside the worktree, so no config, hook, filter, replace ref or attribute from the worker's repository takes part; a whole-tree hash that includes ignored files, with checks run on a copy of the hashed tree, in a bubblewrap jail that mounts only the system folders, the owner's check mounts and the snapshot when `check_jail` is `bwrap`, a bubblewrap worker jail when `worker.isolation` is `bwrap`, and nested repositories, escaping symlinks and a moved `.git` refused; binary diffs kept as bytes; an output folder inside the worktree refused; checks that start passing on an unchanged tree refused; any unexpected error ending in `final.json`; workers and reviewers resolved from the owner's tools registry with pins re-hashed before every call; reviewer findings read from the reviewer's output stream; a refusal of checks that already pass before the work; a hash-chained event log; a cumulative lineage ledger and a lineage registry that must exist, keyed by the owner's repository name and bound to one git directory; a fact-only state builder with redaction; decision backends (rules, replay, HTTP, dual); learn-then-test qualification records verified at admission; and the stop rules. `--self-test` runs 82 scenarios and 21 unit checks offline.
+- **`scripts/validate-superloop.py`.** Rules L1 to L12 for goals, controllers, the tools registry and the question catalog, with 66 mutation cases.
+- **`examples/superloop/`.** The question catalog, a goal template, a shadow pilot controller, an offline rules controller and a tools registry template.
+- **`skills/mm-superloop/`** with scenarios in `tests/scenarios/mm-superloop.json`.
+- **`docs/research/orchestration/SUPERLOOP-COUNCIL.md` and `superloop-council/`.** A five-family council on whether a decision model fits the six agentic patterns and the omo superloop, the raw reports, and six rounds of independent review of the driver with what changed because of them.
+
+### Changed
+- `docs/research/orchestration/SYSTEM-ONE.md` corrects two errors (the retention terms, and an integration guide wrongly called the vendor's) and adds model limits, confidence definitions, other decision models, constrained decoding and the council outcome. Still no decision seat in the matrix.
+- `mm-loop` points long goals to the superloop and gains a BLOCKED outcome. `mm-verify` gains machine-readable findings, printed as a JSON list on the last output line.
+- The OpenCode with omo harness example now invokes the omo run wrapper from a pinned local install.
+- Staging integration preserves the root-level benchmark, score data, provenance and motion adapter alongside the matrix and review-panel work. `docs/REPOSITORY-MAP.md` links the two council syntheses and distinguishes benchmark candidates from runtime policy; no model mapping changes.
+- Both standalone installers now include `mm-superloop`. `scripts/test-install.py` tests complete skill copies and backups, including destinations containing spaces. CI runs the shell installer on Linux and the PowerShell installer on Windows, and runs the full release checks on staging pushes.
+- README and example-guide corrections align the version, review status, benchmark-data caveat and pinned schema-key instructions with the files they describe.
+
+### Benchmark integration from staging
+
+Staging recorded the benchmark import as its own 1.3.0 at `923ff02`, separate from the review-panel line's 1.3.0 below. Version 1.4.0 is the first combined tree, and the imported snapshot and its limitations are retained here rather than attributed to the review-panel release.
+
 - **OMO-Benchmark integrated at the repository root.** The profile-weighted evaluation framework for `omo.jsonc` chains now lives alongside the routing layer: an eight-dimension model scorecard (AE, TO, IP, R, CR, VD, LC, REL), profile-weighted chain scoring with geometric decay `[0.50, 0.25, 0.12, 0.08, 0.05]`, a Contract Risk (CXR) penalty for machine-parsed output contracts, per-agent matrices for all 11 agent profiles, and per-category matrices for all 10 category lanes.
 - **Recommended configuration and tooling.** `configs/omo.recommended.jsonc` carries the 14 audited corrections; `scripts/validate.sh` checks JSONC syntax, required keys, and duplicate keys; `scripts/score.py` recomputes every chain from the CSVs; `data/sources.yaml` records full benchmark provenance. `data/model-scores.csv` and `data/profile-fits.csv` are the machine-readable scorecard and slot weights.
 - **Benchmark documentation.** `BENCHMARK.md` is the entry point; `docs/01-methodology.md` through `docs/06-handover.md` carry the methodology, scorecard, per-agent and per-category matrices, data-quality caveats, and handover rules.
+- **Gate scope.** The benchmark adds exact exceptions for `BENCHMARK.md` and `docs/01` through `docs/06`, and prefix exceptions for `configs/` and `data/`. Existing mapping, research, validator and source-registry exceptions remain; the gate's self-test covers the complete set.
 
-### Known issues
+### Imported benchmark limitations
+
 - SkillsBench has a 13-point harness-dependent discrepancy for one high-volume model. The conservative value is used.
-- DeepSWE v1.1 run-to-run variation is 1.4–3.2 points. Grade bands, not ranks, are authoritative inside the noise floor.
+- DeepSWE v1.1 run-to-run variation is 1.4 to 3.2 points. Grade bands, not ranks, are authoritative inside the noise floor.
 - Function-calling reliability for one relay route is unverified as of this snapshot. Historical pass rate: 7–20%.
 
+## 1.3.0
+
+### Added
+- **Review panel.** `docs/REVIEW-PANEL.md` defines how reviews run: zero-context reviewers with read-only tools, twelve review lenses, a fan-out budget by tier, an aggregator, and spec and drift gates. The design was informed by a study of the Elephant-Goldfish Model, recorded in `docs/research/orchestration/EGM-ANALYSIS.md`. No source text was copied.
+- **Matrix fields.** Every situation has `review_tier`, `lenses` and `gates`. Every reviewer seat has `lenses`. Every option has an `aggregator` seat and the `zero-context-review` constraint. A05 and A06 get a second reviewer seat from a disjoint model family, with the primary lens run by both.
+- **Validator rules O15 to O18** with 34 new mutation cases, including file-based cases that finally cover O10, O13 and O14 in `--self-test`.
+- **`examples/orchestration/lenses.json`, `finding.schema.json` and `standards/`** (spec readiness and drift).
+- **`scripts/aggregate-findings.py`.** Validates findings, clusters them deterministically against the first finding's range, namespaces ids by file, normalizes paths and families, marks cross-family corroboration and lists possible duplicates for the model merge.
+- **`scripts/score-review.py`, `examples/orchestration/seeded/` and `docs/research/orchestration/SEEDED-DEFECTS.md`.** The scorer and protocol for testing whether more lenses or more families catch more. The fixture is invented and no result is claimed.
+- **`scripts/check-drift.py`.** Compares counts, IDs, links, versions, tier and gate tables and the test counts in the docs with the data and scripts (rules D1 to D9).
+- **`docs/research/orchestration/SYSTEM-ONE.md`.** Assessment note on System One decision models: why none is in the matrix, where one could fit, and the shadow-mode pilot criteria.
+- **`scripts/validate-scenarios.py`, `tests/scenarios/` and `TESTING.md`.** Skill front matter and size cap checks and static scenario patterns.
+
 ### Changed
-- The benchmark now lives at the repository root: `BENCHMARK.md`, `configs/`, `data/`, and `docs/01`–`06`.
-- The benchmark's real model IDs are its product, so `BENCHMARK.md`, `docs/01`–`06`, `configs/`, and `data/` are deliberately exempt from the vendor-name gate; each exemption is exact and self-tested. No other path gains an exemption.
+- Rule O14 now reads `MATRIX.md` under the root it is given, so the self-test can cover it.
+- Spread options outside ultimate use a third family as the aggregator's first rung where the model table has one.
+- `MATRIX.md` gains lens and aggregator columns and a review panel table.
+- The independence rule gains a fifth point: the aggregator sits outside the author and orchestrator harness and families.
+- `mm-domain` and `mm-verify` gain a `description` in their front matter. Both had none.
+- `README.md` said three profiles in two places. It now says four.
 
 ## 1.2.0
 
 ### Added
+- **Multi-agent orchestration direction.** `docs/ORCHESTRATION.md` extends routing from one agent and its sub-agents to several agents across seven harnesses, using omo role and category names. Twelve situations (A01 to A12) map to a harness, a model chain with fallbacks, and an independent reviewer, for four profiles. Design proposal only: nothing was installed or run.
+- **`global` profile.** The unrestricted twin of `ultimate` (no region limit, no budget cap). `profiles/global.json` and `profiles/global.example.json`; `setup-config.sh global` works. The retired Google family stays retired.
+- **`scripts/validate-orchestration.py`.** Checks vocabulary, review independence over every fallback rung, the Hong Kong rule for `ultimate`, cap placement for `hybrid` and `b4b`, hephaestus family, and that the generated table matches the data. A mutation self-test proves 40 failure cases are caught, including every hole the independent review found. Both modes run in CI.
+- **Seven harness configuration examples** under `examples/orchestration/harnesses/`, each with sources and limitations. Docs-checked only; install, load and dry-run are deferred.
+- **Research record** under `docs/research/orchestration/`: council reports, synthesis, harness and coordinator evidence, worked examples, and the independent review.
+
+### Changed
+- `.github/checks.py`: a narrow harness-name allowlist (Codex CLI, Qwen Code) so orchestration docs can name harnesses without admitting model IDs, with must-pass and must-fail self-tests; the validator script joins the exact exemption list; `global` joins the profile schema loop; a mirror check keeps the cap policy in `validate-orchestration.py` equal to `checks.py`.
+- `scripts/validate-full-config.py`: the model-ID catalog accepts the verified `global` IDs, and R12b covers `global.example.json`.
+
+### Known issues found by the audit, not fixed here
+- In the shipped `ultimate` and `hybrid` profiles, `momus` uses the same model as `hephaestus`, inside one harness. The orchestration matrix fixes this with an external reviewer; the base profiles are unchanged.
+- The `opencode/mimo-v2.5-free` route used in the example profiles stops working on 2026-10-21.
+- omo is under the Sustainable Use License 1.0. The owner accepted it as an explicit exception. Client or commercial use needs a separate licence check.
+### Motion additions
 - **Motion/animation domain adapter (`references/domains/motion.md`).** The design/UX adapter covers the static surface (tokens, layout, contrast) but stops short of anything that moves. The new adapter takes over once a property is animated, a timeline is sequenced, or a frame is rendered, and it carries the full `TEMPLATE.md` schema: a workflow with a mermaid flowchart, a binding minimum evidence set, authority order, verification by observation, and a fraud table whose headline entry is the screenshot taken *after* the motion settled (it proves the end state, never the curve). Its stand-in for "run the tests" is captured frames at start/middle/settled plus a frame-budget measurement on the real surface under CPU throttling. Wired into every routing surface the `mm-domain` skill enumerates: the `mm-method` router paragraph, the `flowcharts.md` adapter router, the `mm-verify` sector list, and the README/`AGENTS.md` enumerations.
 - **Skill-repo integration assessment (`docs/research/2026-10-skill-repo-assessment.md`).** Ten external skill repositories were downloaded, inspected at source, and graded on two axes that actually decide an import: license (can we redistribute) and the release gate (does the text survive `.github/checks.py`'s vendor denylist). Two were adopted as cited sources; the remaining eight are recorded with their verdict and reason so a future contributor does not re-litigate them. The file is denylist-exempt by design (it lives under `docs/research/`), which is what lets it name the agent harnesses the candidates are authored for.
 

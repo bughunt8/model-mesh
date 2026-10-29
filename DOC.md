@@ -4,7 +4,7 @@
 
 1. **A method** any model can follow to do work carefully: figure out what's really being asked, decide what "done" looks like, gather real evidence, make the smallest correct change, verify by actually running/observing it, and report the outcome first with honest caveats. This is the "loop", shipped as four skills: think (`mm-method`), act (`mm-loop`), prove (`mm-verify`), grow (`mm-domain`).
 
-2. **A way to route work across many models.** Instead of using one model for everything, each agent role (implementer, architect, reviewer, orchestrator, coder, utility) is matched to the *kind* of model that fits it. Three ready profiles express different cost/quality preferences: `ultimate` (max capability), `hybrid` (the default), and `b4b` (leans cheaper).
+2. **A way to route work across many models.** Instead of using one model for everything, each agent role (implementer, architect, reviewer, orchestrator, coder, utility) is matched to the *kind* of model that fits it. Four ready profiles express different cost, region and quality preferences: `ultimate` (max capability, Hong Kong-native), `hybrid` (the default), `b4b` (leans cheaper) and `global` (no region limit, no budget cap). A design proposal in `docs/ORCHESTRATION.md` extends the routing to several agents across several harnesses, with an independent reviewer on every row. `docs/REVIEW-PANEL.md` describes how those reviews run: zero-context reviewers, review lenses, a merge step and design gates.
 
 ## Why route at all?
 

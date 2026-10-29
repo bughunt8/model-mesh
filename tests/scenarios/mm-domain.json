@@ -1,0 +1,41 @@
+{
+  "skill": "mm-domain",
+  "note": "Static checks on the skill text. They show the contract is still written down. They do not show an agent follows it.",
+  "scenarios": [
+    {
+      "id": "four-stages",
+      "description": "The four stages exist.",
+      "required": [
+        "## Stage 1: Discuss",
+        "## Stage 2: Research",
+        "## Stage 3: Generate the bundle",
+        "## Stage 4: Verify"
+      ],
+      "forbidden": []
+    },
+    {
+      "id": "bundle-complete",
+      "description": "The bundle is all four parts or not done.",
+      "required": [
+        "all four, or not done"
+      ],
+      "forbidden": []
+    },
+    {
+      "id": "bounds",
+      "description": "Bounds are stated.",
+      "required": [
+        "## Bounds"
+      ],
+      "forbidden": []
+    },
+    {
+      "id": "authorization-gate",
+      "description": "Outward-facing actions need authorization.",
+      "required": [
+        "authorization gate"
+      ],
+      "forbidden": []
+    }
+  ]
+}

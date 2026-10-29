@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "mode": "shadow",
+  "note": "Shadow pilot. The decision model's answers are logged next to the rules baseline and change nothing. Real provider and model IDs appear only in this example file. The worker and the reviewer are references into the owner's tools registry (see tools.example.json), which holds their argv and pinned hashes outside the worktree. isolation states how the worker is kept from writing outside its worktree; the driver cannot check it and repeats it in final.json.",
+  "caps": {
+    "max_iterations": 10,
+    "wall_clock_seconds": 1800,
+    "no_progress_streak": 2,
+    "fix_verify_cycles": 3,
+    "per_call_seconds": 600,
+    "budget_usd": 5.0
+  },
+  "reservations_usd": {
+    "worker_call": 0.4,
+    "review_call": 0.15,
+    "decision_call": 0.001
+  },
+  "review": {
+    "every_k_iterations": 0,
+    "smoke_below": 0.5
+  },
+  "decision": {
+    "backend": {
+      "kind": "http",
+      "base_url": "https://api.typesafe.ai",
+      "path": "/v1/systemone",
+      "model": "jev-1.14.0",
+      "api_key_env": "TYPESAFE_API_KEY",
+      "state_encoding": "object",
+      "timeout_seconds": 10,
+      "retries": 2
+    },
+    "questions": "examples/superloop/questions.json",
+    "budget_tokens": 30000,
+    "locale": "en",
+    "lineage": {
+      "provider": "typesafe",
+      "model": "jev-1.14.0",
+      "base_family": "undisclosed"
+    },
+    "egress": {
+      "retention": "DPA keeps data as long as necessary for the purpose; zero data retention by enterprise agreement only",
+      "region": "United States, per the launch post"
+    }
+  },
+  "qualifications": [],
+  "worker": {
+    "kind": "omo",
+    "ref": "omo-4.19.4",
+    "agent": "sisyphus",
+    "expect_agents": [
+      "sisyphus",
+      "Sisyphus - ultraworker"
+    ],
+    "isolation": "bwrap",
+    "env": {}
+  },
+  "repository": "model-mesh",
+  "check_jail": "bwrap",
+  "materialize": {
+    "fragment": "profiles/hybrid.example.json",
+    "disabled_hooks": [
+      "goal",
+      "todo-continuation-enforcer",
+      "start-work",
+      "atlas",
+      "runtime-fallback"
+    ]
+  },
+  "reviewers": [
+    {
+      "harness": "goose",
+      "kind": "command",
+      "ref": "goose-review"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "harness": "pi",
+  "status": "docs-checked-runtime-deferred",
+  "native_path": "Two files in the Pi agent directory (location not stated in the fetched pages): models.json and settings.json.",
+  "native_format": "json",
+  "native_config": "{\n  \"models_json\": {\n    \"providers\": {\n      \"deepseek\": {\n        \"baseUrl\": \"https://api.deepseek.com/v1\",\n        \"api\": \"openai-completions\",\n        \"apiKey\": \"REFERENCE_AN_ENV_VAR_PER_PI_DOCS\",\n        \"models\": [\n          {\n            \"id\": \"deepseek-v4-pro\"\n          }\n        ]\n      }\n    }\n  },\n  \"settings_json\": {\n    \"defaultProvider\": \"deepseek\",\n    \"defaultModel\": \"deepseek-v4-pro\",\n    \"defaultThinkingLevel\": \"high\",\n    \"enableAnalytics\": false,\n    \"enableInstallTelemetry\": false\n  }\n}",
+  "invocation": "pi in RPC or print mode inside a container with the worktree mounted; wait for the agent_settled event before reading output",
+  "sources": [
+    "https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/models.md",
+    "https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/settings.md"
+  ],
+  "limitations": [
+    "Provider keys follow the Ollama example in the docs. The DeepSeek base URL and the way Pi reads an API key from the environment were not confirmed.",
+    "Pi has no built-in subagents or permission prompts. Run it in a container or VM with no credentials beyond the model key.",
+    "MCP arrives through Codemode and packages add subagents, memory and sandboxing; none are enabled here.",
+    "Requires Node 22.19 or newer. No install, load or dry-run was executed."
+  ],
+  "role_binding": "Pi is a worker or reviewer seat with a clear settle signal. One model per session; the caller walks the fallback chain.",
+  "profiles": {
+    "ultimate": "Worker for A05, A06 and A09 alternates; reviewer for A04, A08 and A10.",
+    "hybrid": "Same roles. Model rows follow the matrix.",
+    "b4b": "Same roles with the cheaper rungs first.",
+    "global": "Same roles with the global pools."
+  }
+}

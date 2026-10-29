@@ -7,6 +7,8 @@ and category model chains used by oh-my-openagent / OpenCode.
 **Snapshot date:** 2026-10-18
 **Status:** Living document. See `docs/06-handover.md` before editing.
 
+This snapshot evaluates benchmark candidate configurations, not the current runtime-routing profiles. Its findings do not authorize a profile change or bypass region, retirement, licence or reviewer-independence policy; read [the repository map](docs/REPOSITORY-MAP.md) before adopting a candidate.
+
 ## Why this exists
 
 `omo.jsonc` assigns model fallback chains to 11 agent profiles and 10 category

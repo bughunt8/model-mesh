@@ -15,6 +15,7 @@ You map placeholders to whatever you actually run. The **roles** are what matter
 | `ProviderE` | Coding-specialist family provider | Your coding-model provider |
 | `ProviderF` | Multimodal / long-context provider | Your vision/long-context provider |
 | `ProviderG` | Independent diversification vendor (ultimate-only) | A 5th, independent vendor for outage resilience |
+| `ProviderH` | Premium communicator (global-only) | A first-party orchestration-model provider with no region limit |
 
 ## Model placeholders (named by ROLE, not vendor)
 
@@ -42,7 +43,8 @@ You map placeholders to whatever you actually run. The **roles** are what matter
 | `budget-low` | Cheapest general | unspecified-low |
 | `flagship-open` | GA frontier-class open flagship | Ultimate-only rung (cost > cap) |
 | `vision-xl` | Native multimodal + long context | multimodal-looker primary |
-| `div-flagship` | Independent 5th-vendor diversification | Ultimate-only fallback (atlas/prometheus) |
+| `div-flagship` | Independent 5th-vendor diversification | Fallback in the pre-HK ultimate; the independent reviewer seat in `global` (never in metered profiles) |
+| `premium-comm` | Premium communicator | Orchestrator seat in `global` only |
 
 ## How to map (example)
 
