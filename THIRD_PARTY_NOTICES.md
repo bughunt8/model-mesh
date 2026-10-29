@@ -58,3 +58,46 @@ Conceptual adaptations rewritten for generic coding; the pipeline-specific machi
 ## Elephant-Goldfish Model
 
 The review panel design in `docs/REVIEW-PANEL.md` was informed by the Elephant-Goldfish Model, https://github.com/google/elephant-goldfish-model, licensed Apache-2.0. The ideas studied are zero-context reviewer subagents, role-based review lenses, staged design review, and a drift report. No source text, persona prompt or template was copied. The lens prompts, standards and scripts in this repository are original. The study is in `docs/research/orchestration/EGM-ANALYSIS.md`.
+
+## emilkowalski/skills (cited source, MIT)
+
+By Emil Kowalski (https://github.com/emilkowalski/skills), MIT.
+
+The motion/animation domain adapter (`skills/mm-method/references/domains/motion.md`)
+cites this repository as an authoritative open-source reference for motion craft: whether a
+surface should animate at all, purpose-first motion decisions, easing and duration
+selection, interruption and exit handling, and the render-and-inspect verification loop.
+
+No files were copied. The adapter is original prose written to model-mesh's own
+`references/domains/TEMPLATE.md` schema; this repository is named in the adapter's Sources
+section as the upstream reference a reader should consult for the fuller craft material.
+Licensing per that repository (MIT).
+
+## iart-ai/web-animation-skills (cited source, MIT)
+
+By iart.ai (https://github.com/iart-ai/web-animation-skills), MIT.
+
+The motion/animation domain adapter cites this repository as an authoritative
+open-source reference for the render-and-inspect verification loop (render a frame,
+capture it, check it) and for per-technique implementation guidance across scroll-driven
+timelines, micro-interactions, page transitions, and frame-budget work.
+
+No files were copied. Same arrangement as above: original prose against model-mesh's
+adapter schema, with the upstream named in the adapter's Sources section. Licensing per
+that repository (MIT).
+
+The related `iart-ai/motion-skills` repository is cited in the same adapter's Sources as
+a pack index only. It is a directory of per-audience motion packs and contains no skill
+files itself; nothing from it was imported. Licensing per that repository (MIT).
+
+## Skills assessed and NOT adopted
+
+Ten external skill repositories were assessed for integration in October 2026. Two are
+cited above; the other eight were declined or deferred, and the reason for each is
+recorded in `docs/research/2026-10-skill-repo-assessment.md`. The two that were declined
+for licensing reasons are recorded there specifically so a future contributor does not
+re-attempt them without a license change: one bundles a third-party runtime under a
+non-open-source license that its own NOTICE confirms is not covered by its Apache grant,
+and one carries no repository-level license at all.
+
+No files from any declined repository were copied into this project.

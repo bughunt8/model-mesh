@@ -6,3 +6,7 @@ provider-map.local
 .DS_Store
 __pycache__/
 *.pyc
+*.zip
+.omo/
+.venv/
+dist/

@@ -17,6 +17,10 @@ What runs, what it proves, and what it does not. All commands run from the repos
 | `python scripts/check-drift.py` | Docs against data and scripts, rules D1 to D9. It reads text with patterns and does not know what a sentence means | `--self-test` |
 | `python scripts/landscape/landscape_scan.py --self-test` | The landscape scorer | built in |
 | `python scripts/landscape/review_gate.py --self-test` | The landscape review-gate parser | built in |
+| `python scripts/test-install.py --self-test --shell bash` | The shell installer copies every skill file and preserves every prior file in a backup; tests a destination containing spaces | built in |
+| `python scripts/test-install.py --self-test --shell powershell` | The same installer contract under PowerShell, run in the Windows CI job | built in |
+| `bash scripts/validate.sh --layers 1,2` | Benchmark JSONC syntax, duplicate keys and required agent and category keys, not live resolution | none |
+| `python scripts/score.py --all` | Recomputes benchmark chain scores from the committed CSVs, not their source accuracy or runtime effectiveness | none |
 
 The generated matrix table is rebuilt with `python scripts/validate-orchestration.py --render`. The check fails when the committed file differs.
 

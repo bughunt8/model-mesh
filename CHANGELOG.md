@@ -14,6 +14,24 @@
 - `docs/research/orchestration/SYSTEM-ONE.md` corrects two errors (the retention terms, and an integration guide wrongly called the vendor's) and adds model limits, confidence definitions, other decision models, constrained decoding and the council outcome. Still no decision seat in the matrix.
 - `mm-loop` points long goals to the superloop and gains a BLOCKED outcome. `mm-verify` gains machine-readable findings, printed as a JSON list on the last output line.
 - The OpenCode with omo harness example now invokes the omo run wrapper from a pinned local install.
+- Staging integration preserves the root-level benchmark, score data, provenance and motion adapter alongside the matrix and review-panel work. `docs/REPOSITORY-MAP.md` links the two council syntheses and distinguishes benchmark candidates from runtime policy; no model mapping changes.
+- Both standalone installers now include `mm-superloop`. `scripts/test-install.py` tests complete skill copies and backups, including destinations containing spaces. CI runs the shell installer on Linux and the PowerShell installer on Windows, and runs the full release checks on staging pushes.
+- README and example-guide corrections align the version, review status, benchmark-data caveat and pinned schema-key instructions with the files they describe.
+
+### Benchmark integration from staging
+
+Staging recorded the benchmark import as its own 1.3.0 at `923ff02`, separate from the review-panel line's 1.3.0 below. Version 1.4.0 is the first combined tree, and the imported snapshot and its limitations are retained here rather than attributed to the review-panel release.
+
+- **OMO-Benchmark integrated at the repository root.** The profile-weighted evaluation framework for `omo.jsonc` chains now lives alongside the routing layer: an eight-dimension model scorecard (AE, TO, IP, R, CR, VD, LC, REL), profile-weighted chain scoring with geometric decay `[0.50, 0.25, 0.12, 0.08, 0.05]`, a Contract Risk (CXR) penalty for machine-parsed output contracts, per-agent matrices for all 11 agent profiles, and per-category matrices for all 10 category lanes.
+- **Recommended configuration and tooling.** `configs/omo.recommended.jsonc` carries the 14 audited corrections; `scripts/validate.sh` checks JSONC syntax, required keys, and duplicate keys; `scripts/score.py` recomputes every chain from the CSVs; `data/sources.yaml` records full benchmark provenance. `data/model-scores.csv` and `data/profile-fits.csv` are the machine-readable scorecard and slot weights.
+- **Benchmark documentation.** `BENCHMARK.md` is the entry point; `docs/01-methodology.md` through `docs/06-handover.md` carry the methodology, scorecard, per-agent and per-category matrices, data-quality caveats, and handover rules.
+- **Gate scope.** The benchmark adds exact exceptions for `BENCHMARK.md` and `docs/01` through `docs/06`, and prefix exceptions for `configs/` and `data/`. Existing mapping, research, validator and source-registry exceptions remain; the gate's self-test covers the complete set.
+
+### Imported benchmark limitations
+
+- SkillsBench has a 13-point harness-dependent discrepancy for one high-volume model. The conservative value is used.
+- DeepSWE v1.1 run-to-run variation is 1.4 to 3.2 points. Grade bands, not ranks, are authoritative inside the noise floor.
+- Function-calling reliability for one relay route is unverified as of this snapshot. Historical pass rate: 7–20%.
 
 ## 1.3.0
 
@@ -53,6 +71,13 @@
 - In the shipped `ultimate` and `hybrid` profiles, `momus` uses the same model as `hephaestus`, inside one harness. The orchestration matrix fixes this with an external reviewer; the base profiles are unchanged.
 - The `opencode/mimo-v2.5-free` route used in the example profiles stops working on 2026-10-21.
 - omo is under the Sustainable Use License 1.0. The owner accepted it as an explicit exception. Client or commercial use needs a separate licence check.
+### Motion additions
+- **Motion/animation domain adapter (`references/domains/motion.md`).** The design/UX adapter covers the static surface (tokens, layout, contrast) but stops short of anything that moves. The new adapter takes over once a property is animated, a timeline is sequenced, or a frame is rendered, and it carries the full `TEMPLATE.md` schema: a workflow with a mermaid flowchart, a binding minimum evidence set, authority order, verification by observation, and a fraud table whose headline entry is the screenshot taken *after* the motion settled (it proves the end state, never the curve). Its stand-in for "run the tests" is captured frames at start/middle/settled plus a frame-budget measurement on the real surface under CPU throttling. Wired into every routing surface the `mm-domain` skill enumerates: the `mm-method` router paragraph, the `flowcharts.md` adapter router, the `mm-verify` sector list, and the README/`AGENTS.md` enumerations.
+- **Skill-repo integration assessment (`docs/research/2026-10-skill-repo-assessment.md`).** Ten external skill repositories were downloaded, inspected at source, and graded on two axes that actually decide an import: license (can we redistribute) and the release gate (does the text survive `.github/checks.py`'s vendor denylist). Two were adopted as cited sources; the remaining eight are recorded with their verdict and reason so a future contributor does not re-litigate them. The file is denylist-exempt by design (it lives under `docs/research/`), which is what lets it name the agent harnesses the candidates are authored for.
+
+### Changed
+- **No repository's files were vendored.** The two clean candidates (MIT, gate-clean) are cited as authoritative sources from the new adapter's Sources section and attributed in `THIRD_PARTY_NOTICES.md`, matching the repo's existing "cited/adapted, not copied" pattern. Vendoring was declined because it would have required widening the vendor-neutral release gate — the one gate that keeps this repo honest about being vendor-neutral.
+- Two of the ten candidates were declined for **licensing** reasons and are named in the assessment so they are not re-attempted without a license change: one bundles a third-party animation runtime under a non-open-source license that its own `NOTICE` confirms is not covered by its Apache grant, and one carries no repository-level license at all.
 
 ## 1.1.5
 

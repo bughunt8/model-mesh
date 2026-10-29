@@ -50,3 +50,9 @@ The disagreements were about eligibility and scope rather than facts. Sol exclud
 Several claims in the reports were checked and corrected. Gemini models appeared in several cells even though the repository retired Gemini in v1.1.1. GPT 6.1 Luna does not exist, while GPT 6 Luna does. Gemini 4 Argon has no public ID. DeepSeek and MiMo model IDs are changing, so the matrix avoids the retiring MiMo V2.5 route. The owner's affinity hypotheses are tie-breakers: the evidence for Qwen Code with Qwen3.8 is vendor assertion, and Kimi K3 found that Alibaba benchmarked it elsewhere. For DSH with DeepSeek Flash the evidence is vendor documentation.
 
 Adopt the matrix as a design for review, then qualify one row per harness before relying on it. Start with A01 on OpenCode with omo and Goose review, A04 on Goose with Pi review, and A11 on Qwen Code with the official Playwright MCP, because those three exercise the most different harness paths.
+
+## Repository integration
+
+The matrix synthesis remains the routing-policy record. The later [superloop council](SUPERLOOP-COUNCIL.md) extends it with a bounded loop owned by code, a frozen profile and cumulative author lineage; it does not replace the matrix or adopt a decision-model seat. Its runtime guide is [SUPERLOOP.md](../../SUPERLOOP.md).
+
+The root-level [OMO-Benchmark](../../../BENCHMARK.md) supplies candidate scores and a separate candidate config. Its eleven agent seats are not the four routing profiles, and its roster does not reverse a retirement, region, licence or independence decision. The driver reads the profile fragments and the matrix, not the benchmark config. [The repository map](../../REPOSITORY-MAP.md) records these authority boundaries; this integration policy is not an additional claim of council agreement.

@@ -195,7 +195,7 @@ def self_test():
     def mutated(fn):
         tmp = tempfile.mkdtemp()
         try:
-            for rel in ["docs", "examples", "scripts", ".github", ".plugin", "README.md", "CHANGELOG.md", "TESTING.md"]:
+            for rel in ["docs", "examples", "scripts", ".github", ".plugin", "README.md", "BENCHMARK.md", "CHANGELOG.md", "TESTING.md"]:
                 src = os.path.join(ROOT, rel)
                 if os.path.isdir(src):
                     shutil.copytree(src, os.path.join(tmp, rel), ignore=shutil.ignore_patterns("__pycache__"))

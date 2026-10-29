@@ -8,6 +8,8 @@
 
 Follow this exactly when asked to set up or modify the multi-model config. Do not free-style model choices.
 
+Read [the repository map](docs/REPOSITORY-MAP.md) when work crosses routing, benchmark research, multi-agent review or the superloop. The benchmark's agent-seat scores are candidate evidence, not authority to change the routing profiles or the superloop's frozen matrix cell.
+
 1. **Read the methodology first.** Open `docs/ROUTING.md` and `docs/PROVIDERS.md` in full before any edit. The routing rules are binding.
 2. **Pick the profile.** ultimate = max capability; hybrid = default (policy budget cap on generalist/utility/orchestration rungs, with the flagship coding tier `coder-xl`, the read-only architect `oracle`, and each agent's `ultrawork` escape hatch exempt); b4b = same cap applied more aggressively (fewer exempt slots; `coder-xl` survives only as the `deep` category's fallback). The cap is a preference for the cheap tiers, not a hard per-slot ceiling; see `docs/ROUTING.md` and the cap note in `docs/EXAMPLE-MAPPING.md`. If the user did not specify, use **hybrid**.
 3. **Map placeholders to real models.** Produce a table: each `ProviderX/role-name` -> a concrete provider/model you have confirmed exists. Never write a model ID from memory; confirm each resolves against the target provider (list its models or read its docs). Show the table to the user and get approval before writing real IDs.
@@ -38,7 +40,7 @@ A mid-tier model that follows this loop beats a stronger model that free-styles:
 /mm-method report       rewrite the answer you were about to send per Step 6
 ```
 
-Deeper material loads on demand: `references/failure-modes.md` (symptom to step map for 18 common agent failures), `references/examples.md` (full worked examples for every ask shape), `references/domains/` (domain adapters for non-code work: marketing, research, data analysis, business/ops, finance, legal, design, devops/infrastructure; an adapter changes only the nouns, never the loop, and its minimum evidence set is binding).
+Deeper material loads on demand: `references/failure-modes.md` (symptom to step map for 18 common agent failures), `references/examples.md` (full worked examples for every ask shape), `references/domains/` (domain adapters for non-code work: marketing, research, data analysis, business/ops, finance, legal, design, motion/animation, devops/infrastructure; an adapter changes only the nouns, never the loop, and its minimum evidence set is binding).
 
 **Triviality gate (run first).** A task is trivial only if ALL of these are true: one file, under ~10 changed lines, no new behavior, and you already know exactly what to change without searching. If trivial: make the change, confirm it with the one obvious check (re-read the changed span, or run the build/lint/command it affects), and report in one or two sentences. Everything else, and anything you are unsure about, gets the full loop.
 

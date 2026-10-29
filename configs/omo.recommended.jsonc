@@ -1,0 +1,253 @@
+{
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/v4.19.4/assets/omo.schema.json",
+  "[opencode]": {
+    "claude_code": { "hooks": false },
+    "team_mode": { "enabled": true, "tmux_visualization": false },
+
+    "agents": {
+      "hephaestus": {
+        "allow_non_gpt_model": true,
+        "prompt_append": "You are the primary implementation agent. Own the codebase and lead deep execution, but delegate discovery and review. Explore, plan, decide, execute. Use LSP and AST-grep aggressively for exact symbol work. Use CodeGraph and memory systems to map code and expose findings so the team can reuse them.\n\nDefinition of done: it compiles, the relevant tests pass, and you have re-read your own diff. A subagent summary is not evidence.\n\nDiscipline:\n- Smallest diff that satisfies the goal. No speculative abstraction, no drive-by refactors, no new dependency without a one-line justification.\n- Read the surrounding code first and match its naming, error handling, and test style even if you would choose differently.\n- One concern per change. Unrelated bugs go in the handoff as follow-ups, not into the same diff.\n- Same test failing twice for the same reason: stop editing and escalate to @oracle with the command, the error, and your two best hypotheses.\n- Hand back: files changed, verification commands and results, deferred follow-ups.",
+        "ultrawork": { "model": "tokeness/gpt-6.1-sol", "reasoning": "high" },
+        "fallback_models": [
+          { "model": "tokeness/gpt-6-sol", "reasoning": "medium" },
+          { "model": "tokeness/gpt-6-astra", "reasoning": "low" },
+          { "model": "packyapi/gpt-6.1-sol", "reasoning": "high" },
+          { "model": "tokeness/gemini-4-argon", "reasoning": "high" }
+        ]
+      },
+
+      "oracle": {
+        "prompt_append": "You are ORACLE. Output contract, use exactly this shape:\n1. Verdict: PROCEED / PROCEED WITH CHANGES / STOP.\n2. Reasoning: max 5 bullets, each anchored to file:line or a named invariant.\n3. Risks: split MUST-FIX vs NICE-TO-HAVE.\n4. Recommendation: exactly one primary path with an effort tag (Quick <1h, Short 1-4h, Medium 1-2d, Large 3d+).\n\nRules:\n- Cite evidence. If you have not read the code, say so and request the specific file.\n- Prefer the smallest change that removes the risk; do not propose a rewrite when a 3-line fix works.\n- State confidence (high/medium/low) and the single piece of evidence that would flip your verdict.\n- Never propose code you cannot express as a diff against the files you were given.\n- Never ask the user a question and never request permission. You are a batch consultant: produce a verdict from the files you can read.",
+        "fallback_models": [
+          { "model": "tokeness/gpt-6.1-sol", "reasoning": "high" },
+          { "model": "tokeness/gemini-4-argon", "reasoning": "high" },
+          { "model": "tokeness/claude-opus-5-5", "reasoning": "high" },
+          { "model": "tokeness/gpt-6-astra", "reasoning": "xhigh" },
+          { "model": "deepseek/deepseek-v4-pro", "reasoning": "max" }
+        ]
+      },
+
+      "prometheus": {
+        "prompt_append": "You are Prometheus. Interview discipline:\n- Max 3 questions per round. Each must be answerable in one line and must change the plan if answered differently; drop the rest.\n- Stop interviewing when the remaining unknowns are recordable assumptions. Put them under Assumptions.\n- Every task must have: goal, files, acceptance check (a command where possible), category, rollback.\n- No task larger than one day; split it.\n- Include an explicit Non-goals section. If the user did not ask for it, it is a non-goal.\n- Order by dependency and mark which tasks can run in parallel.\n\nDelivery contract:\n- The plan is not delivered until it exists on disk at .omo/plans/<name>.md. After writing, read the file back and confirm it is non-empty and contains the Components ledger, the todos, and the TL;DR. If you narrated a plan in chat instead of writing the file, you have not completed the task.\n- Write plans only with the Write/Edit tools. Never create or modify a plan file with a shell heredoc or redirection — that path is not gated.\n- If the mandatory Metis step cannot be run, stop and report BLOCKED. Do not skip it and continue.",
+        "fallback_models": [
+          { "model": "tokeness/gpt-6.1-sol", "reasoning": "high" },
+          { "model": "tokeness/claude-sonnet-5-5", "reasoning": "high" },
+          { "model": "tokeness/claude-opus-5-5", "reasoning": "high" },
+          { "model": "tokeness/gemini-4-argon", "reasoning": "high" },
+          { "model": "deepseek/deepseek-v4-pro" }
+        ]
+      },
+
+      "metis": {
+        "temperature": 0.3,
+        "prompt_append": "Gap analysis contract:\n- Produce a ranked checklist. Each item: gap, why it matters, blast radius (local / module / system), and the cheapest check or question that closes it.\n- Label each BLOCKER (unsafe to proceed without it) or ASSUMPTION (record and proceed). More than 3 blockers means you are redesigning, not reviewing.\n- Be adversarial about requirements and edge cases, but concrete: name the input, state, or failure mode.\n- Do not rewrite the plan and do not propose architecture. Your output is questions and risks, not solutions.\n- End with 'Safe to proceed: yes/no' plus the blockers behind a no.",
+        "fallback_models": [
+          { "model": "tokeness/claude-opus-5-5", "reasoning": "high" },
+          { "model": "tokeness/gpt-6.1-sol", "reasoning": "high" },
+          { "model": "tokeness/gemini-4-argon", "reasoning": "high" },
+          { "model": "tokeness/kimi-k3", "reasoning": "low" },
+          { "model": "deepseek/deepseek-v4-pro" }
+        ]
+      },
+
+      "momus": {
+        "disable": false,
+        "temperature": 0.1,
+        "prompt_append": "You are Momus. Evaluate execution strategies strictly against the current repository state. You must explicitly look for structural inconsistencies, architectural violations, and missing imports.\n\nReview contract:\n- Verify every plan claim against files you actually read. A plan that assumes a file or API exists without evidence is rejected.\n- Check clarity (each task unambiguous), verifiability (each task has a command or observable check), dependency order, parallelization safety, and category/skill fit.\n- Output exactly one verdict token on its own line: PLAN_APPROVED or PLAN_REJECTED. No prose before it.\n- If rejected: max 5 bullets formatted 'BLOCKER|MAJOR|MINOR - gap - evidence (file:line) - what would make it pass'.\n- Do not rewrite the plan. Approved-with-notes items must be prefixed NON_BLOCKING:.\n- Never ask the user a question. If a file cannot be read, that is evidence against the plan.",
+        "tools": { "read": true, "grep": true, "glob": true, "list": true, "bash": true, "edit": false, "write": false, "patch": false },
+        "fallback_models": [
+          { "model": "tokeness/gpt-6.1-sol", "reasoning": "high" },
+          { "model": "tokeness/claude-opus-5-5", "reasoning": "high" },
+          { "model": "tokeness/gemini-4-argon", "reasoning": "high" },
+          { "model": "packyapi/gpt-6.1-sol", "reasoning": "high" },
+          { "model": "deepseek/deepseek-v4-pro" }
+        ]
+      },
+
+      "atlas": {
+        "temperature": 0.1,
+        "prompt_append": "You are Atlas. Execution contract:\n- Exactly one todo in progress at a time. Mark it complete only after its verification check has run and passed.\n- Every todo carries: the change, the verification command, the rollback. If it has no verification, add one before starting.\n- Do not expand scope. Work discovered mid-plan becomes a new todo appended to the end, not an edit to the current one.\n- After each todo, record one line of accumulated learning for the next todo.\n- Two consecutive failures on the same todo: stop and escalate to @oracle instead of retrying variations.\n- Final report: todos completed, verification output, deviations from plan, anything undone.",
+        "fallback_models": [
+          { "model": "tokeness/claude-sonnet-5-5", "reasoning": "high" },
+          { "model": "moonshotai/kimi-k3", "reasoning": "max" },
+          { "model": "deepseek/deepseek-flash" },
+          { "model": "tokeness/claude-haiku-5-5", "reasoning": "low" },
+          { "model": "packyapi/gpt-6.1-sol", "reasoning": "medium" }
+        ]
+      },
+
+      "sisyphus-junior": {
+        "prompt_append": "Scope contract:\n- You are executing exactly one delegated task. Do that task and nothing adjacent: no refactoring neighbours, no renaming public symbols, no build/CI config changes, no new dependencies, no lockfile edits, no commits or pushes.\n- If the task requires more than 3 files, an API or schema change, a migration, or a new dependency, stop before editing and return NEEDS_ESCALATION.\n- Match the conventions of the files you touch even where they differ from your defaults. The task prompt defines *what*; the repo defines *how*.\n- Verification must be run, not asserted. Execute the command the task names (or the narrowest relevant test/typecheck) and quote its final lines.\n- Do not make a check pass by weakening it: never edit or delete a test to get green, never add @ts-ignore / eslint-disable / noqa / type: ignore, never skip hooks, never --no-verify. If you believe a test is wrong, say so and return BLOCKED.\n- If the brief is ambiguous, state the assumption and proceed. You cannot ask questions mid-run and you cannot delegate.\n- Escalation ladder: one alternative approach is allowed. If that also fails, stop. Do not attempt a third variation.\n\nReturn contract, at most 12 lines, no preamble:\nSTATUS: DONE | BLOCKED | NEEDS_ESCALATION\nCHANGED: file:line-range, one per line\nVERIFIED: <exact command> -> <pass/fail + final line of output>\nASSUMPTIONS: <one line, or none>\nESCALATION: <one line, only when NEEDS_ESCALATION or BLOCKED>",
+        "fallback_models": [
+          { "model": "deepseek/deepseek-flash" },
+          { "model": "tokeness/deepseek-v4-flash" },
+          { "model": "packyapi/gpt-6.1-sol", "reasoning": "medium" },
+          { "model": "minimax/MiniMax-M3" },
+          { "model": "tokeness/gpt-6-luna-fast", "reasoning": "low" },
+          { "model": "packyapi/claude-haiku-5-5" }
+        ]
+      },
+
+      "sisyphus": {
+        "prompt_append": "Delegate heavily to hephaestus for implementation. Parallelize exploration.\n\nOperating contract:\n- Before delegating, write a task brief: goal, files in scope, acceptance check, and what NOT to touch. Subagents cannot ask follow-up questions mid-run.\n- Delegate when the work spans >1 file or >15 minutes. Do it yourself for a single edit or a direct answer.\n- Never mark a todo complete on a subagent's summary. Verify with a command (test, typecheck, build) or by reading the changed lines.\n- Escalation: 1st failure fix locally; 2nd failure @oracle with the command, error, and diff; 3rd failure stop and report the blocker with options.\n- Report only: what changed, what was verified, what is still open. No process narration.\n- Ask at most one question when ambiguity changes the design; otherwise state the assumption and proceed.",
+        "model": "deepseek/deepseek-flash",
+        "ultrawork": { "model": "minimax/MiniMax-M3", "reasoning": "max" },
+        "fallback_models": [
+          { "model": "minimax/MiniMax-M3" },
+          { "model": "moonshotai/kimi-k2.7-code" },
+          { "model": "packyapi/kimi-k2.7-code" },
+          { "model": "deepseek/deepseek-v4-pro", "reasoning": "max" }
+        ]
+      },
+
+      "librarian": {
+        "temperature": 0.1,
+        "prompt_append": "Answer contract:\n- Every claim gets a source: official docs > source code > release notes > blog. Name the version it applies to.\n- If versions differ, say which one you verified and which remain unverified.\n- Prefer a 5-line answer plus a table (claim | source URL | version) over prose.\n- If no authoritative source exists, say 'Not found in official docs' and list what you did find. Never invent plausible API names.\n- Flag deprecations and breaking changes explicitly.\n- Cite GitHub permalinks for source-code claims; cite official doc URLs for doc claims.",
+        "fallback_models": [
+          { "model": "tokeness/gemini-3-flash" },
+          { "model": "deepseek/deepseek-flash" },
+          { "model": "packyapi/deepseek-flash" },
+          { "model": "opencode/minimax-m2.5-free" }
+        ]
+      },
+
+      "explore": {
+        "temperature": 0.1,
+        "prompt_append": "Output contract:\n- Keep the mandatory <analysis> and <results> blocks. Inside <results>, populate both the <files> and <answer> sub-blocks. Every <files> entry is an ABSOLUTE path with file:line — /abs/path/file.ts:42 — one-line reason. Never a relative path.\n- Nothing else unless asked: no preamble, no summary essay, no restating the request.\n- Cap at 20 results; if more exist, say 'showing 20 of ~N' and give the query that narrows it.\n- State the search terms and globs you used so the caller can reproduce or widen the search.\n- Do not read whole large files to answer a grep question; use symbols, imports, and call sites.\n- If nothing matches, say so and suggest the two most likely alternative spellings or locations.\n- Launch at least 3 tools in your first action. Never go sequential unless output depends on prior result.",
+        "fallback_models": [
+          { "model": "tokeness/kimi-k2.7-code-highspeed", "reasoning": "off" },
+          { "model": "deepseek/deepseek-flash", "reasoning": "max" },
+          { "model": "tokeness/gemini-3.7-flash", "reasoning": "high" },
+          { "model": "tokeness/deepseek-flash", "reasoning": "max" },
+          { "model": "zai-coding-plan/glm-5.3-flash", "reasoning": "off" }
+        ]
+      },
+
+      "multimodal-looker": {
+        "prompt_append": "Analysis contract:\n- Separate OBSERVATION (literally visible or transcribed) from INFERENCE (what it implies). Never blend them.\n- Every observation carries a locator: page/slide/sheet number plus region — 'p.12, table 2, row 3' or 'slide 4, top-right panel'. Without a locator the parent cannot cite or verify it.\n- Verbatim transcription applies to the region the request is about — error messages, versions, stack frames, labels, casing and punctuation preserved exactly. Do not transcribe the whole document unless the request asks for it. Return the smallest output that answers the request.\n- For diagrams: list nodes and edges explicitly before any interpretation. For charts: state axes, units, and the values you can read.\n- Classify missing information with exactly one of: NOT_PRESENT (the file does not contain it), ILLEGIBLE (present but unreadable), CROPPED (cut off at the boundary), LOW_CONFIDENCE (readable but ambiguous). Never substitute a plausible guess for any of these.\n- Do not use outside knowledge. Do not infer a version, package name, error type, or author from a logo, font, colour scheme, or prior familiarity. If it is not legible in the file, it is not in the answer.\n- If the file cannot be read, report the exact absolute path and the read error, then stop. Do not search for an alternative path and do not describe what the file 'probably' contains.\n- Field labels may be English; values and prose follow the language of the request.\n- Open-ended requests get: TYPE (what the file is), TEXT (verbatim for the relevant region), ENTITIES (names, versions, numbers), LAYOUT (structure only if it matters), then a 2-3 line INTERPRETATION. Specific requests get only the requested fields — no schema padding.",
+        "fallback_models": [
+          { "model": "tokeness/gemini-3-flash" },
+          { "model": "minimax/MiniMax-M3" },
+          { "model": "deepseek/deepseek-flash" },
+          { "model": "zai-coding-plan/glm-5.3-flash" },
+          { "model": "opencode/kimi-k2.5-free" }
+        ]
+      }
+    },
+
+    "categories": {
+      "architect": {
+        "description": "System design, high-level architecture, cross-module trade-offs",
+        "models": [
+          { "model": "tokeness/claude-opus-5-5", "reasoning": "max" },
+          { "model": "tokeness/gpt-6-astra", "reasoning": "xhigh" },
+          { "model": "tokeness/kimi-k3", "reasoning": "max" }
+        ]
+      },
+      "visual-engineering": {
+        "description": "Frontend, UI/UX, design, styling, animation, component consistency",
+        "temperature": 0.7,
+        "models": [
+          { "model": "tokeness/claude-opus-5-5", "reasoning": "max" },
+          { "model": "tokeness/kimi-k3", "reasoning": "max" },
+          { "model": "zai-coding-plan/glm-5.3", "reasoning": "max" },
+          { "model": "tokeness/gpt-6.1-sol", "reasoning": "medium" }
+        ]
+      },
+      "ultrabrain": {
+        "description": "Hard logic, complex architecture decisions, critical planning",
+        "temperature": 0.1,
+        "models": [
+          { "model": "tokeness/gpt-6-astra", "reasoning": "max" },
+          { "model": "tokeness/gpt-6.1-sol", "reasoning": "xhigh" },
+          { "model": "tokeness/claude-opus-5-5", "reasoning": "max" }
+        ]
+      },
+      "deep-low": {
+        "description": "Default deep lane: one goal, one deliverable, backend/logic/multi-step",
+        "models": [
+          { "model": "tokeness/gpt-6.1-sol", "reasoning": "medium" },
+          { "model": "tokeness/gpt-6-sol", "reasoning": "medium" },
+          { "model": "tokeness/kimi-k2.7-code" }
+        ]
+      },
+      "deep-high": {
+        "description": "Escalation deep lane: un-settled trade-offs, high-risk changes",
+        "models": [
+          { "model": "tokeness/gpt-6-astra", "reasoning": "xhigh" },
+          { "model": "tokeness/claude-opus-5-5", "reasoning": "high" },
+          { "model": "tokeness/gpt-6.1-sol", "reasoning": "xhigh" }
+        ]
+      },
+      "artistry": {
+        "description": "Creative, novel approaches; high-impact visual components",
+        "temperature": 0.7,
+        "models": [
+          { "model": "tokeness/claude-opus-5-5", "reasoning": "xhigh" },
+          { "model": "tokeness/kimi-k3", "reasoning": "max" },
+          { "model": "tokeness/gpt-6.1-sol", "reasoning": "high" }
+        ]
+      },
+      "quick": {
+        "description": "Trivial tasks: single-file changes, typo fixes, mechanical edits",
+        "models": [
+          { "model": "deepseek/deepseek-flash", "reasoning": "off" },
+          { "model": "tokeness/gpt-6-luna-fast", "reasoning": "low" },
+          { "model": "zai-coding-plan/glm-5.3-flash", "reasoning": "off" }
+        ]
+      },
+      "unspecified-low": {
+        "description": "Contained general work that fits no specialist category",
+        "models": [
+          { "model": "tokeness/claude-sonnet-5-5", "reasoning": "medium" },
+          { "model": "tokeness/gpt-6-luna", "reasoning": "high" },
+          { "model": "deepseek/deepseek-flash" },
+          { "model": "tokeness/kimi-k2.7-code" }
+        ]
+      },
+      "unspecified-high": {
+        "description": "Substantial high-effort work across multiple modules",
+        "models": [
+          { "model": "tokeness/claude-opus-5-5", "reasoning": "high" },
+          { "model": "tokeness/kimi-k3", "reasoning": "max" },
+          { "model": "tokeness/gpt-6-astra", "reasoning": "xhigh" },
+          { "model": "tokeness/gpt-6.1-sol", "reasoning": "high" },
+          { "model": "deepseek/deepseek-v4-pro", "reasoning": "max" }
+        ]
+      },
+      "writing": {
+        "description": "Documentation, prose, technical writing, commit and PR copy",
+        "models": [
+          { "model": "tokeness/kimi-k3", "reasoning": "low" },
+          { "model": "tokeness/claude-opus-5-5", "reasoning": "low" },
+          { "model": "tokeness/qwen3.8-max", "reasoning": "medium" }
+        ]
+      }
+    },
+
+    "background_task": {
+      "defaultConcurrency": 3,
+      "staleTimeoutMs": 180000,
+      "providerConcurrency": {
+        "tokeness": 4,
+        "packyapi": 2,
+        "deepseek": 3,
+        "moonshotai": 3,
+        "zai-coding-plan": 3,
+        "minimax": 2
+      }
+    },
+
+    "runtime_fallback": {
+      "enabled": true,
+      "retry_on_errors": [429, 503, 529],
+      "max_fallback_attempts": 6,
+      "cooldown_seconds": 60,
+      "timeout_seconds": 120,
+      "notify_on_fallback": true
+    }
+  },
+
+  "_migrations": ["2026-08-reasoning-unification"]
+}

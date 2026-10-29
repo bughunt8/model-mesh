@@ -2,7 +2,9 @@
 
 A superloop is an outer loop that keeps sending work to agents until a goal is met. This page defines the model-mesh version: code owns the loop, omo workers do the work in bounded batches, a typed decision model answers bounded questions at fixed points, and only evidence ends the loop.
 
-Status: design plus a driver tested offline, dated 2026-10-29, hardened over two rounds of independent review on another model family, which reproduced thirteen ways to forge a success (see [the review record](research/orchestration/SUPERLOOP-COUNCIL.md#independent-review)). No live run has happened. No decision model is adopted: the shipped configs run the decision model in shadow mode, where its answers are logged and change nothing. Every speed, cost and accuracy figure for any decision model is unmeasured for model-mesh. The research and the council debate behind this page are in [SUPERLOOP-COUNCIL.md](research/orchestration/SUPERLOOP-COUNCIL.md) and [SYSTEM-ONE.md](research/orchestration/SYSTEM-ONE.md).
+Status: design plus a driver tested offline, dated 2026-10-29. Independent review on another model family ran for six rounds; round 6 approved with one test nit, now fixed. See [the review record](research/orchestration/SUPERLOOP-COUNCIL.md#independent-review). No live run has happened. No decision model is adopted: the shipped configs run the decision model in shadow mode, where its answers are logged and change nothing. Every speed, cost and accuracy figure for any decision model is unmeasured for model-mesh. The research and the council debate behind this page are in [SUPERLOOP-COUNCIL.md](research/orchestration/SUPERLOOP-COUNCIL.md) and [SYSTEM-ONE.md](research/orchestration/SYSTEM-ONE.md).
+
+The driver reads `profiles/` and the situation matrix under `examples/orchestration/`. It does not read the benchmark candidate config under `configs/`, and scores in `data/` do not select a runtime model. [The repository map](REPOSITORY-MAP.md) explains how the method, benchmark research, orchestration synthesis and superloop fit together.
 
 ## The four parts
 

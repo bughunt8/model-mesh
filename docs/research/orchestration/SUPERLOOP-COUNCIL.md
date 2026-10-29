@@ -6,6 +6,8 @@ Date: 2026-10-29. Five members on five model families, two rounds plus an addend
 
 The question: the owner's hypothesis is that a System One decision model such as Jev has no place in the six agentic patterns from Anthropic's [Building effective agents](https://www.anthropic.com/research/building-effective-agents). The council was asked to disprove it, map the loop types onto the six patterns, debate using a decision model as the core orchestrator of an endless loop of omo profiles, and recommend a PR.
 
+Repository integration: [the repository map](../../REPOSITORY-MAP.md) links the root-level benchmark, the [earlier matrix synthesis](SYNTHESIS.md) and this proposal. Benchmark candidates do not change the matrix's eligibility rules, the driver's frozen profile or this council's shadow-only recommendation.
+
 ## Where models agree
 
 | Finding | GPT 6.1 Sol | Gemini 4 Argon | Claude Opus 5.5 | GLM 5.3 | Kimi K3 | Evidence |
@@ -167,4 +169,10 @@ Verdict: APPROVE WITH NITS. The reviewer replayed the round 5 export forgery wit
 |---|---|
 | The new export scenario would still pass if a future change stopped the hook from running at all (nit) | The planted hook now also writes a marker in the worktree, and the scenario requires the marker and the absence of the outside file |
 
-That nit fix is the only change after round 6, and it touches the self-test only. What stays open is listed in the trust boundary and the limits of `docs/SUPERLOOP.md`: the pin race, a pinned file that is not bubblewrap, stated isolations, a same-user unjailed worker, weak owner checks, and the worker's own session record. No live omo, opencode export, goose reviewer or GitHub CI run has been tried.
+At the driver-review checkpoint, that nit fix was the only change after round 6 and touched the self-test only. What stays open is listed in the trust boundary and the limits of `docs/SUPERLOOP.md`: the pin race, a pinned file that is not bubblewrap, stated isolations, a same-user unjailed worker, weak owner checks, and the worker's own session record. No live omo, opencode export, goose reviewer or GitHub CI run had been tried at that checkpoint.
+
+## Staging integration
+
+The later [integration review](superloop-council/review-staging-integration-grok-4-7.md) checked the current staging structure, both syntheses, packaging and CI. It found no missing staging paths or changed runtime control, and approved the working-tree content with nits, conditional on staging the complete reviewed tree before committing.
+
+The follow-up adds all five skills to the release gate, clarifies the contributor exemption guidance, records the benchmark import under the combined 1.4.0 release and links its entry point to the authority map. Neither the driver nor its profile mappings, matrix, templates or shadow-only default changed. This is an integration review by another model family in the same environment, not a different native reviewer harness or live-runtime qualification.

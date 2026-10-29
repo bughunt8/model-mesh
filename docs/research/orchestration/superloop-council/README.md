@@ -9,3 +9,4 @@ Five independent reports gathered on 2026-10-28 and 2026-10-29 HKT, in two round
 - GLM 5.3, the Practical: [round 1](round1-glm-5-3.md), [CDM addendum](round1-addendum-glm-5-3.md), [round 2](round2-glm-5-3.md)
 - Kimi K3, the Researcher: [round 1](round1-kimi-k3.md), [round 2](round2-kimi-k3.md)
 - Independent review of the driver, Grok 4.7: [round 1](review-round1-grok-4-7.md), [round 2](review-round2-grok-4-7.md), [round 3](review-round3-grok-4-7.md), [round 4](review-round4-grok-4-7.md), [round 5](review-round5-grok-4-7.md), [round 6](review-round6-grok-4-7.md)
+- [Staging integration review](review-staging-integration-grok-4-7.md), Grok 4.7. This reviewed repository integration, documentation, packaging and CI, not new driver behavior. It approved the working-tree content with nits and required the final commit to include the whole reviewed tree.
