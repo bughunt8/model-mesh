@@ -75,7 +75,7 @@ The recommendation is to ship the superloop as a control plane in code with the 
 
 ## Independent review
 
-Grok 4.7 reviewed the driver after the council. It is on the xai family, sat outside the council, and differs from the author (Claude Opus 5.5). It was told to break the success path and wrote probes against the code. All five rounds ended REQUEST CHANGES. The reports are [round 1](superloop-council/review-round1-grok-4-7.md), [round 2](superloop-council/review-round2-grok-4-7.md), [round 3](superloop-council/review-round3-grok-4-7.md), [round 4](superloop-council/review-round4-grok-4-7.md) and [round 5](superloop-council/review-round5-grok-4-7.md). Every reproduction from all five rounds now has a regression scenario in `scripts/mm-superloop.py --self-test` or a mutation in `scripts/validate-superloop.py --self-test`. A self-test that passes shows these attacks fail; it does not show no other attack works.
+Grok 4.7 reviewed the driver after the council. It is on the xai family, sat outside the council, and differs from the author (Claude Opus 5.5). It was told to break the success path and wrote probes against the code. Rounds 1 to 5 ended REQUEST CHANGES and round 6 ended APPROVE WITH NITS. The reports are [round 1](superloop-council/review-round1-grok-4-7.md), [round 2](superloop-council/review-round2-grok-4-7.md), [round 3](superloop-council/review-round3-grok-4-7.md), [round 4](superloop-council/review-round4-grok-4-7.md), [round 5](superloop-council/review-round5-grok-4-7.md) and [round 6](superloop-council/review-round6-grok-4-7.md). Every reproduction from all six rounds now has a regression scenario in `scripts/mm-superloop.py --self-test` or a mutation in `scripts/validate-superloop.py --self-test`. A self-test that passes shows these attacks fail; it does not show no other attack works.
 
 ### Round 1
 
@@ -157,4 +157,14 @@ Round 5 confirmed the round 4 forgery closed for a real worker process under bub
 | The admission namespace test does not bind later calls, so a pinned wrapper can pass it and run everything unconfined (minor) | Not fixable by the driver. The docs and the boundary note now say the driver trusts the pinned file to be bubblewrap, and tell the owner to pin the distribution's `bwrap`, not a script |
 | A stale `protected` sentence in `control.py`, a stale scenario count in the self-test text, and "the jail has no network" where only the check jail has none (nits) | Fixed |
 
-Not re-filed, as agreed with the reviewer: the pin race, stated isolations, a same-user unjailed worker, a weak check that reads `/etc`, and the worker's own session record in its writable folders. These round 5 fixes have not been re-reviewed.
+Not re-filed, as agreed with the reviewer: the pin race, stated isolations, a same-user unjailed worker, a weak check that reads `/etc`, and the worker's own session record in its writable folders. Round 6 re-reviewed these fixes.
+
+### Round 6
+
+Verdict: APPROVE WITH NITS. The reviewer replayed the round 5 export forgery with a real stub worker and a real pinned bubblewrap. The version check, the batch and the export all ran inside bubblewrap, the planted hook ran and could not write `/usr/local/bin` or `/var/tmp`, and the run did not succeed. It found no other process the driver starts for the worker that runs outside the jail while `worker_isolation_enforced` is true. A write to `/dev/shm` stayed inside the jail's own `/dev`. With `container` stated instead, the export ran in its empty folder and did not run the hook, and the flag was false.
+
+| Finding (severity) | Change |
+|---|---|
+| The new export scenario would still pass if a future change stopped the hook from running at all (nit) | The planted hook now also writes a marker in the worktree, and the scenario requires the marker and the absence of the outside file |
+
+That nit fix is the only change after round 6, and it touches the self-test only. What stays open is listed in the trust boundary and the limits of `docs/SUPERLOOP.md`: the pin race, a pinned file that is not bubblewrap, stated isolations, a same-user unjailed worker, weak owner checks, and the worker's own session record. No live omo, opencode export, goose reviewer or GitHub CI run has been tried.

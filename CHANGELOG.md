@@ -8,7 +8,7 @@
 - **`scripts/validate-superloop.py`.** Rules L1 to L12 for goals, controllers, the tools registry and the question catalog, with 66 mutation cases.
 - **`examples/superloop/`.** The question catalog, a goal template, a shadow pilot controller, an offline rules controller and a tools registry template.
 - **`skills/mm-superloop/`** with scenarios in `tests/scenarios/mm-superloop.json`.
-- **`docs/research/orchestration/SUPERLOOP-COUNCIL.md` and `superloop-council/`.** A five-family council on whether a decision model fits the six agentic patterns and the omo superloop, the raw reports, and five rounds of independent review of the driver with what changed because of them.
+- **`docs/research/orchestration/SUPERLOOP-COUNCIL.md` and `superloop-council/`.** A five-family council on whether a decision model fits the six agentic patterns and the omo superloop, the raw reports, and six rounds of independent review of the driver with what changed because of them.
 
 ### Changed
 - `docs/research/orchestration/SYSTEM-ONE.md` corrects two errors (the retention terms, and an integration guide wrongly called the vendor's) and adds model limits, confidence definitions, other decision models, constrained decoding and the council outcome. Still no decision seat in the matrix.

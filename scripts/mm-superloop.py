@@ -603,7 +603,8 @@ def self_test():
         if escape:
             swap += f"try:\n    open({escape!r},'w').write('x')\nexcept OSError:\n    pass\n"
         if export_hook:  # the worker plants a file that a careless export would run from its working folder
-            swap += f"open(os.path.join(wt,'.export-hook'),'w').write(\"open({export_hook!r},'w').write('x')\")\n"
+            swap += (f"open(os.path.join(wt,'.export-hook'),'w').write(\"open('.export-hook-ran','w').write('1')\\n"
+                     f"open({export_hook!r},'w').write('x')\\n\")\n")
         open(omo, "w").write("#!" + sys.executable + "\n"
                              "import json,os,sys\n"
                              "a=sys.argv[1:]\n"
@@ -643,7 +644,8 @@ def self_test():
         hook_to = os.path.join(outside_dir, "export-escape")
         scenario("the session export runs inside the worker jail too", "verified_pending_owner", {},
                  ctl_mut=lambda c, x: jailed_omo(c, x, export_hook=hook_to), deps_mut=no_fakes,
-                 check=lambda r, o, w: not os.path.exists(hook_to) and r["boundary"]["worker_isolation_enforced"])
+                 check=lambda r, o, w: os.path.exists(os.path.join(w, ".export-hook-ran")) and not os.path.exists(hook_to)
+                 and r["boundary"]["worker_isolation_enforced"])
         scenario("a writable folder that holds the run folder is refused", "policy_denied", {},
                  ctl_mut=lambda c, x: (jailed_omo(c, x), x["tools_data"]["workers"]["stub"].__setitem__("writable", [x["tmp"]])),
                  deps_mut=no_fakes, check=lambda r, o, w: "overlaps" in str(r["detail"]))
