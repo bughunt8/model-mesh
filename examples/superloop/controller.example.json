@@ -55,6 +55,8 @@
     "isolation": "container",
     "env": {}
   },
+  "repository": "model-mesh",
+  "check_jail": "bwrap",
   "materialize": {
     "fragment": "profiles/hybrid.example.json",
     "disabled_hooks": [

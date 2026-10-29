@@ -101,6 +101,29 @@ class Registry:
             f.write(json.dumps({"kind": "header", "format": 1}) + "\n")
         return True
 
+    def binding(self, repository):
+        """The git directory the owner's repository id was first bound to, or None."""
+        for e in self._entries():
+            if e.get("kind") == "bind" and e.get("repository") == repository:
+                return e.get("git_dir")
+        return None
+
+    def bind(self, repository, git_dir):
+        self.append({"kind": "bind", "repository": repository, "git_dir": git_dir})
+
+    def _entries(self):
+        try:
+            lines = open(self.path, encoding="utf-8").read().splitlines()
+        except OSError:
+            return []
+        out = []
+        for line in lines:
+            try:
+                out.append(json.loads(line))
+            except ValueError:
+                continue
+        return out
+
     def prior(self, repo_key, goal_id):
         out = []
         try:

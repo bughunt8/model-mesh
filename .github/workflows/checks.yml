@@ -44,7 +44,15 @@ jobs:
         run: python scripts/validate-superloop.py
       - name: Superloop validator self-test (mutations must be caught)
         run: python scripts/validate-superloop.py --self-test
+      - name: Install bubblewrap for the superloop check jail
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q bubblewrap
+          # Ubuntu 24.04 blocks unprivileged user namespaces through AppArmor by default
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
       - name: Superloop driver self-test (offline scenarios with fake workers)
+        env:
+          MM_SUPERLOOP_REQUIRE_JAIL: "1"
         run: python scripts/mm-superloop.py --self-test
       - name: Documentation drift check
         run: python scripts/check-drift.py

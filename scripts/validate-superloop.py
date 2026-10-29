@@ -44,6 +44,9 @@ Rules:
       {session_id}, version 4.19.4 and pins; every absolute path in an argv and the executable
       itself must be pinned with a SHA-256; qualification record pins map a path to a SHA-256.
       The driver hashes every pin again immediately before each call.
+  L12 controller.repository is the owner's name for the repository (letters, digits, dot, dash,
+      underscore), which the lineage registry binds to one git directory; controller.check_jail
+      is bwrap (each acceptance check sees only the snapshot) or none (stated, not protected).
 
 Fake workers and reviewers pass only when the caller allows them, which only the offline
 self-test does.
@@ -70,6 +73,8 @@ _q = _mod("_q_sl", "scripts/superloop/qualify.py")
 KNOWN_FAMILIES = set(_vo.PREFIX_FAMILY.values()) | {"google"}
 TOOLS_EXAMPLE = os.path.join(ROOT, "examples", "superloop", "tools.example.json")
 ISOLATION = {"separate_user", "container", "none"}
+CHECK_JAILS = {"bwrap", "none"}
+REPO_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$")
 DOWNLOADERS = {"bunx", "npx", "pnpx", "yarn", "npm", "pnpm", "uvx", "pipx"}
 QUESTIONS = os.path.join(ROOT, "examples", "superloop", "questions.json")
 EXAMPLES = [("examples/superloop/goal.example.json", "examples/superloop/controller.example.json"),
@@ -267,6 +272,10 @@ def validate_controller(c, g=None, catalog=None, allow_fake=False):
     for k, v in res.items():
         if not _num(v) or v < 0:
             e.append(f"L10 reservations_usd.{k} must be non-negative")
+    if not isinstance(c.get("repository"), str) or not REPO_ID.match(c["repository"]):
+        e.append("L12 repository must be the owner's id for the repository: letters, digits, dot, dash, underscore")
+    if c.get("check_jail") not in CHECK_JAILS:
+        e.append(f"L12 check_jail must be one of {sorted(CHECK_JAILS)}")
     return e
 
 
@@ -495,6 +504,10 @@ def self_test():
     expect("worker binary in the controller", lambda m: m["controller"]["worker"].__setitem__("binary", "./x"), "L8")
     expect("export command in the controller", lambda m: m["controller"]["worker"].__setitem__("export_argv", ["x", "{session_id}"]), "L8")
     expect("no stated isolation", lambda m: m["controller"]["worker"].pop("isolation"), "L8")
+    expect("no repository id", lambda m: m["controller"].pop("repository"), "L12")
+    expect("repository id that is a path", lambda m: m["controller"].__setitem__("repository", "../other"), "L12")
+    expect("no check jail stated", lambda m: m["controller"].pop("check_jail"), "L12")
+    expect("unknown check jail", lambda m: m["controller"].__setitem__("check_jail", "chroot"), "L12")
     expect("omo continuation left on", lambda m: m["controller"]["materialize"]["disabled_hooks"].remove("todo-continuation-enforcer"), "L8")
     expect("atlas left on", lambda m: m["controller"]["materialize"]["disabled_hooks"].remove("atlas"), "L8")
     expect("runtime fallback left on", lambda m: m["controller"]["materialize"]["disabled_hooks"].remove("runtime-fallback"), "L8")

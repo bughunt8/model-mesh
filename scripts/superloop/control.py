@@ -29,10 +29,11 @@ on a fresh copy of the hashed tree, a review of the diff to that same tree by a 
 independent of the whole lineage with no blocker and no major finding, an unchanged tree after
 the review, a second run of the checks on a new copy, and wall-clock time left.
 
-Trust boundary: these rules hold against a worker that cannot write outside its worktree. A
-worker running as the driver's own OS user can edit the driver, the registries and the run
-folder, and no check in this file can stop that. The controller states the worker's isolation,
-and final.json repeats it.
+Trust boundary: these rules hold against a worker that cannot write outside its worktree, with
+checks jailed by bubblewrap. A worker running as the driver's own OS user can edit the driver,
+the registries and the run folder, and no check in this file can stop that; an unjailed check can
+read the live worktree by path. The controller states the isolation and the jail, and final.json
+repeats both with a protected flag. The driver never runs git in the worker's repository.
 """
 import hashlib, importlib.util, json, os, re, shutil, subprocess, sys, time
 from urllib.parse import urlparse
@@ -65,84 +66,139 @@ class PolicyError(Exception):
     pass
 
 
+EMPTY_TREE = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
 GIT_SAFE = ["-c", "core.fsmonitor=false", "-c", "core.untrackedCache=false", "-c", "core.splitIndex=false",
-            "-c", "core.autocrlf=false", "-c", "core.safecrlf=false"]
+            "-c", "core.autocrlf=false", "-c", "core.safecrlf=false", "-c", "core.symlinks=true"]
 
 
-def git(worktree, *args, env=None, check=True):
-    e = dict(os.environ)
-    e.update(env or {})
-    r = subprocess.run(["git", "-C", worktree] + GIT_SAFE + list(args), capture_output=True, text=True, env=e)
-    if check and r.returncode != 0:
-        raise RuntimeError(f"git {' '.join(args)} failed: {r.stderr.strip()}")
-    return r.stdout.strip()
+def clean_env(home, extra=None):
+    """A process environment built from nothing: PATH, a private HOME and a plain locale. Nothing
+    from the driver's environment leaks in, including MM_* and GIT_* variables."""
+    e = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "HOME": home, "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8",
+         "TMPDIR": os.environ.get("TMPDIR", "/tmp")}
+    e.update(extra or {})
+    return e
 
 
-def tree_hash(worktree, scratch):
-    """Hash of the working tree through a fresh private index: tracked, untracked and ignored
-    files. Left out: .git, the worker's status file and the controller-written omo config (that
-    one is checked on its own). Checks never read the live worktree; they run on a copy of this
-    tree (extract_tree), so bytes outside it cannot make a check pass. A filter set in the
-    repository's own config is refused: git add would run its command as the driver, which is a
-    way out of any worker sandbox. Filters from the owner's global config (git-lfs, for example)
-    are allowed; checks and review both see the stored blobs, never the filtered worktree."""
-    for scope in ("--local", "--worktree"):
-        if git(worktree, "config", scope, "--includes", "--get-regexp", r"^(filter|diff)\..*\.(clean|smudge|process|command|textconv)$",
-               check=False).strip():
-            raise PolicyError("a git filter or diff driver is set in the repository config; it would run as the driver")
-    idx = os.path.join(scratch, "superloop.index")
-    if os.path.exists(idx):
-        os.remove(idx)
-    env = {"GIT_INDEX_FILE": idx}
-    git(worktree, "add", "-A", "-f", "--", ".", *HASH_EXCLUDE, env=env)
-    return git(worktree, "write-tree", env=env)
+def git_dir_of(worktree):
+    """Resolve the worktree's git directory and common directory without running git in it.
+    The worktree must be the root of a checkout: .git is a directory, a symlink or a gitfile."""
+    dot = os.path.join(worktree, ".git")
+    if os.path.isdir(dot):
+        gd = os.path.realpath(dot)
+    elif os.path.isfile(dot):
+        line = open(dot, encoding="utf-8", errors="replace").readline().strip()
+        if not line.startswith("gitdir:"):
+            raise PolicyError("the worktree's .git file is not a gitdir pointer")
+        gd = os.path.realpath(os.path.join(worktree, line[len("gitdir:"):].strip()))
+    else:
+        raise PolicyError("the worktree must be the root of a git checkout")
+    cf = os.path.join(gd, "commondir")
+    common = os.path.realpath(os.path.join(gd, open(cf, encoding="utf-8").read().strip())) if os.path.isfile(cf) else gd
+    return gd, common
 
 
-def extract_tree(worktree, tree, dest):
-    """Write the exact blobs of a tree object into dest. No filters, no checkout. A nested
-    repository (gitlink) or a symlink that leaves the tree is refused."""
-    os.makedirs(dest)
-    listing = subprocess.run(["git", "-C", worktree] + GIT_SAFE + ["ls-tree", "-r", "-z", "--full-tree", tree],
-                             capture_output=True, check=True).stdout
-    entries = []
-    for e in listing.split(b"\0"):
-        if not e:
-            continue
-        meta, path = e.split(b"\t", 1)
-        mode, typ, sha = meta.split(b" ")
-        if typ != b"blob":
-            raise PolicyError(f"{path.decode(errors='replace')} is a nested repository; its content cannot be reviewed")
-        entries.append((mode.decode(), sha.decode(), path.decode("utf-8", errors="surrogateescape")))
-    if not entries:
-        return
-    p = subprocess.Popen(["git", "-C", worktree] + GIT_SAFE + ["cat-file", "--batch"], stdin=subprocess.PIPE,
-                         stdout=subprocess.PIPE)
-    data, _ = p.communicate(("\n".join(sha for _, sha, _ in entries) + "\n").encode())
-    pos = 0
-    root = os.path.realpath(dest)
-    for mode, sha, path in entries:
-        nl = data.index(b"\n", pos)
-        size = int(data[pos:nl].split(b" ")[2])
-        body = data[nl + 1:nl + 1 + size]
-        pos = nl + 1 + size + 1
-        full = os.path.join(dest, path)
-        os.makedirs(os.path.dirname(full), exist_ok=True)
-        if mode == "120000":
-            target = body.decode("utf-8", errors="surrogateescape")
-            if os.path.isabs(target) or not os.path.realpath(os.path.join(os.path.dirname(full), target)).startswith(root + os.sep):
-                raise PolicyError(f"symlink {path} points outside the tree")
-            os.symlink(target, full)
-            continue
-        with open(full, "wb") as f:
-            f.write(body)
-        if mode == "100755":
-            os.chmod(full, 0o755)
+class Store:
+    """The driver's own git object store, in the run folder, outside the worktree.
+
+    Every hash, snapshot and diff goes through this store with the worktree as a plain work tree.
+    Git never reads the worker's repository here: no repository config, hooks, filters, replace
+    refs, alternates or info/attributes. System and global config are off, replace objects are
+    off, hooks point at an empty folder, and attributes come from the empty tree, so the
+    worktree's own .gitattributes cannot convert bytes either. Git skips every path named .git.
+    What the store holds is exactly the bytes in the worktree's files."""
+
+    def __init__(self, scratch, worktree):
+        self.dir = os.path.join(scratch, "store.git")
+        self.hooks = os.path.join(scratch, "no-hooks")
+        self.home = os.path.join(scratch, "git-home")
+        self.wt = worktree
+        for d in (self.hooks, self.home):
+            os.makedirs(d, exist_ok=True)
+        self.env = clean_env(self.home, {"GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": os.devnull,
+                                         "GIT_ATTR_NOSYSTEM": "1", "GIT_NO_REPLACE_OBJECTS": "1",
+                                         "GIT_TERMINAL_PROMPT": "0", "GIT_OPTIONAL_LOCKS": "0"})
+        r = subprocess.run(["git", "init", "-q", "--bare", "--template=", self.dir], capture_output=True, env=self.env)
+        if r.returncode != 0:
+            raise RuntimeError(f"git init of the driver store failed: {r.stderr.decode(errors='replace').strip()}")
+
+    def cmd(self, *args):
+        return ["git", "--git-dir=" + self.dir, "--work-tree=" + self.wt, "--no-replace-objects",
+                "--attr-source=" + EMPTY_TREE, "-c", "core.hooksPath=" + self.hooks] + GIT_SAFE + list(args)
+
+    def run(self, *args, env=None, stdin=None):
+        e = dict(self.env)
+        e.update(env or {})
+        r = subprocess.run(self.cmd(*args), capture_output=True, env=e, input=stdin)
+        if r.returncode != 0:
+            raise RuntimeError(f"git {args[0]} failed: {r.stderr.decode(errors='replace').strip()}")
+        return r.stdout
+
+    def tree_hash(self, scratch):
+        """Hash of the whole working tree through a fresh private index: tracked, untracked and
+        ignored files alike. Left out: every .git, the worker's status file and the
+        controller-written omo config (that one is checked on its own)."""
+        idx = os.path.join(scratch, "superloop.index")
+        if os.path.exists(idx):
+            os.remove(idx)
+        env = {"GIT_INDEX_FILE": idx}
+        self.run("add", "-A", "-f", "--", ".", *HASH_EXCLUDE, env=env)
+        return self.run("write-tree", env=env).decode().strip()
+
+    def extract(self, tree, dest):
+        """Write the exact blobs of a tree object into dest. No filters, no checkout. A nested
+        repository (gitlink) or a symlink that leaves the tree is refused."""
+        os.makedirs(dest)
+        entries = []
+        for e in self.run("ls-tree", "-r", "-z", "--full-tree", tree).split(b"\0"):
+            if not e:
+                continue
+            meta, path = e.split(b"\t", 1)
+            mode, typ, sha = meta.split(b" ")
+            if typ != b"blob":
+                raise PolicyError(f"{path.decode(errors='replace')} is a nested repository; its content cannot be reviewed")
+            entries.append((mode.decode(), sha.decode(), path.decode("utf-8", errors="surrogateescape")))
+        if not entries:
+            return
+        data = self.run("cat-file", "--batch", stdin=("\n".join(sha for _, sha, _ in entries) + "\n").encode())
+        pos = 0
+        root = os.path.realpath(dest)
+        for mode, sha, path in entries:
+            nl = data.index(b"\n", pos)
+            size = int(data[pos:nl].split(b" ")[2])
+            body = data[nl + 1:nl + 1 + size]
+            pos = nl + 1 + size + 1
+            full = os.path.join(dest, path)
+            os.makedirs(os.path.dirname(full), exist_ok=True)
+            if mode == "120000":
+                target = body.decode("utf-8", errors="surrogateescape")
+                if os.path.isabs(target) or not os.path.realpath(os.path.join(os.path.dirname(full), target)).startswith(root + os.sep):
+                    raise PolicyError(f"symlink {path} points outside the tree")
+                os.symlink(target, full)
+                continue
+            with open(full, "wb") as f:
+                f.write(body)
+            if mode == "100755":
+                os.chmod(full, 0o755)
+
+    def write_diff(self, base_tree, tree, path):
+        """The change since admission, tree object to tree object, as raw bytes."""
+        with open(path, "wb") as f:
+            f.write(self.run("diff", "--binary", "--no-ext-diff", "--no-textconv", "--no-color", base_tree, tree))
 
 
-def write_diff(worktree, base_tree, tree, path):
-    """The change since admission: baseline tree object to current tree object."""
-    open(path, "w", encoding="utf-8").write(git(worktree, "diff", "--binary", "--no-ext-diff", "--no-textconv",
-                                                base_tree, tree, check=False))
+def jail_argv(argv, snap, hide):
+    """bubblewrap around one acceptance check: the whole filesystem read-only, the live
+    worktree, its git directory and the run folder replaced by empty folders, the snapshot
+    bound back read-write, a fresh /tmp, its own process, network and IPC namespaces, and an
+    environment built from nothing."""
+    j = ["bwrap", "--die-with-parent", "--new-session", "--unshare-all", "--clearenv",
+         "--setenv", "PATH", os.environ.get("PATH", "/usr/bin:/bin"), "--setenv", "HOME", "/tmp",
+         "--setenv", "TMPDIR", "/tmp", "--setenv", "LANG", "C.UTF-8",
+         "--ro-bind", "/", "/", "--dev", "/dev", "--proc", "/proc", "--tmpfs", "/tmp"]
+    for h in hide:
+        j += ["--tmpfs", h]
+    return j + ["--bind", snap, snap, "--chdir", snap, "--"] + list(argv)
 
 
 def protected_hashes(worktree, paths):
@@ -332,7 +388,9 @@ class Run:
                "profile": self.goal.get("profile"), "situation": self.goal.get("situation"),
                "option": self.goal.get("option"), "mode": self.ctl.get("mode"), "reserved_usd": round(self.spent, 4),
                "decisions": self.decisions, "disagreements": self.disagreements, "provenance": self.prov.snapshot(),
-               "isolation": self.ctl.get("worker", {}).get("isolation")}
+               "isolation": self.ctl.get("worker", {}).get("isolation"), "check_jail": self.ctl.get("check_jail"),
+               "protected": self.ctl.get("worker", {}).get("isolation") in ("container", "separate_user")
+               and self.ctl.get("check_jail") == "bwrap"}
         out.update(extra)
         if self.log is None:
             return out
@@ -363,14 +421,31 @@ class Run:
             self.prov.record(0, "author:" + str(s["role"]), s["harness"], s["families"])
         for s in self.goal.get("prior_lineage", []):
             self.prov.record(-1, "prior:" + str(s.get("note", "")), s["harness"], s["families"])
+        wt_real, out_real = os.path.realpath(self.wt), os.path.realpath(self.out)
+        if out_real == wt_real or out_real.startswith(wt_real + os.sep) or wt_real.startswith(out_real + os.sep):
+            return ["the output folder and the worktree must not contain each other; put --out outside the checkout"]
         try:
-            common = os.path.realpath(os.path.join(self.wt, git(self.wt, "rev-parse", "--git-common-dir")))
-        except RuntimeError as ex:
+            self.git_dir, self.common = git_dir_of(self.wt)
+        except (PolicyError, OSError) as ex:
             return [f"worktree: {ex}"]
         if not self.registry.exists():
             return [f"lineage registry {self.registry.path} is missing; create it once with --init-registry. "
                     "A missing registry is not an empty history"]
-        self.repo_key = common
+        # the owner names the repository; the registry binds that name to one git directory, so a
+        # worker that moves .git between runs cannot start a fresh lineage under the same name
+        self.repo_key = self.ctl["repository"]
+        bound = self.registry.binding(self.repo_key)
+        if bound is None:
+            self.registry.bind(self.repo_key, self.common)
+        elif bound != self.common:
+            return [f"repository {self.repo_key!r} is bound to {bound}, but this worktree's git directory is "
+                    f"{self.common}. A moved .git cannot reset the lineage; the owner must investigate"]
+        if self.ctl["check_jail"] == "bwrap":
+            exe = shutil.which("bwrap")
+            ok = exe and subprocess.run([exe, "--unshare-all", "--ro-bind", "/", "/", "--", "true"],
+                                        capture_output=True).returncode == 0
+            if not ok:
+                return ["check_jail bwrap: bubblewrap is missing or cannot create namespaces on this host"]
         for e in self.registry.prior(self.repo_key, self.goal["id"]):
             for h in e.get("harnesses", []) or ["unknown"]:
                 self.prov.record(-2, "registry:" + str(e.get("run")), h, e.get("families", []))
@@ -442,8 +517,19 @@ class Run:
             self.pin_version = "4.19.4"
         return []
 
+    def tree(self):
+        return self.store.tree_hash(self.scratch)
+
     def setup(self):
-        self.base = git(self.wt, "rev-parse", "HEAD")
+        self.store = Store(self.scratch, self.wt)
+        r = subprocess.run(["git", "--git-dir=" + self.git_dir, "--no-replace-objects", "-c", "core.hooksPath=" +
+                            self.store.hooks, "rev-parse", "--verify", "-q", "HEAD"], capture_output=True, env=self.store.env)
+        self.base = r.stdout.decode().strip() or None
+        hide = [os.path.realpath(self.wt)]
+        for d in (self.git_dir, self.common, os.path.realpath(self.out)):
+            if not any(d == h or d.startswith(h + os.sep) for h in hide):
+                hide.append(d)
+        self.hide = hide
         self.cfg_text, self.mat = materialize(self.ctl, self.goal, self.wt, self.scratch, self.allowed,
                                               self.ctl["worker"].get("agent", "sisyphus"))
         self.cfg_sha = _sha(self.cfg_text)
@@ -455,7 +541,7 @@ class Run:
         for f in self.mat["families"]:
             self.prov.record(0, "config", "opencode-omo", [f])
         self.protected0 = protected_hashes(self.wt, self.goal.get("protected_paths", []))
-        self.base_tree = tree_hash(self.wt, self.scratch)
+        self.base_tree = self.tree()
         base_checks = self.run_checks(0, self.base_tree, tag="baseline")
         if base_checks is not None and all(c["passed"] for c in base_checks):
             raise PolicyError("every acceptance check already passes on the baseline tree; at least one must fail "
@@ -486,14 +572,18 @@ class Run:
         share of the wall clock. Returns None when the clock runs out before every check has run."""
         snap = os.path.join(self.scratch, f"snap-{tag}-{iteration:03d}")
         shutil.rmtree(snap, ignore_errors=True)
-        extract_tree(self.wt, tree, snap)
+        self.store.extract(tree, snap)
+        home = os.path.join(self.scratch, "check-home")
+        os.makedirs(home, exist_ok=True)
+        jail = self.ctl["check_jail"] == "bwrap"
         res = []
         try:
             for c in self.goal["acceptance"]:
                 left = self.remaining()
                 if left <= 0:
                     return None
-                r = workers.run_bounded(c["argv"], snap, dict(os.environ), min(c.get("timeout_seconds", 300), left),
+                argv = jail_argv(c["argv"], snap, self.hide) if jail else c["argv"]
+                r = workers.run_bounded(argv, snap, clean_env(home), min(c.get("timeout_seconds", 300), left),
                                         self.out, f"{tag}-{iteration:03d}-{c['name']}")
                 res.append({"name": c["name"], "passed": r["exit_code"] == 0 and not r["timed_out"],
                             "exit_code": r["exit_code"], "timed_out": r["timed_out"]})
@@ -595,7 +685,7 @@ class Run:
         shutil.rmtree(rdir, ignore_errors=True)
         os.makedirs(rdir)
         diff = os.path.join(rdir, "change.patch")
-        write_diff(self.wt, self.base_tree, tree, diff)
+        self.store.write_diff(self.base_tree, tree, diff)
         findings, ran = [], []
         for seatm, adapter in usable:
             left = self.remaining()
@@ -626,7 +716,7 @@ class Run:
             findings += [dict(x, id=f"{seatm['harness']}:{x['id']}") for x in items]
         if self.remaining() <= 0:
             return {"stop": "cap_wall_clock", "detail": "wall clock ran out during the review"}
-        if tree_hash(self.wt, self.scratch) != tree or not self.config_intact():
+        if self.tree() != tree or not self.config_intact():
             return {"stop": "policy_denied", "ran": ran, "detail": "the worktree changed during the review"}
         clusters = agg.cluster(findings)
         blockers = [c for c in clusters if c["severity"] == "blocker"]
@@ -641,7 +731,7 @@ class Run:
     def run(self):
         try:
             return self._run()
-        except (PolicyError, PermissionError, RuntimeError, subprocess.CalledProcessError) as ex:
+        except Exception as ex:  # any failure ends in final.json, never a bare traceback
             return self.finish("policy_denied", f"{type(ex).__name__}: {ex}")
 
     def _run(self):
@@ -654,8 +744,8 @@ class Run:
         self.admitted = True
         try:
             self.setup()
-        except (PolicyError, PermissionError, RuntimeError) as ex:
-            return self.finish("policy_denied", str(ex))
+        except Exception as ex:
+            return self.finish("policy_denied", f"{type(ex).__name__}: {ex}")
         caps = self.ctl["caps"]
         prev_passing, prev_failing, idle = set(), None, 0
         cycles, checks, open_findings, last_review, review_rounds = {}, [], [], None, 0
@@ -681,11 +771,17 @@ class Run:
                 return self.finish("worker_failure", res.get("error"), iterations=it)
             if not self.config_intact():
                 return self.finish("policy_denied", "the worker changed .omo/omo.jsonc", iterations=it)
+            try:
+                moved = git_dir_of(self.wt) != (self.git_dir, self.common)
+            except (PolicyError, OSError):
+                moved = True
+            if moved:
+                return self.finish("policy_denied", "the worker moved or replaced the worktree's .git", iterations=it)
             bad = self.verify_reported(res, it)
             if bad:
                 return self.finish("policy_denied", bad, iterations=it)
             claims = read_claims(self.wt)
-            tree_prev, tree = tree, tree_hash(self.wt, self.scratch)
+            tree_prev, tree = tree, self.tree()
             checks = self.run_checks(it, tree)
             if checks is None:
                 return self.finish("cap_wall_clock", "wall clock ran out during the checks", iterations=it)
@@ -729,6 +825,10 @@ class Run:
             if worst >= caps["fix_verify_cycles"]:
                 return self.finish("fix_cycles_exhausted", f"{worst} cycles on {max(cycles, key=cycles.get)}", iterations=it)
             green = bool(checks) and not failing
+            if green and tree == self.base_tree:
+                # the same tree failed these checks at admission, so a pass now came from outside it
+                return self.finish("policy_denied", "the checks pass on the tree that failed them at admission; "
+                                   "they depend on something outside the tree", iterations=it)
             cadence = self.ctl.get("review", {}).get("every_k_iterations")
             smoke = green and answers.get("goal_met", {}).get("type") == "noul" and \
                 answers["goal_met"]["p"] < self.ctl.get("review", {}).get("smoke_below", 0.5)
@@ -758,7 +858,7 @@ class Run:
             again = self.run_checks(it, rv["tree"], tag="recheck")
             if again is None:
                 return self.finish("cap_wall_clock", "wall clock ran out during the recheck", iterations=it)
-            if not all(c["passed"] for c in again) or tree_hash(self.wt, self.scratch) != rv["tree"] or not self.config_intact():
+            if not all(c["passed"] for c in again) or self.tree() != rv["tree"] or not self.config_intact():
                 self.log.write("recheck_failed", iteration=it, checks=again)
                 checks = again
                 continue

@@ -19,7 +19,14 @@ Think of a railway. The omo workers are the trains and the decision model is the
 
 ## Trust boundary
 
-Everything below holds against a worker that cannot write outside its worktree. A worker running as the driver's own OS user can edit the driver, the registries and the run folder, attach to the reviewer process, or delete the lineage, and no check in the driver can stop that. So run the worker as another OS user or in a container where only the worktree is writable. The controller states the isolation (`separate_user`, `container` or `none`). The driver cannot verify it, and `final.json` repeats it next to the verdict, so a success under `none` reads as unprotected. omo's and OpenCode's own permission settings are not a sandbox.
+The driver's guarantees need two things it does not provide by itself.
+
+- The worker can write only inside its worktree. A worker running as the driver's own OS user can edit the driver, the registries and the run folder, attach to the reviewer process, or delete the lineage, and no check in the driver can stop that. Run the worker as another OS user or in a container where only the worktree is writable. omo's and OpenCode's own permission settings are not a sandbox.
+- Each acceptance check sees only its snapshot. An unjailed check is an ordinary process: it can open the live worktree, including `.git`, by path, or find it through `/proc`. With `check_jail: bwrap` the driver runs each check under bubblewrap, with the filesystem read-only, the live worktree, its git directory and the run folder replaced by empty folders, only the snapshot writable, its own process and network namespaces and an environment built from nothing. bubblewrap needs Linux with unprivileged user namespaces; the driver tests it at admission and refuses the run if it does not work.
+
+The controller states both: `worker.isolation` (`separate_user`, `container` or `none`) and `check_jail` (`bwrap` or `none`). The driver cannot verify the first. `final.json` repeats both and sets `protected` to true only for `container` or `separate_user` together with `bwrap`. A success with `protected: false` says the checks and the review passed; it does not say a worker could not have staged them.
+
+Inside that boundary, the driver itself never runs git in the worker's repository. It keeps its own object store in the run folder, outside the worktree, and reads the worktree as plain files: no repository config, hooks, filters, replace refs or attributes from the worker's side take part.
 
 ## Where a decision model fits the six patterns
 
@@ -67,8 +74,8 @@ A wrong brake costs one look from a person or one review call. A wrong accelerat
 2. The control plane rewrites `.omo/omo.jsonc` from the frozen config.
 3. One worker batch: `oh-my-openagent run --agent sisyphus --json --directory <worktree> "<prompt>"` from a local, pinned omo 4.19.4 install. The prompt is built by code from the goal, the failing checks and the open review findings. It tells the worker not to declare the goal complete, not to edit protected paths or the omo config, and not to send, publish, pay, change permissions or delete outside the worktree.
 4. Batch checks: the omo config must be unchanged, and the session's agents and models, read through the pinned export command, must be readable, all in `expect_agents`, and all in the cell's families. Otherwise the run stops with `policy_denied`.
-5. The control plane hashes the tree through a fresh private index, ignored files included. Left out are `.git`, the worker's status file and the controller's omo config (checked on its own). A filter or diff driver set in the repository's own config, a nested repository and a symlink that leaves the tree stop the run.
-6. Acceptance checks run as argv lists on a fresh copy of that tree object, written from the stored blobs, never in the live worktree. So a check sees exactly the bytes the reviewer's diff describes: nothing under `.git`, no status file, no filtered content. Each check gets the smaller of its own timeout and the wall-clock time left.
+5. The control plane hashes the worktree's files into its own git store, through a fresh private index, ignored files included. System and global git config, hooks, replace objects and attributes are all off, so the stored blobs are the bytes in the files. Left out are every `.git`, the worker's status file and the controller's omo config (checked on its own). A nested repository, a symlink that leaves the tree, or a `.git` that moved during the batch stops the run.
+6. Acceptance checks run as argv lists on a fresh copy of that tree, written from the stored blobs, never in the live worktree, with an environment built from nothing (`PATH`, a private `HOME`, `TMPDIR` and a locale). Under `check_jail: bwrap` the copy is all the check can see, so it sees the bytes the reviewer's diff describes and nothing under `.git`. Under `none` that holds only for checks that stay in their working folder. Each check gets the smaller of its own timeout and the wall-clock time left. A check that needs another variable passes it in its argv, for example through `env`.
 7. Facts: check results, tree change, idle streak, regressions, protected-path changes, the worker's exit and timeout, and the last review's counts.
 8. Decision questions: `progress`, `blocked`, `needs_human`, `goal_met` and `next_action`, plus `situation` once at the start. The rules baseline answers the same questions, and both answers are logged.
 9. Brakes, if advisory mode and an answer crosses a verified threshold.
@@ -91,9 +98,9 @@ Before the first batch, the checks also run once on the admission tree. If every
 
 Spend is reserved before each call from the controller's per-call reservations, because missing usage is not zero cost. Worker and review reservations must be above zero, and so must the decision reservation when a remote backend is used. A dual backend reserves two decision calls. A reservation the controller leaves out stops the run instead of counting as free.
 
-The driver never resets the lineage itself. Earlier authors go in the goal's `prior_lineage`, and every admitted run also appends its lineage to a registry outside the worktree (`~/.local/state/model-mesh/superloop-lineage.jsonl` by default). The owner creates it once with `--init-registry`; a missing registry stops the run, because a missing registry is not an empty history. Entries are keyed by repository (every branch and worktree of one clone shares the key) and by goal id, so renaming a branch or a goal does not escape them. This is conservative: unrelated earlier work in the same clone also counts. A worker that runs as the owner's user can still delete and recreate the file, which is why the trust boundary above matters. A run refuses an output directory that already holds a log.
+The driver never resets the lineage itself. Earlier authors go in the goal's `prior_lineage`, and every admitted run also appends its lineage to a registry outside the worktree (`~/.local/state/model-mesh/superloop-lineage.jsonl` by default). The owner creates it once with `--init-registry`; a missing registry stops the run, because a missing registry is not an empty history. Entries are keyed by the controller's `repository`, the owner's name for the repository, and by goal id, so renaming a branch or a goal does not escape them. The first run under a name binds it to the worktree's git directory, and a later run whose git directory differs is refused, so a worker that points `.git` somewhere new between runs cannot start a fresh lineage. Every branch and linked worktree of one clone shares the git directory. This is conservative: unrelated earlier work in the same clone also counts. A worker that runs as the owner's user can still delete and recreate the file, which is why the trust boundary above matters. A run refuses an output directory that already holds a log.
 
-Terminal states: `verified_pending_owner` or `verified` (success), `cap_iterations`, `cap_wall_clock`, `cap_budget`, `no_progress`, `fix_cycles_exhausted`, `blocked_human`, `review_unavailable`, `worker_failure`, `policy_denied`, `cancelled`. Running out of a cap never counts as success. `final.json` lists any open blocker or major findings and the stated isolation.
+Terminal states: `verified_pending_owner` or `verified` (success), `cap_iterations`, `cap_wall_clock`, `cap_budget`, `no_progress`, `fix_cycles_exhausted`, `blocked_human`, `review_unavailable`, `worker_failure`, `policy_denied`, `cancelled`. Running out of a cap never counts as success. `final.json` lists any open blocker or major findings, the stated isolation, the check jail and whether the run was `protected`. Any error the driver did not expect also ends in `final.json` as `policy_denied`, with the error type in the reason.
 
 ## Endless, in a sentence the owner can sign
 
@@ -139,6 +146,8 @@ Schema-valid output is not correct output. A paper on constrained decoding found
 
 - No decision model is adopted, and the orchestration matrix has no decision seat. Matrix rules for a decision seat wait until one is adopted.
 - Owner-written acceptance checks are trusted. The validator refuses obvious no-ops and the driver refuses checks that all pass before the work, but neither can tell a weak test from a strong one. That stays the owner's job, together with listing the tests under `protected_paths`.
+- No check jail outside Linux. On macOS or Windows, run the driver inside a Linux container or accept `check_jail: none` and `protected: false`.
+- The jail has no network. A check that needs a download fails under `bwrap`; fetch dependencies before admission.
 - Hashing and copying ignored files makes a large dependency folder in the worktree slow: every batch writes a full copy for the checks. Nested repositories are refused rather than hashed.
 - Rotating which checks fail can avoid the fix-verify count; the iteration cap still bounds it.
 - No vendor-specific backend code. The generic `http` backend sends one request shape to any compatible endpoint; the example config points it at one vendor in shadow mode.
@@ -151,7 +160,7 @@ Schema-valid output is not correct output. A paper on constrained decoding found
 ```text
 python scripts/validate-superloop.py
 python scripts/mm-superloop.py --init-registry
-python scripts/mm-superloop.py --goal GOAL.json --controller CONTROLLER.json --worktree PATH --out runs/RUN_ID
+python scripts/mm-superloop.py --goal GOAL.json --controller CONTROLLER.json --worktree PATH --out ~/.local/state/model-mesh/runs/RUN_ID
 python scripts/mm-superloop.py --self-test
 ```
 

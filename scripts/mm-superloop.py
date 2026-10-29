@@ -4,7 +4,7 @@ asks a typed decision model at fixed forks, and accepts work only on evidence.
 
 Usage:
   python scripts/mm-superloop.py --goal GOAL.json --controller CONTROLLER.json \
-      --worktree PATH --out runs/RUN_ID
+      --worktree PATH --out ~/.local/state/model-mesh/runs/RUN_ID
   python scripts/mm-superloop.py --init-registry [PATH]
   python scripts/mm-superloop.py --self-test
 
@@ -13,13 +13,16 @@ Before the first run, the owner creates the lineage registry once (--init-regist
 registry (~/.config/model-mesh/superloop-tools.json or MM_SUPERLOOP_TOOLS; template in
 examples/superloop/tools.example.json). Both live outside every worktree.
 
-The worktree must be a git checkout with a clean HEAD; the run never commits, pushes or merges.
-Create runs/RUN_ID/STOP to stop a run at the next iteration boundary.
+The worktree must be the root of a git checkout; the run never commits, pushes or merges. The
+output folder must be new and outside the worktree. Create STOP in it to stop the run at the next
+iteration boundary.
 Exit codes: 0 verified (pending the owner's merge), 2 stopped without success, 3 refused at
 admission, 1 internal error.
 
 The self-test runs every scenario offline: a temporary git repository, fake workers, fake
 reviewers and recorded decision answers. MM_OFFLINE=1 is set, so no request can leave the machine.
+The four check-jail scenarios run only where bubblewrap works; MM_SUPERLOOP_REQUIRE_JAIL=1 turns a
+missing jail into a failure, which CI sets.
 """
 import argparse, copy, json, os, shutil, subprocess, sys, tempfile
 
@@ -107,7 +110,14 @@ def base_controller():
     c = json.load(open(os.path.join(ROOT, "examples", "superloop", "controller.rules.example.json"), encoding="utf-8"))
     c["worker"] = {"kind": "fake", "name": "worker", "agent": "sisyphus", "expect_agents": ["sisyphus"], "isolation": "container"}
     c["reviewers"] = [{"harness": first["harness"], "kind": "fake", "name": "reviewer"}]
+    c["check_jail"] = "none"
     return c
+
+
+def bwrap_works():
+    exe = shutil.which("bwrap")
+    return bool(exe) and subprocess.run([exe, "--unshare-all", "--ro-bind", "/", "/", "--", "true"],
+                                        capture_output=True).returncode == 0
 
 
 def two_seat_matrix():
@@ -211,7 +221,7 @@ def self_test():
             ev = os.path.join(ctx["out"], "events.jsonl")
             if os.path.exists(ev):
                 ok = ok and ledger.verify_chain(ev)
-            print(("  ok   " if ok else "  FAIL ") + f"{label}: {res['status']} ({str(res['detail'])[:110]})")
+            print(("  ok   " if ok else "  FAIL ") + f"{label}: {res['status']} ({str(res['detail'])[:110]})".replace("\n", " "))
             fails += 0 if ok else 1
         finally:
             shutil.rmtree(tmp)
@@ -333,15 +343,43 @@ def self_test():
              pre=lambda g, c, d, x: (os.makedirs(x["out"]), open(os.path.join(x["out"], "events.jsonl"), "w").close()))
 
     def registry_entry(g, c, d, x):
-        wt = x["wt"]
-        common = os.path.realpath(os.path.join(wt, control.git(wt, "rev-parse", "--git-common-dir")))
-        ledger.Registry(d["registry"]).append({"repo_key": common, "goal": "earlier", "run": "r0",
+        ledger.Registry(d["registry"]).append({"repo_key": c["repository"], "goal": "earlier", "run": "r0",
                                                "status": "no_progress", "harnesses": ["dsh"],
                                                "families": list(seat_harnesses()[0]["families"])})
     scenario("an earlier run in the repository is inherited without prior_lineage", "review_unavailable", both, pre=registry_entry)
     scenario("renaming the branch and the goal does not drop the lineage", "review_unavailable", both,
              goal_mut=lambda g: g.update(id="renamed-goal"),
-             pre=lambda g, c, d, x: (registry_entry(g, c, d, x), control.git(x["wt"], "branch", "-m", "hidden-branch")))
+             pre=lambda g, c, d, x: (registry_entry(g, c, d, x),
+                                     subprocess.run(["git", "-C", x["wt"], "branch", "-m", "hidden-branch"], check=True)))
+
+    def moved_git(d, x):
+        inner = d["fakes"]["worker"]
+
+        def fn(wt, prompt, it, extra):
+            os.rename(os.path.join(wt, ".git"), os.path.join(wt, "alt.git"))
+            open(os.path.join(wt, ".git"), "w").write("gitdir: alt.git\n")
+            return inner(wt, prompt, it, extra)
+        d["fakes"]["worker"] = fn
+    scenario("a worker that moves .git during a batch is refused", "policy_denied", both, deps_mut=moved_git,
+             check=lambda r, o, w: "moved" in r["detail"])
+    scenario("a repository id bound to another git directory is refused", "policy_denied", both,
+             pre=lambda g, c, d, x: ledger.Registry(d["registry"]).bind(c["repository"], "/elsewhere/.git"),
+             check=lambda r, o, w: "bound to" in str(r["detail"]))
+    scenario("the first run binds the repository id in the registry", "verified_pending_owner", both,
+             check=lambda r, o, w: ledger.Registry(os.path.join(os.path.dirname(o), "lineage.jsonl")).binding("model-mesh")
+             == os.path.realpath(os.path.join(w, ".git")))
+
+    def out_inside(g, c, d, x):
+        x["out"] = os.path.join(x["wt"], "runs", "r1")
+    scenario("an output folder inside the worktree is refused", "policy_denied", both, pre=out_inside,
+             check=lambda r, o, w: "contain each other" in str(r["detail"]))
+
+    def raises(d, x):
+        def fn(wt, prompt, it, extra):
+            raise ValueError("boom")
+        d["fakes"]["worker"] = fn
+    scenario("an unexpected error still ends in final.json", "policy_denied", both, deps_mut=raises,
+             check=lambda r, o, w: os.path.exists(os.path.join(o, "final.json")) and "ValueError" in r["detail"])
     scenario("a deleted lineage registry stops the run", "policy_denied", both,
              pre=lambda g, c, d, x: os.remove(d["registry"]))
     scenario("a lone major blocks success", "fix_cycles_exhausted", {i: [(f"n{i}.txt", "x"), ("a.txt", "a\n"), ("b.txt", "b\n")] for i in range(1, 30)},
@@ -403,17 +441,89 @@ def self_test():
     scenario("a check that reads the status file through a split path cannot pass", "no_progress",
              {1: [(".superloop/status.json", "WIN\n"), ("a.txt", "a\n")]},
              goal_mut=only_check(win_in + [".superloop", "status.json"]))
-    scenario("a git filter in the worktree is refused", "policy_denied", both,
-             pre=lambda g, c, d, x: control.git(x["wt"], "config", "filter.benign.clean", "cat"))
+    def marker(x):
+        return os.path.join(x["tmp"], "RAN")
 
-    def filter_later(d, x):
+    def worker_git_tricks(kind):
+        """The worker plants something in its own .git that git would run or honour as the driver."""
+        def mut(d, x):
+            inner = d["fakes"]["worker"]
+            m = marker(x)
+
+            def fn(wt, prompt, it, extra):
+                g = lambda *a: subprocess.run(["git", "-C", wt] + list(a), check=True, capture_output=True,
+                                              input=a[-1].encode() if a[0] == "hash-object" else None)
+                if kind == "filter":
+                    g("config", "filter.benign.clean", f"touch {m}; sed s/SECRET/ok/")
+                    open(os.path.join(wt, ".gitattributes"), "w").write("* filter=benign\n")
+                elif kind == "hook":
+                    h = os.path.join(wt, ".git", "hooks", "post-index-change")
+                    open(h, "w").write(f"#!/bin/sh\ntouch {m}\n")
+                    os.chmod(h, 0o755)
+                elif kind == "replace":
+                    secret = subprocess.run(["git", "-C", wt, "hash-object", "-w", "--stdin"], input=b"SECRET\n",
+                                            capture_output=True, check=True).stdout.decode().strip()
+                    ok = subprocess.run(["git", "-C", wt, "hash-object", "-w", "--stdin"], input=b"ok\n",
+                                        capture_output=True, check=True).stdout.decode().strip()
+                    subprocess.run(["git", "-C", wt, "replace", "-f", secret, ok], check=True, capture_output=True)
+                open(os.path.join(wt, "a.txt"), "w").write("SECRET\n")
+                return inner(wt, prompt, it, extra)
+            d["fakes"]["worker"] = fn
+        return mut
+    is_ok = ["python3", "-c", "import sys; sys.exit(0 if open('a.txt').read() == 'ok\\n' else 1)"]
+    for kind in ("filter", "hook", "replace"):
+        scenario(f"a {kind} in the worker's .git neither runs nor changes the bytes", "no_progress", {},
+                 goal_mut=only_check(is_ok), deps_mut=worker_git_tricks(kind),
+                 check=lambda r, o, w, x=None: not any(os.path.exists(os.path.join(os.path.dirname(o), "RAN")) for _ in [0]))
+
+    def binary_file(d, x):
         inner = d["fakes"]["worker"]
 
         def fn(wt, prompt, it, extra):
-            control.git(wt, "config", "filter.benign.clean", "sed s/SECRET/ok/")
+            open(os.path.join(wt, "blob.bin"), "wb").write(bytes(range(256)) * 4)
             return inner(wt, prompt, it, extra)
         d["fakes"]["worker"] = fn
-    scenario("a git filter added by a batch is refused", "policy_denied", both, deps_mut=filter_later)
+
+    def has_binary_diff(r, o, w):
+        diffs = [os.path.join(dp, f) for dp, _, fs in os.walk(o) for f in fs if f == "change.patch"]
+        return bool(diffs) and all(b"GIT binary patch" in open(p, "rb").read() for p in diffs)
+    scenario("a binary file is reviewed, not a crash", "verified_pending_owner", both, deps_mut=binary_file,
+             check=has_binary_diff)
+
+    # -- the check jail ----------------------------------------------------------------------------
+    def jailed(c):
+        c["check_jail"] = "bwrap"
+
+    def live_check(g, c, d, x):
+        g["acceptance"] = [{"name": "w", "description": "win", "timeout_seconds": 30, "argv": win_in + [x["wt"], ".git", "superloop-win"]}]
+
+    escaped = os.path.join(ROOT, ".superloop-jail-escape")
+
+    scenario("checks that start passing on an unchanged tree are refused", "policy_denied",
+             {1: [(".git/superloop-win", "WIN\n")]}, pre=live_check,
+             check=lambda r, o, w: "outside the tree" in r["detail"])
+
+    def escape_check(g, c, d, x):
+        out = escaped
+        g["acceptance"].append({"name": "x", "description": "write outside", "timeout_seconds": 30, "argv": [
+            "python3", "-c", f"open({out!r}, 'w').write('x')"]})
+
+    if bwrap_works():
+        scenario("jailed checks still pass on honest work", "verified_pending_owner", both, ctl_mut=jailed,
+                 check=lambda r, o, w: r.get("protected") is True)
+        scenario("a jailed check cannot read the live worktree's .git", "no_progress", {1: [(".git/superloop-win", "WIN\n")]},
+                 ctl_mut=jailed, pre=live_check)
+        scenario("without the jail the same check passes, and final.json says unprotected", "verified_pending_owner",
+                 {1: [(".git/superloop-win", "WIN\n"), ("a.txt", "a\n")]}, pre=live_check,
+                 check=lambda r, o, w: r.get("protected") is False and r.get("check_jail") == "none")
+        scenario("a jailed check cannot write outside its snapshot", "no_progress", both, ctl_mut=jailed, pre=escape_check,
+                 check=lambda r, o, w: not os.path.exists(escaped))
+    elif os.environ.get("MM_SUPERLOOP_REQUIRE_JAIL") == "1":
+        print("  FAIL MM_SUPERLOOP_REQUIRE_JAIL is set, but bubblewrap is missing or cannot create namespaces here")
+        fails += 1
+    else:
+        print("  skip the four check-jail scenarios: bubblewrap is missing or cannot create namespaces here")
+
     scenario("checks that already pass on the baseline are refused", "policy_denied", both,
              goal_mut=only_check(["test", "1", "-eq", "1"]))
 

@@ -75,7 +75,7 @@ The recommendation is to ship the superloop as a control plane in code with the 
 
 ## Independent review
 
-Grok 4.7 reviewed the driver after the council. It is on the xai family, sat outside the council, and differs from the author (Claude Opus 5.5). It was told to break the success path and wrote probes against the code. Both rounds ended REQUEST CHANGES. The reports are [round 1](superloop-council/review-round1-grok-4-7.md) and [round 2](superloop-council/review-round2-grok-4-7.md). Every reproduction from both rounds now has a regression scenario in `scripts/mm-superloop.py --self-test` or a mutation in `scripts/validate-superloop.py --self-test`. A self-test that passes shows these attacks fail; it does not show no other attack works.
+Grok 4.7 reviewed the driver after the council. It is on the xai family, sat outside the council, and differs from the author (Claude Opus 5.5). It was told to break the success path and wrote probes against the code. All three rounds ended REQUEST CHANGES. The reports are [round 1](superloop-council/review-round1-grok-4-7.md), [round 2](superloop-council/review-round2-grok-4-7.md) and [round 3](superloop-council/review-round3-grok-4-7.md). Every reproduction from all three rounds now has a regression scenario in `scripts/mm-superloop.py --self-test` or a mutation in `scripts/validate-superloop.py --self-test`. A self-test that passes shows these attacks fail; it does not show no other attack works.
 
 ### Round 1
 
@@ -100,7 +100,7 @@ Grok 4.7 reviewed the driver after the council. It is on the xai family, sat out
 
 ### Round 2
 
-Round 2 closed most of round 1 and found new holes. Most rely on a worker running as the driver's own OS user. That led to a stated trust boundary as well as code changes.
+Round 2 closed most of round 1 and found new holes. Several rely on a worker running as the driver's own OS user, which led to a stated trust boundary as well as code changes. Round 3 showed that boundary was not enough on its own, as recorded below.
 
 | Finding (severity) | Change |
 |---|---|
@@ -108,7 +108,7 @@ Round 2 closed most of round 1 and found new holes. Most rely on a worker runnin
 | A pinned reviewer was replaced after admission (blocker) | Every pin is hashed again right before each call, and the resolved real path runs |
 | A check passed on a file under `.git`, and the diff was empty (blocker) | Checks run on a fresh copy of the hashed tree, written from the stored blobs, never in the live worktree |
 | A check read the status file through a split path (blocker) | Same copy: the status file is not in it |
-| A clean filter showed the reviewer different bytes (blocker) | Checks and review both use the stored blobs. A filter or diff driver in the repository's own config is refused, because git would run it as the driver |
+| A clean filter showed the reviewer different bytes (blocker) | A filter or diff driver in the repository's own config was refused. Round 3 found this fix too narrow: replace refs and hooks in the same `.git` still took part. Round 3 replaced it |
 | `test 1 -eq 1` and other tautologies passed as checks (blocker) | The checks run once on the admission tree, and the run is refused if every one already passes |
 | A nested repository passed on unseen bytes, and an empty one crashed the driver (major) | Nested repositories and escaping symlinks are refused, and git errors end as `policy_denied` |
 | Renaming the branch and the goal dropped the lineage (major) | The registry is keyed by repository only |
@@ -118,3 +118,19 @@ Round 2 closed most of round 1 and found new holes. Most rely on a worker runnin
 | `mode` was read as an agent name, an agent-written `human` label verified, and the mtime check had slack (minor and nit) | `mode` is dropped, the owner pins qualification records and must read the dataset, and no findings file is used |
 
 Not changed, and stated in the docs: a worker that runs as the owner's OS user can defeat any file-based record, rotating failing checks can dodge the fix-verify count until the iteration cap, and a small window remains between hashing a pin and starting the process.
+
+### Round 3
+
+Round 3 confirmed every replayed round 2 forgery closed, and found three more that returned success with `isolation: container` and a worker that wrote only inside its worktree. So the stated boundary did not hold, and the round 2 claim that checks and review used the stored blobs was false while git honoured the worker's replace refs.
+
+| Finding (severity) | Change |
+|---|---|
+| A replace ref under `.git/refs/replace` made git show the reviewer and the checks a different blob (blocker) | The driver no longer runs git in the worker's repository. It keeps its own object store in the run folder and reads the worktree as plain files, with system and global config, hooks, replace objects and attributes all off. The repository-filter refusal is gone because the worker's config is never read |
+| A `post-index-change` hook in the worktree ran as the driver during hashing and rewrote the snapshot and the diff (blocker) | Same change: the driver's store has no hooks and points `core.hooksPath` at an empty folder |
+| A check read the live `.git` by absolute path, or found the worktree through `/proc` (blocker) | Checks get an environment built from nothing. With `check_jail: bwrap` each check runs under bubblewrap and sees only its snapshot. `final.json` sets `protected` only for an isolated worker with jailed checks. Checks that start passing on the tree that failed them at admission are refused, jail or not |
+| A binary file in the diff crashed the driver before `final.json` (major) | The diff stays bytes, and any unexpected error ends in `final.json` as `policy_denied` |
+| Pointing `.git` at a new directory gave the next run a fresh lineage key (major) | The controller names the repository. The registry binds that name to one git directory and refuses a run where it differs. A `.git` moved during a batch stops the run |
+| The documented `--out runs/RUN_ID` inside the worktree could never succeed (major) | An output folder inside the worktree is refused, and the docs put it under `~/.local/state/model-mesh/runs/` |
+| The trust boundary paragraph overclaimed (docs) | Rewritten: it names the two conditions, worker isolation and the check jail, and what `protected: false` does and does not say |
+
+Grok's probes, rerun on the new code: the hook case ends `no_progress` and the hook never ran; the replace-ref case ends `policy_denied`, but only because the probe's own `git replace` fails on the second batch, so the self-test carries the clean version, which ends `no_progress`; the absolute-path and `/proc` checks end `no_progress` under `bwrap` and still succeed under `none` with `protected: false`; the moved `.git` and the inside output folder are refused. The pin race and a same-user worker remain open, as before. These round 3 fixes have not been re-reviewed.
