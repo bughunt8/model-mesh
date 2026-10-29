@@ -21,7 +21,7 @@ admission, 1 internal error.
 
 The self-test runs every scenario offline: a temporary git repository, fake workers, fake
 reviewers and recorded decision answers. MM_OFFLINE=1 is set, so no request can leave the machine.
-The four check-jail scenarios run only where bubblewrap works; MM_SUPERLOOP_REQUIRE_JAIL=1 turns a
+The eleven scenarios that use bubblewrap run only where it works; MM_SUPERLOOP_REQUIRE_JAIL=1 turns a
 missing jail into a failure, which CI sets.
 """
 import argparse, copy, json, os, shutil, subprocess, sys, tempfile
@@ -593,7 +593,7 @@ def self_test():
         d["fakes"]["worker"] = fn
     scenario("a symlink out of the tree is refused", "policy_denied", {}, deps_mut=escaping_link)
 
-    def stub_omo(c, x, model=None, swap_export=False, escape=None):
+    def stub_omo(c, x, model=None, swap_export=False, escape=None, export_hook=None):
         """Real omo adapter, no fakes: stub binaries stand in for oh-my-openagent and opencode export."""
         command_reviewer(c, x)
         prov, mid = (model or worker_model()).split("/", 1)
@@ -602,6 +602,8 @@ def self_test():
         swap = f"open({exp!r},'w').write('#!{sys.executable}\\nprint(1)\\n')\n" if swap_export else ""
         if escape:
             swap += f"try:\n    open({escape!r},'w').write('x')\nexcept OSError:\n    pass\n"
+        if export_hook:  # the worker plants a file that a careless export would run from its working folder
+            swap += f"open(os.path.join(wt,'.export-hook'),'w').write(\"open({export_hook!r},'w').write('x')\")\n"
         open(omo, "w").write("#!" + sys.executable + "\n"
                              "import json,os,sys\n"
                              "a=sys.argv[1:]\n"
@@ -610,7 +612,8 @@ def self_test():
                              "for f in ('a.txt','b.txt'): open(os.path.join(wt,f),'w').write('x\\n')\n" + swap +
                              "print(json.dumps({'sessionId':'ses_stub','success':True,'durationMs':1,'messageCount':2,'summary':'done'}))\n")
         open(exp, "w").write("#!" + sys.executable + "\n"
-                             "import json\n"
+                             "import json,os\n"
+                             "try:\n    exec(open('.export-hook').read())\nexcept OSError:\n    pass\n"
                              f"print(json.dumps({{'info':{{'id':'ses_stub','agent':'sisyphus','providerID':{prov!r},'modelID':{mid!r}}}}}))\n")
         for f in (omo, exp):
             os.chmod(f, 0o755)
@@ -626,8 +629,8 @@ def self_test():
              ctl_mut=lambda c, x: stub_omo(c, x), deps_mut=no_fakes,
              check=lambda r, o, w: os.path.exists(os.path.join(w, ".omo", "omo.jsonc")))
     if jail_scenarios:
-        def jailed_omo(c, x, escape=None):
-            stub_omo(c, x, escape=escape)
+        def jailed_omo(c, x, escape=None, export_hook=None):
+            stub_omo(c, x, escape=escape, export_hook=export_hook)
             c["worker"]["isolation"] = "bwrap"
             jailed(c, x)
         scenario("omo under the driver's worker jail: both jails enforced", "verified_pending_owner", {},
@@ -637,6 +640,10 @@ def self_test():
         scenario("a jailed omo worker cannot write outside the worktree", "verified_pending_owner", {},
                  ctl_mut=lambda c, x: jailed_omo(c, x, escape=escape_to), deps_mut=no_fakes,
                  check=lambda r, o, w: not os.path.exists(escape_to) and r["boundary"]["worker_isolation_enforced"])
+        hook_to = os.path.join(outside_dir, "export-escape")
+        scenario("the session export runs inside the worker jail too", "verified_pending_owner", {},
+                 ctl_mut=lambda c, x: jailed_omo(c, x, export_hook=hook_to), deps_mut=no_fakes,
+                 check=lambda r, o, w: not os.path.exists(hook_to) and r["boundary"]["worker_isolation_enforced"])
         scenario("a writable folder that holds the run folder is refused", "policy_denied", {},
                  ctl_mut=lambda c, x: (jailed_omo(c, x), x["tools_data"]["workers"]["stub"].__setitem__("writable", [x["tmp"]])),
                  deps_mut=no_fakes, check=lambda r, o, w: "overlaps" in str(r["detail"]))

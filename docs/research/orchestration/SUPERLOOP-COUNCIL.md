@@ -75,7 +75,7 @@ The recommendation is to ship the superloop as a control plane in code with the 
 
 ## Independent review
 
-Grok 4.7 reviewed the driver after the council. It is on the xai family, sat outside the council, and differs from the author (Claude Opus 5.5). It was told to break the success path and wrote probes against the code. All four rounds ended REQUEST CHANGES. The reports are [round 1](superloop-council/review-round1-grok-4-7.md), [round 2](superloop-council/review-round2-grok-4-7.md), [round 3](superloop-council/review-round3-grok-4-7.md) and [round 4](superloop-council/review-round4-grok-4-7.md). Every reproduction from all four rounds now has a regression scenario in `scripts/mm-superloop.py --self-test` or a mutation in `scripts/validate-superloop.py --self-test`. A self-test that passes shows these attacks fail; it does not show no other attack works.
+Grok 4.7 reviewed the driver after the council. It is on the xai family, sat outside the council, and differs from the author (Claude Opus 5.5). It was told to break the success path and wrote probes against the code. All five rounds ended REQUEST CHANGES. The reports are [round 1](superloop-council/review-round1-grok-4-7.md), [round 2](superloop-council/review-round2-grok-4-7.md), [round 3](superloop-council/review-round3-grok-4-7.md), [round 4](superloop-council/review-round4-grok-4-7.md) and [round 5](superloop-council/review-round5-grok-4-7.md). Every reproduction from all five rounds now has a regression scenario in `scripts/mm-superloop.py --self-test` or a mutation in `scripts/validate-superloop.py --self-test`. A self-test that passes shows these attacks fail; it does not show no other attack works.
 
 ### Round 1
 
@@ -145,4 +145,16 @@ Round 4 confirmed every replayed round 3 item closed: replace refs, the worktree
 | The docs said the check sees only its snapshot, and the skill read `protected: true` as both guarantees holding (docs) | The trust boundary names what each jail mounts, says the check can still read the system folders and check mounts, and says why the worker jail matters: a same-user worker can write a world-writable system folder, as `/usr/local/bin` is in this sandbox |
 | A broken sentence in `TESTING.md` (nit) | Fixed |
 
-Grok's round 4 probe, rerun on the new code with a pinned bubblewrap: the `/var/tmp` forgery ends `no_progress`, with `worker_isolation_enforced` false because the probe's worker is a fake in the driver's process. A check that reads `/etc/passwd` still passes, as the reviewer expected; `/etc` is mounted, the worker cannot write it, and a check that tests the host instead of the tree is a weak check, which stays the owner's job. The pin race and the stated isolations remain open. These round 4 fixes have not been re-reviewed.
+Grok's round 4 probe, rerun on the new code with a pinned bubblewrap: the `/var/tmp` forgery ends `no_progress`, with `worker_isolation_enforced` false because the probe's worker is a fake in the driver's process. A check that reads `/etc/passwd` still passes, as the reviewer expected; `/etc` is mounted, the worker cannot write it, and a check that tests the host instead of the tree is a weak check, which stays the owner's job. The pin race and the stated isolations remain open. Round 5 re-reviewed these fixes.
+
+### Round 5
+
+Round 5 confirmed the round 4 forgery closed for a real worker process under bubblewrap: the jailed stub could not write `/var/tmp` or `/usr/local/bin`, and the run did not succeed. Every round 4 rerun case held. The findings narrowed to one major, one minor and three nits.
+
+| Finding (severity) | Change |
+|---|---|
+| The session export ran outside the worker jail, in the worktree, as the driver user. A probe export that ran a file the worker planted wrote under `/usr/local/bin`, a jailed check read it, and the run succeeded with both enforced flags true (major) | Every worker process (the version check, each batch and each session export) starts through one launcher that applies the worker jail. The worker counts as enforced only if every one of them did. Without the jail, the export runs in an empty folder, not the worktree. A new scenario plants the same hook; it fails against the old code and passes against the new |
+| The admission namespace test does not bind later calls, so a pinned wrapper can pass it and run everything unconfined (minor) | Not fixable by the driver. The docs and the boundary note now say the driver trusts the pinned file to be bubblewrap, and tell the owner to pin the distribution's `bwrap`, not a script |
+| A stale `protected` sentence in `control.py`, a stale scenario count in the self-test text, and "the jail has no network" where only the check jail has none (nits) | Fixed |
+
+Not re-filed, as agreed with the reviewer: the pin race, stated isolations, a same-user unjailed worker, a weak check that reads `/etc`, and the worker's own session record in its writable folders. These round 5 fixes have not been re-reviewed.

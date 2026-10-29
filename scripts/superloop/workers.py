@@ -180,6 +180,24 @@ class OmoWorker:
 
     def __init__(self, cfg, tool, jail=None):
         self.cfg, self.tool, self.jail = cfg, tool, jail
+        self.calls_jailed = self.calls_unjailed = 0
+
+    def _launch(self, argv, worktree, env, timeout, out_dir, tag, capture=False):
+        """Every process of a batch (version, run, session export) starts here, so under the worker
+        jail none of them runs outside it. Without a jail the export gets an empty working folder,
+        not the worktree, so files the worker planted there are not its project config."""
+        if self.jail:
+            argv, cwd = self._wrap(argv, worktree), worktree
+            self.calls_jailed += 1
+        else:
+            cwd = worktree if tag.startswith(("worker-", "omo-version")) else os.path.join(out_dir, "export-cwd")
+            os.makedirs(cwd, exist_ok=True)
+            self.calls_unjailed += 1
+        return run_bounded(argv, cwd, env, timeout, out_dir, tag, capture=capture)
+
+    @property
+    def ran_jailed(self):
+        return self.calls_jailed > 0 and self.calls_unjailed == 0
 
     def _wrap(self, argv, worktree):
         if not self.jail:
@@ -195,8 +213,7 @@ class OmoWorker:
 
     def version(self, worktree, out_dir):
         base, _ = self._argvs()
-        r = run_bounded(self._wrap(base + ["--version"], worktree), worktree, dict(os.environ), 60, out_dir,
-                        "omo-version", capture=True)
+        r = self._launch(base + ["--version"], worktree, dict(os.environ), 60, out_dir, "omo-version", capture=True)
         return (r["stdout_text"] or "").strip()
 
     def run(self, worktree, prompt, iteration, timeout, out_dir):
@@ -210,10 +227,9 @@ class OmoWorker:
             return {"exit_code": None, "timed_out": False, "duration": 0.0, "error": str(ex), "reported": {}}
         argv = base + ["run", "--agent", self.cfg.get("agent", "sisyphus"), "--json", "--directory", worktree, prompt]
         try:
-            argv = self._wrap(argv, worktree)
+            res = self._launch(argv, worktree, env, timeout, out_dir, f"worker-{iteration:03d}")
         except PermissionError as ex:
             return {"exit_code": None, "timed_out": False, "duration": 0.0, "error": str(ex), "reported": {}}
-        res = run_bounded(argv, worktree, env, timeout, out_dir, f"worker-{iteration:03d}")
         rep = parse_run_result(res["stdout"])
         if rep.get("session_id"):
             try:
@@ -222,10 +238,14 @@ class OmoWorker:
                 rep["export_error"] = str(ex)
             else:
                 left = max(5.0, timeout - (time.time() - t0))
-                ex = run_bounded([a.format(session_id=rep["session_id"]) for a in export], worktree, env,
-                                 min(60.0, left), out_dir, f"export-{iteration:03d}", capture=True)
-                if ex["exit_code"] == 0 and not ex["timed_out"]:
-                    rep.update(parse_session(ex["stdout_text"]))
+                try:
+                    ex = self._launch([a.format(session_id=rep["session_id"]) for a in export], worktree, env,
+                                      min(60.0, left), out_dir, f"export-{iteration:03d}", capture=True)
+                except PermissionError as err:
+                    rep["export_error"] = str(err)
+                else:
+                    if ex["exit_code"] == 0 and not ex["timed_out"]:
+                        rep.update(parse_session(ex["stdout_text"]))
         res["reported"] = rep
         return res
 

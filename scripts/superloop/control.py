@@ -30,10 +30,11 @@ independent of the whole lineage with no blocker and no major finding, an unchan
 the review, a second run of the checks on a new copy, and wall-clock time left.
 
 Trust boundary: these rules hold against a worker that cannot write outside its worktree, with
-checks jailed by bubblewrap. A worker running as the driver's own OS user can edit the driver,
-the registries and the run folder, and no check in this file can stop that; an unjailed check can
-read the live worktree by path. The controller states the isolation and the jail, and final.json
-repeats both with a protected flag. The driver never runs git in the worker's repository.
+checks that read nothing a worker wrote except their snapshot. On Linux the driver can enforce
+both with a pinned bubblewrap; final.json's boundary record says what it enforced and what was
+only stated. A worker running as the driver's own OS user without the jail can edit the driver,
+the registries and the run folder, and no check in this file can stop that. The driver never runs
+git in the worker's repository.
 """
 import hashlib, importlib.util, json, os, re, shutil, subprocess, sys, time
 from urllib.parse import urlparse
@@ -409,14 +410,18 @@ class Run:
         return True
 
     def boundary(self):
-        """What the driver enforced itself and what the controller only stated. Enforced means
-        the driver started that process under the pinned bubblewrap; nothing else counts."""
+        """What the driver enforced itself and what the controller only stated. Worker enforced
+        means every worker process of the run (version, batches, session exports) started through
+        the pinned bubblewrap; checks enforced means every check did. The driver trusts the pinned
+        file to be bubblewrap: its one namespace test at admission does not prove a later call was
+        confined. Nothing else counts."""
         w = self.ctl.get("worker", {})
         return {"worker_isolation": w.get("isolation"),
-                "worker_isolation_enforced": bool(getattr(self, "worker_ran_jailed", False)),
+                "worker_isolation_enforced": bool(getattr(getattr(self, "worker", None), "ran_jailed", False)),
                 "check_jail": self.ctl.get("check_jail"),
                 "check_jail_enforced": bool(getattr(self, "checks_ran_jailed", False)),
-                "note": "a stated isolation (separate_user, container, none) was not checked by the driver"}
+                "note": "a stated isolation (separate_user, container, none) was not checked by the driver; "
+                        "enforced trusts the pinned file to be bubblewrap"}
 
     def bwrap(self):
         """The pinned bubblewrap, hashed again before each use."""
@@ -827,7 +832,6 @@ class Run:
             self.write_config()
             prompt = compose_prompt(self.goal, it, checks, open_findings)
             res = self.worker.run(self.wt, prompt, it, min(caps["per_call_seconds"], self.remaining()), self.out)
-            self.worker_ran_jailed = bool(getattr(self.worker, "jail", None)) and getattr(self, "worker_ran_jailed", True)
             for s in self.a["authors"]:
                 self.prov.record(it, "author:" + str(s["role"]), s["harness"], s["families"])
             self.log.write("worker", iteration=it, exit_code=res["exit_code"], timed_out=res["timed_out"],
