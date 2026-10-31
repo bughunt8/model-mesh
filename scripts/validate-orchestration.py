@@ -30,6 +30,16 @@ Rules:
   O12 A06 options require author provenance; A11 options require the official Playwright MCP.
   O13 the seven harness example files exist, parse, and are marked docs-checked, runtime-deferred.
   O14 MATRIX.md equals the table rendered from the data.
+  O15 every option states the zero-context review constraint and a read-only review artifact.
+  O16 every option has an aggregator seat outside the author and orchestrator harness and families.
+  O17 lenses: every situation names lenses from examples/orchestration/lenses.json and a primary_lens that
+      is in the list, every reviewer seat has a unique seat id and carries lenses, the seats together cover
+      the situation, and the tier limits hold. In the spread tier two seats have disjoint families, both run
+      the primary lens and every other lens runs on exactly one seat, so a round is at most
+      lenses + 1 reviewer calls. Reviewer seats may carry only the keys in SEAT_KEYS.
+  O16 also: on a spread option outside ultimate, the aggregator's first rung is a family no reviewer uses
+      when the model table has one, and the later rungs may fall back to a reviewer family.
+  O18 gates: spec-readiness before and drift after are set exactly where the policy says.
 """
 import copy, io, json, os, re, sys
 
@@ -37,6 +47,11 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MATRIX = os.path.join(ROOT, "examples", "orchestration", "matrix.example.json")
 TABLE = os.path.join(ROOT, "docs", "research", "orchestration", "MATRIX.md")
 HARNESS_DIR = os.path.join(ROOT, "examples", "orchestration", "harnesses")
+LENSES = os.path.join(ROOT, "examples", "orchestration", "lenses.json")
+TIERS = {"standard": (4, 1), "wide": (6, 1), "spread": (6, 2)}
+SPREAD_SITUATIONS = {"A05", "A06"}
+GATED = {"A02", "A03"}
+SEAT_KEYS = {"role", "seat", "harness", "chain", "kind", "execution", "lenses"}
 
 SITUATIONS = [f"A{n:02d}" for n in range(1, 13)]
 PROFILES = ["ultimate", "hybrid", "b4b", "global"]
@@ -52,6 +67,7 @@ STATUSES = {"proposed-adapter-qualification-deferred", "conditional-custom-provi
 HK_FAMILIES = {"deepseek", "moonshot", "zai", "alibaba", "minimax", "xiaomi"}
 HK_BLOCKED = {"openai", "anthropic", "google", "xai"}
 # Mirrors .github/checks.py OVER_CAP / METERED_EXEMPT. checks.py asserts the same sets.
+CAP_REFERENCE = 4.65
 OVER_CAP = {"flagship-open", "div-flagship", "reasoner-xl", "coder-xl"}
 METERED_EXEMPT = {"coder-xl"}
 CLAIMS = re.compile(r"\b(verified|measured|qualified|passes|proven|certified)\b", re.I)
@@ -63,6 +79,15 @@ EXPECTED_HARNESS_FILES = {
 }
 ENVELOPE_KEYS = {"harness", "status", "native_path", "native_format", "native_config", "invocation",
                  "sources", "limitations", "role_binding", "profiles"}
+
+
+def lens_library():
+    try:
+        d = json.load(io.open(LENSES, encoding="utf-8"))
+        ids = [x["id"] for x in d["lenses"]]
+        return set(ids) if len(ids) == len(set(ids)) else set()
+    except Exception:
+        return set()
 
 
 def seats(option):
@@ -268,6 +293,9 @@ def validate(matrix, root=ROOT, check_files=True):
                     if st["harness"] not in HARNESSES:
                         e("O3", f"{where}: unknown harness {st['harness']}")
                 chains = [st["chain"] for st in seats(o)] + list(o.get("category_routes", {}).values())
+                agg = o.get("aggregator")
+                if isinstance(agg, dict) and isinstance(agg.get("chain"), list) and all(isinstance(x, str) for x in agg["chain"]):
+                    chains.append(agg["chain"])
                 for ch in chains:
                     if len(set(ch)) != len(ch):
                         e("O4", f"{where}: duplicate rung in {ch}")
@@ -327,6 +355,8 @@ def validate(matrix, root=ROOT, check_files=True):
                 # O7 cap uses model identity and conservative price references.
                 if p in ("hybrid", "b4b"):
                     entries = [(st["role"], i, mid, False, st["kind"]) for st in seats(o) for i,mid in enumerate(st["chain"])]
+                    if isinstance(agg, dict):
+                        entries += [("aggregator", i, mid, False, "aggregation") for i, mid in enumerate(agg.get("chain", []))]
                     entries += [(c,i,mid,True,"author") for c,ch in o["category_routes"].items() for i,mid in enumerate(ch)]
                     for role,i,mid,iscat,kind in entries:
                         if mid not in models[p]:
@@ -334,7 +364,7 @@ def validate(matrix, root=ROOT, check_files=True):
                         name = models[p][mid]["id"].split("/",1)[1].lower()
                         price = OUTPUT_REFERENCE.get(name)
                         allowed = name == "kimi-k3" and cap_exempt(p,role,i,iscat,kind)
-                        if price is None or price > 4.65 and not allowed:
+                        if price is None or price > CAP_REFERENCE and not allowed:
                             e("O7", f"{where}: {mid} at {role}[{i}] has no cap-safe reference or exact slot exception")
                 # O8 applies to the entire chain, including fallbacks.
                 for st in seats(o):
@@ -346,6 +376,106 @@ def validate(matrix, root=ROOT, check_files=True):
                     e("O12", f"{where}: A06 needs author-provenance-required")
                 if sid == "A11" and "official-playwright-mcp" not in caps:
                     e("O12", f"{where}: A11 needs official-playwright-mcp")
+    # O15 to O18 review panel
+    lens_ids = lens_library()
+    if not lens_ids:
+        e("O17", "examples/orchestration/lenses.json is missing or has no lenses")
+    panel = matrix.get("policy", {}).get("review_panel", {})
+    if panel.get("tiers") != {k: {"max_lenses": a, "reviewer_seats": b} for k, (a, b) in TIERS.items()}:
+        e("O17", "policy.review_panel.tiers must match the tier table in this validator")
+    for s in sits:
+        sid = s.get("id")
+        tier = s.get("review_tier")
+        lenses = s.get("lenses")
+        if tier not in TIERS:
+            e("O17", f"{sid}: review_tier must be one of {sorted(TIERS)}")
+            continue
+        if not isinstance(lenses, list) or not lenses or len(set(lenses)) != len(lenses) or not set(lenses) <= lens_ids:
+            e("O17", f"{sid}: lenses must be a non-empty unique list drawn from the lens library")
+            continue
+        if s.get("primary_lens") != lenses[0]:
+            e("O17", f"{sid}: primary_lens must be set and equal the first lens")
+        max_l, seat_n = TIERS[tier]
+        if len(lenses) > max_l:
+            e("O17", f"{sid}: {len(lenses)} lenses exceed the {tier} tier limit of {max_l}")
+        if (sid in SPREAD_SITUATIONS) != (tier == "spread"):
+            e("O17", f"{sid}: spread tier is for {sorted(SPREAD_SITUATIONS)} and only those")
+        gates = s.get("gates")
+        want = {"pre": "spec-readiness", "post": "drift"} if sid in GATED else {"pre": "none", "post": "none"}
+        if gates != want:
+            e("O18", f"{sid}: gates must be {want}")
+        for p in PROFILES:
+            for o in s.get("profiles", {}).get(p, {}).get("options", []):
+                where = f"{sid}/{p}/{o.get('name')}"
+                cons = set(o.get("constraints", []))
+                if not {"zero-context-review", "readonly-review-artifact"} <= cons:
+                    e("O15", f"{where}: needs zero-context-review and readonly-review-artifact")
+                revs = o["reviewers"]
+                if len(revs) != seat_n:
+                    e("O17", f"{where}: {tier} tier needs {seat_n} reviewer seat(s), found {len(revs)}")
+                covered = set()
+                seat_ids = [r.get("seat") for r in revs]
+                if not all(isinstance(x, str) and x for x in seat_ids) or len(set(seat_ids)) != len(seat_ids):
+                    e("O17", f"{where}: reviewer seats need unique non-empty seat ids")
+                for r in revs:
+                    if set(r) - SEAT_KEYS:
+                        e("O15", f"{where}: reviewer seat {r.get('role')} has keys outside the review contract: {sorted(set(r) - SEAT_KEYS)}")
+                    ls = r.get("lenses")
+                    if not isinstance(ls, list) or not ls or not set(ls) <= set(lenses):
+                        e("O17", f"{where}: reviewer {r.get('role')} lenses must be a non-empty subset of the situation lenses")
+                        continue
+                    covered |= set(ls)
+                if covered != set(lenses):
+                    e("O17", f"{where}: reviewer seats leave lenses uncovered: {sorted(set(lenses) - covered)}")
+                if tier == "spread" and len(revs) == 2:
+                    fam = [families(matrix, p, r["chain"]) for r in revs]
+                    if fam[0] & fam[1]:
+                        e("O17", f"{where}: spread reviewers share a family {sorted(fam[0] & fam[1])}")
+                    if not all(s.get("primary_lens") in (r.get("lenses") or []) for r in revs):
+                        e("O17", f"{where}: both spread reviewers must run the primary lens {s.get('primary_lens')}")
+                    for ln in lenses:
+                        runs = sum(ln in (r.get("lenses") or []) for r in revs)
+                        want_runs = 2 if ln == s.get("primary_lens") else 1
+                        if runs != want_runs:
+                            e("O17", f"{where}: lens {ln} runs on {runs} seat(s), spread budget needs {want_runs}")
+                # O16 aggregator
+                ag = o.get("aggregator")
+                if not isinstance(ag, dict) or not {"harness", "chain", "kind", "execution"} <= set(ag):
+                    e("O16", f"{where}: aggregator seat missing or incomplete")
+                    continue
+                if ag["kind"] != "aggregation" or ag["execution"] != "deterministic-key-first-then-model-merge":
+                    e("O16", f"{where}: aggregator kind or execution wrong")
+                if ag["harness"] not in HARNESSES or ag["harness"] == "opencode-omo":
+                    e("O16", f"{where}: aggregator harness {ag['harness']} is not allowed")
+                au_h = {a["harness"] for a in o["authors"]} | ({o["orchestrator"]["harness"]} if o.get("orchestrator") else set())
+                if ag["harness"] in au_h:
+                    e("O16", f"{where}: aggregator harness is an author or orchestrator harness")
+                bad_chain = not isinstance(ag["chain"], list) or not ag["chain"] or not all(isinstance(x, str) and x in models.get(p, {}) for x in ag["chain"])
+                if bad_chain:
+                    e("O16", f"{where}: aggregator chain must be non-empty and in the {p} model table")
+                    continue
+                a_fam = set()
+                for ch in [a["chain"] for a in o["authors"]] + list(o.get("category_routes", {}).values()) + ([o["orchestrator"]["chain"]] if o.get("orchestrator") else []):
+                    a_fam |= families(matrix, p, ch)
+                if families(matrix, p, ag["chain"]) & a_fam:
+                    e("O16", f"{where}: aggregator family overlaps authors or orchestrator")
+                if tier == "spread" and p != "ultimate" and len(revs) == 2:
+                    rev_f = set()
+                    for r in revs:
+                        rev_f |= families(matrix, p, r["chain"])
+                    third = set()
+                    for m, inf in models[p].items():
+                        fam = model_family(inf["id"])
+                        if fam in a_fam | rev_f or fam in ("unknown", "google") or str(inf.get("status", "")).startswith(("retires", "unknown")):
+                            continue
+                        name = inf["id"].split("/", 1)[1].lower()
+                        if p in ("hybrid", "b4b") and OUTPUT_REFERENCE.get(name, 99) > CAP_REFERENCE:
+                            continue
+                        third.add(fam)
+                    if third and families(matrix, p, ag["chain"][:1]) & rev_f:
+                        e("O16", f"{where}: a third family exists ({sorted(third)}) but the aggregator's first rung is a reviewer family")
+                if {models[p][m]["id"].lower() for m in ag["chain"]} & {models[p][m]["id"].lower() for x in o["authors"] for m in x["chain"] if m in models[p]}:
+                    e("O16", f"{where}: aggregator repeats an author model ID")
     # O11 claims
     def walk(x, path=""):
         if isinstance(x, dict):
@@ -423,11 +553,11 @@ def file_checks(matrix, root):
         if re.search(r"(sk-[A-Za-z0-9]{12,}|api[_-]?key\"?\s*[:=]\s*\"[A-Za-z0-9]{16,})", d["native_config"]):
             errs.append(f"O13: {fn} looks like it embeds a secret")
     # O14
-    if os.path.exists(TABLE) and os.path.abspath(root) == ROOT:
-        if io.open(TABLE, encoding="utf-8").read() != render(matrix):
-            errs.append("O14: docs/research/orchestration/MATRIX.md differs from the rendered matrix (run --render)")
-    elif os.path.abspath(root) == ROOT:
+    table = os.path.join(root, "docs", "research", "orchestration", "MATRIX.md")
+    if not os.path.exists(table):
         errs.append("O14: docs/research/orchestration/MATRIX.md missing")
+    elif io.open(table, encoding="utf-8").read() != render(matrix):
+        errs.append("O14: docs/research/orchestration/MATRIX.md differs from the rendered matrix (run --render)")
     return errs
 
 
@@ -462,10 +592,18 @@ def render(matrix):
            "Reading the tables. Each option is one complete assignment, so do not mix seats between options. "
            "An arrow marks an ordered fallback for one seat, not parallel work. Every harness in an `Authors` cell "
            "also supplies the helper roles listed after `same chain for`. The reviewer is always a different harness "
-           "and a different model family from every author rung. All rows are proposals. No row has been run.", ""]
+           "and a different model family from every author rung. Bracketed names are review lenses from "
+           "[lenses.json](../../../examples/orchestration/lenses.json). The aggregator merges findings and sits outside the "
+           "author and orchestrator harness and families. All rows are proposals. No row has been run.", "",
+           "## Review panel by situation", "",
+           "| Situation | Tier | Lenses (first is primary) | Gate before | Gate after |", "|---|---|---|---|---|"]
+    for s in matrix["situations"]:
+        g = s["gates"]
+        out.append(f"| {s['id']} {s['title']} | {s['review_tier']} | {', '.join(s['lenses'])} | {g['pre']} | {g['post']} |")
+    out.append("")
     for p in PROFILES:
-        out += [f"## {p}", "", "| Situation / option | Pattern / coordinator | Orchestrator | Authors | Adversarial reviewer |",
-                "|---|---|---|---|---|"]
+        out += [f"## {p}", "", "| Situation / option | Pattern / coordinator | Orchestrator | Authors | Adversarial reviewers and lenses | Aggregator |",
+                "|---|---|---|---|---|---|"]
         for s in matrix["situations"]:
             for o in s["profiles"][p]["options"]:
                 au = o["authors"]
@@ -474,8 +612,10 @@ def render(matrix):
                 other = [seat_text(matrix, p, a) for a in au[1:] if a["chain"] != au[0]["chain"]]
                 cell = main + ("; same chain for " + ", ".join(same) if same else "") + ("; " + "; ".join(other) if other else "")
                 orch = seat_text(matrix, p, o["orchestrator"]) if o.get("orchestrator") else "peers, no AI orchestrator"
-                rev = "; ".join(seat_text(matrix, p, r) for r in o["reviewers"])
-                out.append(f"| {s['id']} {o['name']} | {o['pattern']} / {o['coordinator']} | {orch} | {cell} | {rev} |")
+                rev = "; ".join(seat_text(matrix, p, r) + " [" + ", ".join(r["lenses"]) + "]" for r in o["reviewers"])
+                ag = o["aggregator"]
+                agg = f"{ag['harness']}: " + " > ".join(short(matrix["models"][p][m]["id"]) for m in ag["chain"])
+                out.append(f"| {s['id']} {o['name']} | {o['pattern']} / {o['coordinator']} | {orch} | {cell} | {rev} | {agg} |")
         out += ["", "Category routes and row rationale:", ""]
         for s in matrix["situations"]:
             o = s["profiles"][p]["options"][0]
@@ -548,6 +688,71 @@ def self_test(matrix):
     expect("situation-level role list", lambda m: m["situations"][0].__setitem__("agent_sequence", ["explore"]), "O3")
     expect("empty author list", lambda m: opt(m).__setitem__("authors",[]), "O1")
     expect("retired family with benign label", lambda m: m["models"]["global"]["ProviderA/flagship-mid"].update({"id":"google/gemini-3.8-flash","family":"openai"}), "O4")
+    def seat_lenses(m, sid, p, n, i):
+        return opt(m, sid, p, n)["reviewers"][i]
+    expect("zero-context constraint dropped", lambda m: opt(m)["constraints"].remove("zero-context-review"), "O15")
+    expect("read-only artifact dropped", lambda m: opt(m)["constraints"].remove("readonly-review-artifact"), "O15")
+    expect("aggregator missing", lambda m: opt(m).pop("aggregator"), "O16")
+    expect("aggregator on author harness", lambda m: opt(m)["aggregator"].__setitem__("harness", opt(m)["authors"][0]["harness"]), "O16")
+    expect("aggregator on omo", lambda m: opt(m)["aggregator"].__setitem__("harness", "opencode-omo"), "O16")
+    expect("aggregator shares author family", lambda m: opt(m)["aggregator"].__setitem__("chain", list(opt(m)["authors"][0]["chain"])), "O16")
+    expect("aggregator shares orchestrator family", lambda m: opt(m)["aggregator"].__setitem__("chain", list(opt(m)["orchestrator"]["chain"])), "O16")
+    expect("aggregator unknown rung", lambda m: opt(m)["aggregator"].__setitem__("chain", ["ProviderZ/nothing"]), "O16")
+    expect("aggregator over the cap in b4b", lambda m: opt(m, "A01", "b4b")["aggregator"].__setitem__("chain", ["ProviderE/coder-xl"]), "O7")
+    expect("unknown lens", lambda m: m["situations"][0]["lenses"].append("vibes"), "O17")
+    expect("duplicate lens", lambda m: m["situations"][0]["lenses"].append(m["situations"][0]["lenses"][0]), "O17")
+    expect("too many lenses for the tier", lambda m: m["situations"][0]["lenses"].extend(["security-abuse", "operability"]), "O17")
+    expect("lens uncovered by reviewers", lambda m: opt(m)["reviewers"][0].__setitem__("lenses", opt(m)["reviewers"][0]["lenses"][:1]), "O17")
+    expect("reviewer lens outside the situation", lambda m: opt(m)["reviewers"][0]["lenses"].append("cost-quota"), "O17")
+    expect("reviewer without lenses", lambda m: opt(m)["reviewers"][0].pop("lenses"), "O17")
+    expect("spread tier with one reviewer", lambda m: opt(m, "A05").__setitem__("reviewers", opt(m, "A05")["reviewers"][:1]), "O17")
+    expect("spread reviewers share a family", lambda m: opt(m, "A05")["reviewers"][1].__setitem__("chain", list(opt(m, "A05")["reviewers"][0]["chain"])), "O17")
+    expect("spread reviewers skip the primary lens", lambda m: opt(m, "A05")["reviewers"][1]["lenses"].remove(next(x for x in m["situations"] if x["id"] == "A05")["lenses"][0]), "O17")
+    expect("spread reviewer reuses an author family", lambda m: opt(m, "A05")["reviewers"][1].__setitem__("chain", list(opt(m, "A05")["authors"][0]["chain"])), "O5")
+    expect("spread tier on a standard situation", lambda m: m["situations"][0].__setitem__("review_tier", "spread"), "O17")
+    expect("tier table edited", lambda m: m["policy"]["review_panel"]["tiers"]["standard"].__setitem__("max_lenses", 9), "O17")
+    expect("spec gate removed", lambda m: next(x for x in m["situations"] if x["id"] == "A02")["gates"].__setitem__("pre", "none"), "O18")
+    expect("drift gate on the wrong situation", lambda m: m["situations"][0]["gates"].__setitem__("post", "drift"), "O18")
+    expect("reviewer seat declares write tools", lambda m: opt(m)["reviewers"][0].__setitem__("tools", "write"), "O15")
+    expect("reviewer seat declares author transcript", lambda m: opt(m, "A05", "ultimate")["reviewers"][0].__setitem__("context", "author-transcript"), "O15")
+    expect("reviewer seat id missing", lambda m: opt(m)["reviewers"][0].pop("seat"), "O17")
+    expect("spread seat ids collide", lambda m: opt(m, "A05")["reviewers"][1].__setitem__("seat", opt(m, "A05")["reviewers"][0]["seat"]), "O17")
+    expect("primary lens not first", lambda m: next(x for x in m["situations"] if x["id"] == "A05").__setitem__("primary_lens", "operability"), "O17")
+    expect("primary lens missing", lambda m: m["situations"][0].pop("primary_lens"), "O17")
+    expect("spread non-primary lens on both seats", lambda m: [r["lenses"].append("evidence-provenance") for r in opt(m, "A05")["reviewers"] if "evidence-provenance" not in r["lenses"]], "O17")
+    expect("spread aggregator ignores a free third family", lambda m: opt(m, "A06", "hybrid")["aggregator"].__setitem__("chain", list(opt(m, "A06", "hybrid")["reviewers"][0]["chain"])), "O16")
+
+    def expect_files(label, mutate, rule, drop=None):
+        nonlocal failures
+        import shutil, tempfile
+        tmp = tempfile.mkdtemp()
+        try:
+            for rel in ("profiles", "examples", "docs/research/orchestration/MATRIX.md", "configs"):
+                src = os.path.join(ROOT, rel)
+                dst = os.path.join(tmp, rel)
+                if os.path.isdir(src):
+                    shutil.copytree(src, dst, ignore=shutil.ignore_patterns("__pycache__"))
+                elif os.path.isfile(src):
+                    os.makedirs(os.path.dirname(dst), exist_ok=True)
+                    shutil.copy(src, dst)
+            if drop:
+                os.remove(os.path.join(tmp, drop))
+            m = copy.deepcopy(matrix)
+            mutate(m)
+            errs, _ = validate(m, root=tmp, check_files=True)
+            hit = any(x.startswith(rule + ":") for x in errs)
+        finally:
+            shutil.rmtree(tmp)
+        if hit:
+            print(f"  ok   {label} -> {rule}")
+        else:
+            failures += 1
+            print(f"  FAIL {label}: {rule} did not fire")
+
+    first_model = lambda m: next(iter(m["models"]["hybrid"]))
+    expect_files("model table disagrees with the profile example", lambda m: m["models"]["hybrid"][first_model(m)].__setitem__("id", "unknown/changed-model"), "O10")
+    expect_files("harness example file missing", lambda m: None, "O13", drop="examples/orchestration/harnesses/pi.example.json")
+    expect_files("MATRIX.md differs from the data", lambda m: m["situations"][0].__setitem__("title", "Renamed situation"), "O14")
     print("self-test " + ("passed" if not failures else f"FAILED ({failures})"))
     return 1 if failures else 0
 

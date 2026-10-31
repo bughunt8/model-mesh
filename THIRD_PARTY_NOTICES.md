@@ -54,3 +54,7 @@ audit-fix-prove protocol (author: ronald-ng, MIT):
 
 Conceptual adaptations rewritten for generic coding; the pipeline-specific machinery
 (on-disk state contracts, OMO agent mapping, run budgets) was not carried over.
+
+## Elephant-Goldfish Model
+
+The review panel design in `docs/REVIEW-PANEL.md` was informed by the Elephant-Goldfish Model, https://github.com/google/elephant-goldfish-model, licensed Apache-2.0. The ideas studied are zero-context reviewer subagents, role-based review lenses, staged design review, and a drift report. No source text, persona prompt or template was copied. The lens prompts, standards and scripts in this repository are original. The study is in `docs/research/orchestration/EGM-ANALYSIS.md`.

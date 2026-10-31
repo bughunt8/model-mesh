@@ -32,6 +32,18 @@ jobs:
         run: python scripts/validate-orchestration.py
       - name: Orchestration validator self-test (mutations must be caught)
         run: python scripts/validate-orchestration.py --self-test
+      - name: Skill front matter, size cap and scenario checks
+        run: python scripts/validate-scenarios.py
+      - name: Skill scenario checker self-test
+        run: python scripts/validate-scenarios.py --self-test
+      - name: Review findings merge self-test
+        run: python scripts/aggregate-findings.py --self-test
+      - name: Seeded-defect scorer self-test
+        run: python scripts/score-review.py --self-test
+      - name: Documentation drift check
+        run: python scripts/check-drift.py
+      - name: Documentation drift check self-test
+        run: python scripts/check-drift.py --self-test
       - name: Run landscape regression suite
         run: python scripts/landscape/landscape_scan.py --self-test
       - name: Check committed landscape golden result

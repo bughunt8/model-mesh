@@ -513,7 +513,13 @@
                     "ProviderB/gen-pro"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "regression-risk",
+                    "contract-fit",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -537,14 +543,24 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "explore",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderB/flagship-open",
+                  "ProviderB/gen-pro"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -588,7 +604,13 @@
                     "ProviderB/gen-pro"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "regression-risk",
+                    "contract-fit",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -613,14 +635,24 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "explore",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderB/flagship-open",
+                  "ProviderB/gen-pro"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "rpc-worker",
@@ -664,7 +696,13 @@
                     "ProviderB/gen-pro"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "regression-risk",
+                    "contract-fit",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -689,14 +727,24 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "explore",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "qwen-code",
+                "chain": [
+                  "ProviderB/flagship-open",
+                  "ProviderB/gen-pro"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "OpenCode LSP and the exact repository map suit a focused fix; review comes from a different harness and model family. DSH SDK and Pi RPC are alternate transports, not measured superiority claims. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -745,7 +793,13 @@
                     "ProviderC/open-reason-lite"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "regression-risk",
+                    "contract-fit",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -769,14 +823,24 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "explore",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderC/open-reason-lite"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -820,7 +884,13 @@
                     "ProviderC/open-reason-lite"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "regression-risk",
+                    "contract-fit",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -845,14 +915,24 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "explore",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderC/open-reason-lite"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "rpc-worker",
@@ -896,7 +976,13 @@
                     "ProviderC/open-reason-lite"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "regression-risk",
+                    "contract-fit",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -921,14 +1007,24 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "explore",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "qwen-code",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderC/open-reason-lite"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "OpenCode LSP and the exact repository map suit a focused fix; review comes from a different harness and model family. DSH SDK and Pi RPC are alternate transports, not measured superiority claims. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -977,7 +1073,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "regression-risk",
+                    "contract-fit",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -1001,14 +1103,24 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "explore",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderC/open-reason-lite",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -1052,7 +1164,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "regression-risk",
+                    "contract-fit",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -1077,14 +1195,24 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "explore",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-lite",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "rpc-worker",
@@ -1128,7 +1256,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "regression-risk",
+                    "contract-fit",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -1153,14 +1287,24 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "explore",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "qwen-code",
+                "chain": [
+                  "ProviderC/open-reason-lite",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "OpenCode LSP and the exact repository map suit a focused fix; review comes from a different harness and model family. DSH SDK and Pi RPC are alternate transports, not measured superiority claims. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -1209,7 +1353,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "regression-risk",
+                    "contract-fit",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -1233,14 +1383,24 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "hephaestus",
                 "explore",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderG/div-flagship",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -1284,7 +1444,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "regression-risk",
+                    "contract-fit",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -1309,14 +1475,24 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "hephaestus",
                 "explore",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderG/div-flagship",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "rpc-worker",
@@ -1360,7 +1536,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "regression-risk",
+                    "contract-fit",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -1385,19 +1567,40 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "hephaestus",
                 "explore",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "qwen-code",
+                "chain": [
+                  "ProviderG/div-flagship",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "OpenCode LSP and the exact repository map suit a focused fix; review comes from a different harness and model family. DSH SDK and Pi RPC are alternate transports, not measured superiority claims. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
         }
-      }
+      },
+      "review_tier": "standard",
+      "lenses": [
+        "regression-risk",
+        "contract-fit",
+        "simplicity"
+      ],
+      "gates": {
+        "pre": "none",
+        "post": "none"
+      },
+      "primary_lens": "regression-risk"
     },
     {
       "id": "A02",
@@ -1469,7 +1672,14 @@
                     "ProviderB/gen-pro"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "regression-risk",
+                    "migration-compat",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -1492,7 +1702,8 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -1501,7 +1712,16 @@
                 "metis",
                 "multimodal-looker",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderB/flagship-open",
+                  "ProviderB/gen-pro"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -1562,7 +1782,14 @@
                     "ProviderB/gen-pro"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "regression-risk",
+                    "migration-compat",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -1586,7 +1813,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -1595,7 +1823,16 @@
                 "metis",
                 "multimodal-looker",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderB/flagship-open",
+                  "ProviderB/gen-pro"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Orca-style isolated task branches fit separable slices; one integration authority merges. Vision slices use a multimodal route only after the harness confirms image input support. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -1661,7 +1898,14 @@
                     "ProviderC/open-reason-lite"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "regression-risk",
+                    "migration-compat",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -1684,7 +1928,8 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -1693,7 +1938,16 @@
                 "metis",
                 "multimodal-looker",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderC/open-reason-lite"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -1754,7 +2008,14 @@
                     "ProviderC/open-reason-lite"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "regression-risk",
+                    "migration-compat",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -1778,7 +2039,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -1787,7 +2049,16 @@
                 "metis",
                 "multimodal-looker",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderC/open-reason-lite"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Orca-style isolated task branches fit separable slices; one integration authority merges. Vision slices use a multimodal route only after the harness confirms image input support. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -1853,7 +2124,14 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "regression-risk",
+                    "migration-compat",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -1876,7 +2154,8 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -1885,7 +2164,16 @@
                 "metis",
                 "multimodal-looker",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderC/open-reason-lite",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -1946,7 +2234,14 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "regression-risk",
+                    "migration-compat",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -1970,7 +2265,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -1979,7 +2275,16 @@
                 "metis",
                 "multimodal-looker",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-lite",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Orca-style isolated task branches fit separable slices; one integration authority merges. Vision slices use a multimodal route only after the harness confirms image input support. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -2045,7 +2350,14 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "regression-risk",
+                    "migration-compat",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -2068,7 +2380,8 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -2077,7 +2390,16 @@
                 "metis",
                 "multimodal-looker",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderG/div-flagship",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -2138,7 +2460,14 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "regression-risk",
+                    "migration-compat",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -2162,7 +2491,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -2171,12 +2501,33 @@
                 "metis",
                 "multimodal-looker",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderG/div-flagship",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Orca-style isolated task branches fit separable slices; one integration authority merges. Vision slices use a multimodal route only after the harness confirms image input support. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
         }
-      }
+      },
+      "review_tier": "standard",
+      "lenses": [
+        "contract-fit",
+        "regression-risk",
+        "migration-compat",
+        "simplicity"
+      ],
+      "gates": {
+        "pre": "spec-readiness",
+        "post": "drift"
+      },
+      "primary_lens": "contract-fit"
     },
     {
       "id": "A03",
@@ -2239,7 +2590,13 @@
                     "ProviderB/gen-pro"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "regression-risk",
+                    "contract-fit",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -2259,7 +2616,8 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -2267,7 +2625,16 @@
                 "explore",
                 "metis",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderB/flagship-open",
+                  "ProviderB/gen-pro"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -2320,7 +2687,13 @@
                     "ProviderB/gen-pro"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "regression-risk",
+                    "contract-fit",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -2341,7 +2714,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -2349,7 +2723,16 @@
                 "explore",
                 "metis",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderB/flagship-open",
+                  "ProviderB/gen-pro"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "rpc-worker",
@@ -2402,7 +2785,13 @@
                     "ProviderB/gen-pro"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "regression-risk",
+                    "contract-fit",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -2423,7 +2812,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -2431,7 +2821,16 @@
                 "explore",
                 "metis",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "qwen-code",
+                "chain": [
+                  "ProviderB/flagship-open",
+                  "ProviderB/gen-pro"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Aider repo map and architect/editor pair fit scoped refactors; equivalence tests decide, not the reviewer narrative. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -2489,7 +2888,13 @@
                     "ProviderC/open-reason-lite"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "regression-risk",
+                    "contract-fit",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -2509,7 +2914,8 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -2517,7 +2923,16 @@
                 "explore",
                 "metis",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderC/open-reason-lite"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -2570,7 +2985,13 @@
                     "ProviderC/open-reason-lite"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "regression-risk",
+                    "contract-fit",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -2591,7 +3012,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -2599,7 +3021,16 @@
                 "explore",
                 "metis",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderC/open-reason-lite"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "rpc-worker",
@@ -2652,7 +3083,13 @@
                     "ProviderC/open-reason-lite"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "regression-risk",
+                    "contract-fit",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -2673,7 +3110,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -2681,7 +3119,16 @@
                 "explore",
                 "metis",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "qwen-code",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderC/open-reason-lite"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Aider repo map and architect/editor pair fit scoped refactors; equivalence tests decide, not the reviewer narrative. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -2739,7 +3186,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "regression-risk",
+                    "contract-fit",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -2759,7 +3212,8 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -2767,7 +3221,16 @@
                 "explore",
                 "metis",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderC/open-reason-lite",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -2820,7 +3283,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "regression-risk",
+                    "contract-fit",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -2841,7 +3310,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -2849,7 +3319,16 @@
                 "explore",
                 "metis",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-lite",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "rpc-worker",
@@ -2902,7 +3381,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "regression-risk",
+                    "contract-fit",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -2923,7 +3408,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -2931,7 +3417,16 @@
                 "explore",
                 "metis",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "qwen-code",
+                "chain": [
+                  "ProviderC/open-reason-lite",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Aider repo map and architect/editor pair fit scoped refactors; equivalence tests decide, not the reviewer narrative. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -2989,7 +3484,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "regression-risk",
+                    "contract-fit",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -3009,7 +3510,8 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -3017,7 +3519,16 @@
                 "explore",
                 "metis",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderG/div-flagship",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -3070,7 +3581,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "regression-risk",
+                    "contract-fit",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -3091,7 +3608,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -3099,7 +3617,16 @@
                 "explore",
                 "metis",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderG/div-flagship",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "rpc-worker",
@@ -3152,7 +3679,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "regression-risk",
+                    "contract-fit",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -3173,7 +3706,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -3181,12 +3715,32 @@
                 "explore",
                 "metis",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "qwen-code",
+                "chain": [
+                  "ProviderG/div-flagship",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Aider repo map and architect/editor pair fit scoped refactors; equivalence tests decide, not the reviewer narrative. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
         }
-      }
+      },
+      "review_tier": "standard",
+      "lenses": [
+        "regression-risk",
+        "contract-fit",
+        "simplicity"
+      ],
+      "gates": {
+        "pre": "spec-readiness",
+        "post": "drift"
+      },
+      "primary_lens": "regression-risk"
     },
     {
       "id": "A04",
@@ -3250,7 +3804,13 @@
                     "ProviderB/gen-pro"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "evidence-provenance",
+                    "operability",
+                    "regression-risk"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -3275,7 +3835,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -3283,7 +3844,16 @@
                 "explore",
                 "sisyphus-junior",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderB/flagship-open",
+                  "ProviderB/gen-pro"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -3336,7 +3906,13 @@
                     "ProviderB/gen-pro"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "evidence-provenance",
+                    "operability",
+                    "regression-risk"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -3361,7 +3937,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -3369,7 +3946,16 @@
                 "explore",
                 "sisyphus-junior",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderB/flagship-open",
+                  "ProviderB/gen-pro"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Goose recipes and Pi RPC both offer headless repeatable diagnosis on synthetic logs; DSH is alternate because it is public preview. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -3427,7 +4013,13 @@
                     "ProviderC/open-reason-lite"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "evidence-provenance",
+                    "operability",
+                    "regression-risk"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -3452,7 +4044,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -3460,7 +4053,16 @@
                 "explore",
                 "sisyphus-junior",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderC/open-reason-lite"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -3513,7 +4115,13 @@
                     "ProviderC/open-reason-lite"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "evidence-provenance",
+                    "operability",
+                    "regression-risk"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -3538,7 +4146,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -3546,7 +4155,16 @@
                 "explore",
                 "sisyphus-junior",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderC/open-reason-lite"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Goose recipes and Pi RPC both offer headless repeatable diagnosis on synthetic logs; DSH is alternate because it is public preview. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -3604,7 +4222,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "evidence-provenance",
+                    "operability",
+                    "regression-risk"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -3629,7 +4253,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -3637,7 +4262,16 @@
                 "explore",
                 "sisyphus-junior",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-lite",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -3690,7 +4324,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "evidence-provenance",
+                    "operability",
+                    "regression-risk"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -3715,7 +4355,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -3723,7 +4364,16 @@
                 "explore",
                 "sisyphus-junior",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-lite",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Goose recipes and Pi RPC both offer headless repeatable diagnosis on synthetic logs; DSH is alternate because it is public preview. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -3781,7 +4431,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "evidence-provenance",
+                    "operability",
+                    "regression-risk"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -3806,7 +4462,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -3814,7 +4471,16 @@
                 "explore",
                 "sisyphus-junior",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderG/div-flagship",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -3867,7 +4533,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "evidence-provenance",
+                    "operability",
+                    "regression-risk"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -3892,7 +4564,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -3900,12 +4573,32 @@
                 "explore",
                 "sisyphus-junior",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderG/div-flagship",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Goose recipes and Pi RPC both offer headless repeatable diagnosis on synthetic logs; DSH is alternate because it is public preview. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
         }
-      }
+      },
+      "review_tier": "standard",
+      "lenses": [
+        "evidence-provenance",
+        "operability",
+        "regression-risk"
+      ],
+      "gates": {
+        "pre": "none",
+        "post": "none"
+      },
+      "primary_lens": "evidence-provenance"
     },
     {
       "id": "A05",
@@ -3969,7 +4662,28 @@
                     "ProviderB/gen-pro"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "security-abuse",
+                    "regression-risk",
+                    "operability"
+                  ],
+                  "seat": "reviewer-1"
+                },
+                {
+                  "role": "momus",
+                  "harness": "qwen-code",
+                  "chain": [
+                    "ProviderF/vision-xl"
+                  ],
+                  "kind": "adversarial-review",
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "security-abuse",
+                    "contract-fit",
+                    "evidence-provenance"
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -3994,15 +4708,26 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "librarian",
                 "oracle",
+                "momus",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderB/flagship-open",
+                  "ProviderB/gen-pro"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -4055,7 +4780,28 @@
                     "ProviderB/gen-pro"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "security-abuse",
+                    "regression-risk",
+                    "operability"
+                  ],
+                  "seat": "reviewer-1"
+                },
+                {
+                  "role": "momus",
+                  "harness": "qwen-code",
+                  "chain": [
+                    "ProviderF/vision-xl"
+                  ],
+                  "kind": "adversarial-review",
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "security-abuse",
+                    "contract-fit",
+                    "evidence-provenance"
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -4081,15 +4827,26 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "librarian",
                 "oracle",
+                "momus",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderB/flagship-open",
+                  "ProviderB/gen-pro"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Seeded exploit reproduction needs externally enforced isolation; Codex sandbox is conditional on its custom-provider path, never on OpenAI defaults for ultimate. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -4147,7 +4904,29 @@
                     "ProviderC/open-reason-lite"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "security-abuse",
+                    "regression-risk",
+                    "operability"
+                  ],
+                  "seat": "reviewer-1"
+                },
+                {
+                  "role": "momus",
+                  "harness": "qwen-code",
+                  "chain": [
+                    "ProviderA/flagship-lite",
+                    "ProviderF/vision-xl"
+                  ],
+                  "kind": "adversarial-review",
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "security-abuse",
+                    "contract-fit",
+                    "evidence-provenance"
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -4172,15 +4951,26 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "librarian",
                 "oracle",
+                "momus",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderC/open-reason-lite"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -4233,7 +5023,29 @@
                     "ProviderC/open-reason-lite"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "security-abuse",
+                    "regression-risk",
+                    "operability"
+                  ],
+                  "seat": "reviewer-1"
+                },
+                {
+                  "role": "momus",
+                  "harness": "qwen-code",
+                  "chain": [
+                    "ProviderA/flagship-lite",
+                    "ProviderF/vision-xl"
+                  ],
+                  "kind": "adversarial-review",
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "security-abuse",
+                    "contract-fit",
+                    "evidence-provenance"
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -4259,15 +5071,26 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "librarian",
                 "oracle",
+                "momus",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderC/open-reason-lite"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Seeded exploit reproduction needs externally enforced isolation; Codex sandbox is conditional on its custom-provider path, never on OpenAI defaults for ultimate. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -4325,7 +5148,29 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "security-abuse",
+                    "regression-risk",
+                    "operability"
+                  ],
+                  "seat": "reviewer-1"
+                },
+                {
+                  "role": "momus",
+                  "harness": "qwen-code",
+                  "chain": [
+                    "ProviderA/flagship-lite",
+                    "ProviderF/vision-xl"
+                  ],
+                  "kind": "adversarial-review",
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "security-abuse",
+                    "contract-fit",
+                    "evidence-provenance"
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -4350,15 +5195,26 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "librarian",
                 "oracle",
+                "momus",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderC/open-reason-lite",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -4411,7 +5267,29 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "security-abuse",
+                    "regression-risk",
+                    "operability"
+                  ],
+                  "seat": "reviewer-1"
+                },
+                {
+                  "role": "momus",
+                  "harness": "qwen-code",
+                  "chain": [
+                    "ProviderA/flagship-lite",
+                    "ProviderF/vision-xl"
+                  ],
+                  "kind": "adversarial-review",
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "security-abuse",
+                    "contract-fit",
+                    "evidence-provenance"
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -4437,15 +5315,26 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "librarian",
                 "oracle",
+                "momus",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-lite",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Seeded exploit reproduction needs externally enforced isolation; Codex sandbox is conditional on its custom-provider path, never on OpenAI defaults for ultimate. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -4503,7 +5392,29 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "security-abuse",
+                    "regression-risk",
+                    "operability"
+                  ],
+                  "seat": "reviewer-1"
+                },
+                {
+                  "role": "momus",
+                  "harness": "qwen-code",
+                  "chain": [
+                    "ProviderB/flagship-open",
+                    "ProviderE/coder-xl"
+                  ],
+                  "kind": "adversarial-review",
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "security-abuse",
+                    "contract-fit",
+                    "evidence-provenance"
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -4528,15 +5439,26 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "librarian",
                 "oracle",
+                "momus",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderF/vision-xl",
+                  "ProviderG/div-flagship"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -4589,7 +5511,29 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "security-abuse",
+                    "regression-risk",
+                    "operability"
+                  ],
+                  "seat": "reviewer-1"
+                },
+                {
+                  "role": "momus",
+                  "harness": "qwen-code",
+                  "chain": [
+                    "ProviderB/flagship-open",
+                    "ProviderE/coder-xl"
+                  ],
+                  "kind": "adversarial-review",
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "security-abuse",
+                    "contract-fit",
+                    "evidence-provenance"
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -4615,20 +5559,44 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "librarian",
                 "oracle",
+                "momus",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderF/vision-xl",
+                  "ProviderG/div-flagship"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Seeded exploit reproduction needs externally enforced isolation; Codex sandbox is conditional on its custom-provider path, never on OpenAI defaults for ultimate. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
         }
-      }
+      },
+      "review_tier": "spread",
+      "lenses": [
+        "security-abuse",
+        "regression-risk",
+        "contract-fit",
+        "operability",
+        "evidence-provenance"
+      ],
+      "gates": {
+        "pre": "none",
+        "post": "none"
+      },
+      "primary_lens": "security-abuse"
     },
     {
       "id": "A06",
@@ -4682,7 +5650,29 @@
                     "ProviderE/coder-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "regression-risk",
+                    "simplicity",
+                    "evidence-provenance"
+                  ],
+                  "seat": "reviewer-1"
+                },
+                {
+                  "role": "momus",
+                  "harness": "qwen-code",
+                  "chain": [
+                    "ProviderF/vision-xl"
+                  ],
+                  "kind": "adversarial-review",
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "security-abuse",
+                    "comprehension"
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -4704,14 +5694,25 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "oracle",
+                "momus",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderE/coder-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -4755,7 +5756,29 @@
                     "ProviderE/coder-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "regression-risk",
+                    "simplicity",
+                    "evidence-provenance"
+                  ],
+                  "seat": "reviewer-1"
+                },
+                {
+                  "role": "momus",
+                  "harness": "qwen-code",
+                  "chain": [
+                    "ProviderF/vision-xl"
+                  ],
+                  "kind": "adversarial-review",
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "security-abuse",
+                    "comprehension"
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -4777,14 +5800,25 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "oracle",
+                "momus",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderE/coder-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "The reviewed patch is fixed input, so both seats analyse it and need known author provenance; Pi settles per run and Aider is a one-shot alternate. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -4833,7 +5867,30 @@
                     "ProviderC/open-reason-lite"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "regression-risk",
+                    "simplicity",
+                    "evidence-provenance"
+                  ],
+                  "seat": "reviewer-1"
+                },
+                {
+                  "role": "momus",
+                  "harness": "qwen-code",
+                  "chain": [
+                    "ProviderA/flagship-lite",
+                    "ProviderE/coder-mid"
+                  ],
+                  "kind": "adversarial-review",
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "security-abuse",
+                    "comprehension"
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -4855,14 +5912,25 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "oracle",
+                "momus",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderF/vision-xl",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -4906,7 +5974,30 @@
                     "ProviderC/open-reason-lite"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "regression-risk",
+                    "simplicity",
+                    "evidence-provenance"
+                  ],
+                  "seat": "reviewer-1"
+                },
+                {
+                  "role": "momus",
+                  "harness": "qwen-code",
+                  "chain": [
+                    "ProviderA/flagship-lite",
+                    "ProviderE/coder-mid"
+                  ],
+                  "kind": "adversarial-review",
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "security-abuse",
+                    "comprehension"
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -4928,14 +6019,25 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "oracle",
+                "momus",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderF/vision-xl",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "The reviewed patch is fixed input, so both seats analyse it and need known author provenance; Pi settles per run and Aider is a one-shot alternate. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -4984,7 +6086,30 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "regression-risk",
+                    "simplicity",
+                    "evidence-provenance"
+                  ],
+                  "seat": "reviewer-1"
+                },
+                {
+                  "role": "momus",
+                  "harness": "qwen-code",
+                  "chain": [
+                    "ProviderA/flagship-lite",
+                    "ProviderE/coder-mid"
+                  ],
+                  "kind": "adversarial-review",
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "security-abuse",
+                    "comprehension"
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -5006,14 +6131,25 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "oracle",
+                "momus",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderF/vision-xl",
+                  "ProviderC/open-reason-lite"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -5057,7 +6193,30 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "regression-risk",
+                    "simplicity",
+                    "evidence-provenance"
+                  ],
+                  "seat": "reviewer-1"
+                },
+                {
+                  "role": "momus",
+                  "harness": "qwen-code",
+                  "chain": [
+                    "ProviderA/flagship-lite",
+                    "ProviderE/coder-mid"
+                  ],
+                  "kind": "adversarial-review",
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "security-abuse",
+                    "comprehension"
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -5079,14 +6238,25 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "oracle",
+                "momus",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderF/vision-xl",
+                  "ProviderC/open-reason-lite"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "The reviewed patch is fixed input, so both seats analyse it and need known author provenance; Pi settles per run and Aider is a one-shot alternate. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -5135,7 +6305,30 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "regression-risk",
+                    "simplicity",
+                    "evidence-provenance"
+                  ],
+                  "seat": "reviewer-1"
+                },
+                {
+                  "role": "momus",
+                  "harness": "qwen-code",
+                  "chain": [
+                    "ProviderA/flagship-lite",
+                    "ProviderE/coder-xl"
+                  ],
+                  "kind": "adversarial-review",
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "security-abuse",
+                    "comprehension"
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -5157,14 +6350,25 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "oracle",
+                "momus",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderF/vision-xl",
+                  "ProviderG/div-flagship"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -5208,7 +6412,30 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "regression-risk",
+                    "simplicity",
+                    "evidence-provenance"
+                  ],
+                  "seat": "reviewer-1"
+                },
+                {
+                  "role": "momus",
+                  "harness": "qwen-code",
+                  "chain": [
+                    "ProviderA/flagship-lite",
+                    "ProviderE/coder-xl"
+                  ],
+                  "kind": "adversarial-review",
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "security-abuse",
+                    "comprehension"
+                  ],
+                  "seat": "reviewer-2"
                 }
               ],
               "category_routes": {
@@ -5230,19 +6457,44 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "oracle",
+                "momus",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderF/vision-xl",
+                  "ProviderG/div-flagship"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "The reviewed patch is fixed input, so both seats analyse it and need known author provenance; Pi settles per run and Aider is a one-shot alternate. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
         }
-      }
+      },
+      "review_tier": "spread",
+      "lenses": [
+        "contract-fit",
+        "regression-risk",
+        "security-abuse",
+        "simplicity",
+        "comprehension",
+        "evidence-provenance"
+      ],
+      "gates": {
+        "pre": "none",
+        "post": "none"
+      },
+      "primary_lens": "contract-fit"
     },
     {
       "id": "A07",
@@ -5297,7 +6549,13 @@
                     "ProviderE/coder-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "evidence-provenance",
+                    "comprehension",
+                    "contract-fit"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -5321,14 +6579,24 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "librarian",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderE/coder-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -5372,7 +6640,13 @@
                     "ProviderE/coder-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "evidence-provenance",
+                    "comprehension",
+                    "contract-fit"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -5397,14 +6671,24 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "librarian",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderE/coder-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Qwen Code has bundled web_fetch and headless JSON; Goose recipes are an acceptable alternate. Claim-level checks decide, not fluent prose. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -5453,7 +6737,13 @@
                     "ProviderC/open-reason-lite"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "evidence-provenance",
+                    "comprehension",
+                    "contract-fit"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -5477,14 +6767,24 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "librarian",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderC/open-reason-lite"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -5528,7 +6828,13 @@
                     "ProviderC/open-reason-lite"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "evidence-provenance",
+                    "comprehension",
+                    "contract-fit"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -5553,14 +6859,24 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "librarian",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderC/open-reason-lite"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Qwen Code has bundled web_fetch and headless JSON; Goose recipes are an acceptable alternate. Claim-level checks decide, not fluent prose. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -5609,7 +6925,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "evidence-provenance",
+                    "comprehension",
+                    "contract-fit"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -5633,14 +6955,24 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "librarian",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderC/open-reason-lite",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -5684,7 +7016,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "evidence-provenance",
+                    "comprehension",
+                    "contract-fit"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -5709,14 +7047,24 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "librarian",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-lite",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Qwen Code has bundled web_fetch and headless JSON; Goose recipes are an acceptable alternate. Claim-level checks decide, not fluent prose. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -5765,7 +7113,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "evidence-provenance",
+                    "comprehension",
+                    "contract-fit"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -5789,14 +7143,24 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "librarian",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderG/div-flagship",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -5840,7 +7204,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "evidence-provenance",
+                    "comprehension",
+                    "contract-fit"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -5865,19 +7235,40 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "librarian",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderG/div-flagship",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Qwen Code has bundled web_fetch and headless JSON; Goose recipes are an acceptable alternate. Claim-level checks decide, not fluent prose. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
         }
-      }
+      },
+      "review_tier": "standard",
+      "lenses": [
+        "evidence-provenance",
+        "comprehension",
+        "contract-fit"
+      ],
+      "gates": {
+        "pre": "none",
+        "post": "none"
+      },
+      "primary_lens": "evidence-provenance"
     },
     {
       "id": "A08",
@@ -5940,7 +7331,13 @@
                     "ProviderE/coder-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "numerics-reconciliation",
+                    "evidence-provenance",
+                    "consistency"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -5961,7 +7358,8 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -5969,7 +7367,16 @@
                 "explore",
                 "sisyphus-junior",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "qwen-code",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderE/coder-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -6022,7 +7429,13 @@
                     "ProviderE/coder-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "numerics-reconciliation",
+                    "evidence-provenance",
+                    "consistency"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -6044,7 +7457,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -6052,7 +7466,16 @@
                 "explore",
                 "sisyphus-junior",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderE/coder-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Goose recipes and Qwen headless JSON make repeatable reconciliation easier; independent recalculation and known answers decide. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -6110,7 +7533,13 @@
                     "ProviderC/open-reason-lite"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "numerics-reconciliation",
+                    "evidence-provenance",
+                    "consistency"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -6131,7 +7560,8 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -6139,7 +7569,16 @@
                 "explore",
                 "sisyphus-junior",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "qwen-code",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderC/open-reason-lite"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -6192,7 +7631,13 @@
                     "ProviderC/open-reason-lite"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "numerics-reconciliation",
+                    "evidence-provenance",
+                    "consistency"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -6214,7 +7659,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -6222,7 +7668,16 @@
                 "explore",
                 "sisyphus-junior",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderC/open-reason-lite"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Goose recipes and Qwen headless JSON make repeatable reconciliation easier; independent recalculation and known answers decide. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -6280,7 +7735,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "numerics-reconciliation",
+                    "evidence-provenance",
+                    "consistency"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -6301,7 +7762,8 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -6309,7 +7771,16 @@
                 "explore",
                 "sisyphus-junior",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "qwen-code",
+                "chain": [
+                  "ProviderC/open-reason-lite",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -6362,7 +7833,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "numerics-reconciliation",
+                    "evidence-provenance",
+                    "consistency"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -6384,7 +7861,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -6392,7 +7870,16 @@
                 "explore",
                 "sisyphus-junior",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-lite",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Goose recipes and Qwen headless JSON make repeatable reconciliation easier; independent recalculation and known answers decide. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -6450,7 +7937,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "numerics-reconciliation",
+                    "evidence-provenance",
+                    "consistency"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -6471,7 +7964,8 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -6479,7 +7973,16 @@
                 "explore",
                 "sisyphus-junior",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "qwen-code",
+                "chain": [
+                  "ProviderG/div-flagship",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -6532,7 +8035,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "numerics-reconciliation",
+                    "evidence-provenance",
+                    "consistency"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -6554,7 +8063,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -6562,12 +8072,32 @@
                 "explore",
                 "sisyphus-junior",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderG/div-flagship",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Goose recipes and Qwen headless JSON make repeatable reconciliation easier; independent recalculation and known answers decide. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
         }
-      }
+      },
+      "review_tier": "standard",
+      "lenses": [
+        "numerics-reconciliation",
+        "evidence-provenance",
+        "consistency"
+      ],
+      "gates": {
+        "pre": "none",
+        "post": "none"
+      },
+      "primary_lens": "numerics-reconciliation"
     },
     {
       "id": "A09",
@@ -6631,7 +8161,16 @@
                     "ProviderB/gen-pro"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "comprehension",
+                    "migration-compat",
+                    "cost-quota",
+                    "operability",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -6655,7 +8194,8 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -6663,7 +8203,16 @@
                 "metis",
                 "oracle",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderB/flagship-open",
+                  "ProviderB/gen-pro"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -6716,7 +8265,16 @@
                     "ProviderB/gen-pro"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "comprehension",
+                    "migration-compat",
+                    "cost-quota",
+                    "operability",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -6741,7 +8299,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -6749,7 +8308,16 @@
                 "metis",
                 "oracle",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "qwen-code",
+                "chain": [
+                  "ProviderB/flagship-open",
+                  "ProviderB/gen-pro"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Planning is author work in the omo role chain. A different harness and model family challenges the frozen plan for traceability and contradiction. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -6807,7 +8375,16 @@
                     "ProviderC/open-reason-lite"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "comprehension",
+                    "migration-compat",
+                    "cost-quota",
+                    "operability",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -6831,7 +8408,8 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -6839,7 +8417,16 @@
                 "metis",
                 "oracle",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderC/open-reason-lite"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -6892,7 +8479,16 @@
                     "ProviderC/open-reason-lite"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "comprehension",
+                    "migration-compat",
+                    "cost-quota",
+                    "operability",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -6917,7 +8513,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -6925,7 +8522,16 @@
                 "metis",
                 "oracle",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "qwen-code",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderC/open-reason-lite"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Planning is author work in the omo role chain. A different harness and model family challenges the frozen plan for traceability and contradiction. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -6983,7 +8589,16 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "comprehension",
+                    "migration-compat",
+                    "cost-quota",
+                    "operability",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -7007,7 +8622,8 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -7015,7 +8631,16 @@
                 "metis",
                 "oracle",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderC/open-reason-lite",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -7068,7 +8693,16 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "comprehension",
+                    "migration-compat",
+                    "cost-quota",
+                    "operability",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -7093,7 +8727,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -7101,7 +8736,16 @@
                 "metis",
                 "oracle",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "qwen-code",
+                "chain": [
+                  "ProviderC/open-reason-lite",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Planning is author work in the omo role chain. A different harness and model family challenges the frozen plan for traceability and contradiction. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -7159,7 +8803,16 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "comprehension",
+                    "migration-compat",
+                    "cost-quota",
+                    "operability",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -7183,7 +8836,8 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -7191,7 +8845,16 @@
                 "metis",
                 "oracle",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderG/div-flagship",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -7244,7 +8907,16 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "contract-fit",
+                    "comprehension",
+                    "migration-compat",
+                    "cost-quota",
+                    "operability",
+                    "simplicity"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -7269,7 +8941,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -7277,12 +8950,35 @@
                 "metis",
                 "oracle",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "qwen-code",
+                "chain": [
+                  "ProviderG/div-flagship",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Planning is author work in the omo role chain. A different harness and model family challenges the frozen plan for traceability and contradiction. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
         }
-      }
+      },
+      "review_tier": "wide",
+      "lenses": [
+        "contract-fit",
+        "comprehension",
+        "migration-compat",
+        "cost-quota",
+        "operability",
+        "simplicity"
+      ],
+      "gates": {
+        "pre": "none",
+        "post": "none"
+      },
+      "primary_lens": "contract-fit"
     },
     {
       "id": "A10",
@@ -7337,7 +9033,13 @@
                     "ProviderE/coder-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "authorization-state",
+                    "security-abuse",
+                    "contract-fit"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -7362,14 +9064,24 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "explore",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderE/coder-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -7413,7 +9125,13 @@
                     "ProviderE/coder-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "authorization-state",
+                    "security-abuse",
+                    "contract-fit"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -7438,14 +9156,24 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "explore",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderE/coder-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Goose tool configuration and Qwen sandbox settings support explicit policy fixtures. Synthetic accounts only; no real credential boundary is approved here. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -7494,7 +9222,13 @@
                     "ProviderC/open-reason-lite"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "authorization-state",
+                    "security-abuse",
+                    "contract-fit"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -7519,14 +9253,24 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "explore",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderC/open-reason-lite"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -7570,7 +9314,13 @@
                     "ProviderC/open-reason-lite"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "authorization-state",
+                    "security-abuse",
+                    "contract-fit"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -7595,14 +9345,24 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "explore",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderC/open-reason-lite"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Goose tool configuration and Qwen sandbox settings support explicit policy fixtures. Synthetic accounts only; no real credential boundary is approved here. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -7651,7 +9411,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "authorization-state",
+                    "security-abuse",
+                    "contract-fit"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -7676,14 +9442,24 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "explore",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-lite",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -7727,7 +9503,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "authorization-state",
+                    "security-abuse",
+                    "contract-fit"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -7752,14 +9534,24 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "explore",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-lite",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Goose tool configuration and Qwen sandbox settings support explicit policy fixtures. Synthetic accounts only; no real credential boundary is approved here. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -7808,7 +9600,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "authorization-state",
+                    "security-abuse",
+                    "contract-fit"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -7833,14 +9631,24 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "explore",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderG/div-flagship",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -7884,7 +9692,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "authorization-state",
+                    "security-abuse",
+                    "contract-fit"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -7909,19 +9723,40 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
                 "atlas",
                 "explore",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderG/div-flagship",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Goose tool configuration and Qwen sandbox settings support explicit policy fixtures. Synthetic accounts only; no real credential boundary is approved here. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
         }
-      }
+      },
+      "review_tier": "standard",
+      "lenses": [
+        "authorization-state",
+        "security-abuse",
+        "contract-fit"
+      ],
+      "gates": {
+        "pre": "none",
+        "post": "none"
+      },
+      "primary_lens": "authorization-state"
     },
     {
       "id": "A11",
@@ -7983,7 +9818,13 @@
                     "ProviderE/coder-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "authorization-state",
+                    "security-abuse",
+                    "evidence-provenance"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -8003,7 +9844,8 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -8011,7 +9853,16 @@
                 "explore",
                 "multimodal-looker",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderE/coder-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -8063,7 +9914,13 @@
                     "ProviderE/coder-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "authorization-state",
+                    "security-abuse",
+                    "evidence-provenance"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -8084,7 +9941,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -8092,7 +9950,16 @@
                 "explore",
                 "multimodal-looker",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderE/coder-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Official open-source Playwright MCP is the browser path; Qwen has Computer Use, Goose has Computer Controller. Final state is checked by a separate test. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -8149,7 +10016,13 @@
                     "ProviderC/open-reason-lite"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "authorization-state",
+                    "security-abuse",
+                    "evidence-provenance"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -8169,7 +10042,8 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -8177,7 +10051,16 @@
                 "explore",
                 "multimodal-looker",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderC/open-reason-lite"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -8229,7 +10112,13 @@
                     "ProviderC/open-reason-lite"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "authorization-state",
+                    "security-abuse",
+                    "evidence-provenance"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -8250,7 +10139,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -8258,7 +10148,16 @@
                 "explore",
                 "multimodal-looker",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderC/open-reason-lite"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Official open-source Playwright MCP is the browser path; Qwen has Computer Use, Goose has Computer Controller. Final state is checked by a separate test. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -8315,7 +10214,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "authorization-state",
+                    "security-abuse",
+                    "evidence-provenance"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -8335,7 +10240,8 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -8343,7 +10249,16 @@
                 "explore",
                 "multimodal-looker",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderC/open-reason-lite",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -8395,7 +10310,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "authorization-state",
+                    "security-abuse",
+                    "evidence-provenance"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -8416,7 +10337,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -8424,7 +10346,16 @@
                 "explore",
                 "multimodal-looker",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-lite",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Official open-source Playwright MCP is the browser path; Qwen has Computer Use, Goose has Computer Controller. Final state is checked by a separate test. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -8481,7 +10412,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "authorization-state",
+                    "security-abuse",
+                    "evidence-provenance"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -8501,7 +10438,8 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -8509,7 +10447,16 @@
                 "explore",
                 "multimodal-looker",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderG/div-flagship",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -8561,7 +10508,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "authorization-state",
+                    "security-abuse",
+                    "evidence-provenance"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -8582,7 +10535,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -8590,12 +10544,32 @@
                 "explore",
                 "multimodal-looker",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderG/div-flagship",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Official open-source Playwright MCP is the browser path; Qwen has Computer Use, Goose has Computer Controller. Final state is checked by a separate test. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
         }
-      }
+      },
+      "review_tier": "standard",
+      "lenses": [
+        "authorization-state",
+        "security-abuse",
+        "evidence-provenance"
+      ],
+      "gates": {
+        "pre": "none",
+        "post": "none"
+      },
+      "primary_lens": "authorization-state"
     },
     {
       "id": "A12",
@@ -8650,7 +10624,13 @@
                     "ProviderE/coder-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "consistency",
+                    "numerics-reconciliation",
+                    "comprehension"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -8675,7 +10655,8 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -8683,7 +10664,16 @@
                 "librarian",
                 "multimodal-looker",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderE/coder-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -8727,7 +10717,13 @@
                     "ProviderE/coder-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "consistency",
+                    "numerics-reconciliation",
+                    "comprehension"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -8753,7 +10749,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -8761,7 +10758,16 @@
                 "librarian",
                 "multimodal-looker",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderE/coder-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Qwen bundles image, PDF, audio and video input settings; peers exchange immutable artifacts and a separate harness checks references and totals. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -8810,7 +10816,13 @@
                     "ProviderC/open-reason-lite"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "consistency",
+                    "numerics-reconciliation",
+                    "comprehension"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -8835,7 +10847,8 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -8843,7 +10856,16 @@
                 "librarian",
                 "multimodal-looker",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderC/open-reason-lite"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -8887,7 +10909,13 @@
                     "ProviderC/open-reason-lite"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "consistency",
+                    "numerics-reconciliation",
+                    "comprehension"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -8913,7 +10941,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -8921,7 +10950,16 @@
                 "librarian",
                 "multimodal-looker",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-xl",
+                  "ProviderC/open-reason-lite"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Qwen bundles image, PDF, audio and video input settings; peers exchange immutable artifacts and a separate harness checks references and totals. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -8970,7 +11008,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "consistency",
+                    "numerics-reconciliation",
+                    "comprehension"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -8995,7 +11039,8 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -9003,7 +11048,16 @@
                 "librarian",
                 "multimodal-looker",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderC/open-reason-lite",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -9047,7 +11101,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "consistency",
+                    "numerics-reconciliation",
+                    "comprehension"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -9073,7 +11133,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -9081,7 +11142,16 @@
                 "librarian",
                 "multimodal-looker",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderC/open-reason-lite",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Qwen bundles image, PDF, audio and video input settings; peers exchange immutable artifacts and a separate harness checks references and totals. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
@@ -9130,7 +11200,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "consistency",
+                    "numerics-reconciliation",
+                    "comprehension"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -9155,7 +11231,8 @@
                 "no-unlogged-auxiliary-models",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -9163,7 +11240,16 @@
                 "librarian",
                 "multimodal-looker",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "goose",
+                "chain": [
+                  "ProviderG/div-flagship",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             },
             {
               "name": "alternate",
@@ -9207,7 +11293,13 @@
                     "ProviderC/open-reason-xl"
                   ],
                   "kind": "adversarial-review",
-                  "execution": "original-external-role-contract"
+                  "execution": "original-external-role-contract",
+                  "lenses": [
+                    "consistency",
+                    "numerics-reconciliation",
+                    "comprehension"
+                  ],
+                  "seat": "reviewer-1"
                 }
               ],
               "category_routes": {
@@ -9233,7 +11325,8 @@
                 "pi-external-container",
                 "apply-pruned-chains-not-base-fallbacks",
                 "orchestrator-planning-only",
-                "record-all-provider-routes"
+                "record-all-provider-routes",
+                "zero-context-review"
               ],
               "external_adapters": "proposed-not-implemented",
               "agent_sequence": [
@@ -9241,12 +11334,32 @@
                 "librarian",
                 "multimodal-looker",
                 "momus"
-              ]
+              ],
+              "aggregator": {
+                "harness": "pi",
+                "chain": [
+                  "ProviderG/div-flagship",
+                  "ProviderC/open-reason-xl"
+                ],
+                "kind": "aggregation",
+                "execution": "deterministic-key-first-then-model-merge"
+              }
             }
           ],
           "rationale": "Qwen bundles image, PDF, audio and video input settings; peers exchange immutable artifacts and a separate harness checks references and totals. Role sequence follows this option, not the baseline sketch; non-native implementer chains use atlas. Open-source alternates replace omo orchestration with Pi or Goose original role contracts."
         }
-      }
+      },
+      "review_tier": "standard",
+      "lenses": [
+        "consistency",
+        "numerics-reconciliation",
+        "comprehension"
+      ],
+      "gates": {
+        "pre": "none",
+        "post": "none"
+      },
+      "primary_lens": "consistency"
     }
   ],
   "mandatory_independence": {
@@ -9270,6 +11383,25 @@
     "cap_output_usd_per_1m": 4.65,
     "price_basis": "conservative-reference-not-billing-proof",
     "region_basis": "family-and-route-policy-not-connectivity-test",
-    "review_contract": "momus-is-vocabulary-not-a-call-to-the-omo-plugin"
+    "review_contract": "momus-is-vocabulary-not-a-call-to-the-omo-plugin",
+    "review_panel": {
+      "zero_context": "reviewers-get-artifact-standard-and-explicit-context-only",
+      "dedupe": "deterministic-key-before-any-model-merge",
+      "aggregator": "outside-author-and-orchestrator-harness-and-family",
+      "tiers": {
+        "standard": {
+          "max_lenses": 4,
+          "reviewer_seats": 1
+        },
+        "wide": {
+          "max_lenses": 6,
+          "reviewer_seats": 1
+        },
+        "spread": {
+          "max_lenses": 6,
+          "reviewer_seats": 2
+        }
+      }
+    }
   }
 }

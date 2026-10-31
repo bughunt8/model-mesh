@@ -15,7 +15,7 @@
     "Sandbox is off by default. Alibaba benchmarked Qwen3.8-Max in a different harness, so the Qwen Code plus Qwen pairing is an unmeasured tie-breaker.",
     "No install, load or dry-run was executed."
   ],
-  "role_binding": "Author seat for A07, A08, A10 to A12 where bundled image, PDF, audio and video input matters. In ultimate and global rows the model chain is the alibaba pool; the reviewer is a different harness and family.",
+  "role_binding": "Author seat for A07, A08, A10 to A12 where bundled image, PDF, audio and video input matters. The matrix also uses this harness for the second reviewer seat of A05 and A06. Those seats mostly name non-Qwen models, which needs an unbuilt provider adapter and is not a measured pairing. In ultimate and global rows the model chain is the alibaba pool; the reviewer is a different harness and family.",
   "profiles": {
     "ultimate": "Author with qwen3.8-max > qwen3.7-plus on general rows.",
     "hybrid": "Author with qwen3.7-plus > qwen3.5-plus (cap-safe).",

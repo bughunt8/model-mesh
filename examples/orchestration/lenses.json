@@ -1,0 +1,127 @@
+{
+  "version": 1,
+  "status": "design-only-runtime-deferred",
+  "note": "Lens prompts are original wording for review panels. A lens sets what a reviewer looks for. It does not make a reviewer independent: independence comes from harness and model family, see docs/REVIEW-PANEL.md.",
+  "lenses": [
+    {
+      "id": "contract-fit",
+      "title": "Contract fit",
+      "question": "Does the artifact do what the original task contract says, no more and no less?",
+      "asks": [
+        "Which stated requirement or acceptance criterion has no matching change or evidence?",
+        "Which change answers a requirement nobody stated?",
+        "Does the done criterion in the contract hold when read cold, without the author's explanation?"
+      ]
+    },
+    {
+      "id": "regression-risk",
+      "title": "Regression risk",
+      "question": "What existing behavior could this change break, and which check would notice?",
+      "asks": [
+        "Which callers, data shapes or configs depend on the old behavior?",
+        "Would the existing tests fail if the change were reverted, or do they pass either way?",
+        "What input class was never exercised?"
+      ]
+    },
+    {
+      "id": "security-abuse",
+      "title": "Security and abuse",
+      "question": "How could an attacker or a careless user turn this against the system?",
+      "asks": [
+        "Where does untrusted input reach a command, query, path or template?",
+        "Which permission, secret or boundary does the change widen?",
+        "What does failure expose in logs, errors or defaults?"
+      ]
+    },
+    {
+      "id": "simplicity",
+      "title": "Simplicity",
+      "question": "Is there less to build, depend on or maintain than this artifact proposes?",
+      "asks": [
+        "Which part could be removed or replaced by an existing library or service?",
+        "Which new dependency, option or abstraction has one user?",
+        "What will a maintainer have to learn that the task did not require?"
+      ]
+    },
+    {
+      "id": "operability",
+      "title": "Operability",
+      "question": "Can someone run, observe, diagnose and roll this back at 3 AM?",
+      "asks": [
+        "Which failure leaves no log, metric or trace?",
+        "How is the change undone, and what state does rollback leave behind?",
+        "Which step needs a human who may not be there?"
+      ]
+    },
+    {
+      "id": "migration-compat",
+      "title": "Migration and compatibility",
+      "question": "What happens to existing clients, data and versions during and after the change?",
+      "asks": [
+        "Which stored or serialized shape changes, and who reads the old shape?",
+        "What breaks when old and new versions run side by side?",
+        "Is there a safe order of rollout and a stated point of no return?"
+      ]
+    },
+    {
+      "id": "cost-quota",
+      "title": "Cost and quota",
+      "question": "What does this cost at expected and peak load, in money, tokens and rate limits?",
+      "asks": [
+        "Which call, query or model invocation grows with input size or user count?",
+        "Which quota or rate limit is hit first?",
+        "Is the cost bounded by something other than good intentions?"
+      ]
+    },
+    {
+      "id": "comprehension",
+      "title": "Cold-read comprehension",
+      "question": "Can a reader with no background follow it and act on it correctly?",
+      "asks": [
+        "Which term, acronym or reference is used before it is defined?",
+        "Which step depends on knowledge only the author has?",
+        "Which sentence can be read two ways with different consequences?"
+      ]
+    },
+    {
+      "id": "evidence-provenance",
+      "title": "Evidence and provenance",
+      "question": "Is every claim tied to a source, a run or a named observation?",
+      "asks": [
+        "Which claim has no citation, command output or file reference?",
+        "Which source was read in full, and which only skimmed or assumed?",
+        "What contrary evidence exists and was it reported?"
+      ]
+    },
+    {
+      "id": "numerics-reconciliation",
+      "title": "Numbers and reconciliation",
+      "question": "Do the figures add up, reconcile to their source and carry the right units?",
+      "asks": [
+        "Which total does not equal the sum of its parts?",
+        "Which figure changes between two places in the artifact?",
+        "Which unit, period or rounding rule is unstated?"
+      ]
+    },
+    {
+      "id": "authorization-state",
+      "title": "Authorization and final state",
+      "question": "Was the action allowed, aimed at the right target, and is the end state the one requested?",
+      "asks": [
+        "Who authorized each outward-facing or irreversible step, and where is that recorded?",
+        "Was the target the intended one, checked after the action?",
+        "Does the final observed state match the request, not just the last command's exit code?"
+      ]
+    },
+    {
+      "id": "consistency",
+      "title": "Cross-artifact consistency",
+      "question": "Do the artifacts agree with each other on names, numbers and references?",
+      "asks": [
+        "Which name, ID or value differs between two artifacts?",
+        "Which reference points at something that moved or no longer exists?",
+        "Which statement in one artifact is contradicted by another?"
+      ]
+    }
+  ]
+}

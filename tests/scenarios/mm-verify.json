@@ -1,0 +1,33 @@
+{
+  "skill": "mm-verify",
+  "note": "Static checks on the skill text. They show the contract is still written down. They do not show an agent follows it.",
+  "scenarios": [
+    {
+      "id": "two-modes",
+      "description": "Both the default and suite modes exist.",
+      "required": [
+        "## Default mode: judge the work",
+        "## suite mode"
+      ],
+      "forbidden": []
+    },
+    {
+      "id": "no-placeholders",
+      "description": "No unfinished markers ship in the skill.",
+      "required": [],
+      "forbidden": [
+        "TODO",
+        "FIXME",
+        "TBD"
+      ]
+    },
+    {
+      "id": "judges-evidence",
+      "description": "The default mode judges evidence, not claims.",
+      "required": [
+        "(?i)evidence"
+      ],
+      "forbidden": []
+    }
+  ]
+}
